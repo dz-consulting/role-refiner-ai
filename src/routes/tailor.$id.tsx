@@ -33,9 +33,11 @@ function TailorPage() {
         if (!a || !prof) throw new Error("Missing data");
         setAssessment(a);
         // Build a brief original summary preview from profile
-        const skills = (prof.skills ?? []).slice(0, 6).join(" · ");
+        const skillArr = (Array.isArray(prof.skills) ? prof.skills : []) as string[];
+        const outcomeArr = (Array.isArray(prof.outcomes) ? prof.outcomes : []) as string[];
+        const skills = skillArr.slice(0, 6).join(" · ");
         setOriginalSummary(
-          `${prof.name ?? ""} — ${prof.title ?? ""}\n${prof.years_experience ?? 0} years experience\n\nTop skills: ${skills}\n\nKey outcomes:\n${(prof.outcomes ?? []).map((o: string) => "• " + o).join("\n")}`
+          `${prof.name ?? ""} — ${prof.title ?? ""}\n${prof.years_experience ?? 0} years experience\n\nTop skills: ${skills}\n\nKey outcomes:\n${outcomeArr.map((o) => "• " + o).join("\n")}`
         );
 
         if (a.tailored_cv) {

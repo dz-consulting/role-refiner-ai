@@ -87,7 +87,7 @@ function Dashboard() {
             </div>
           </div>
           <Link
-            to="/onboarding"
+            to="/profile"
             className="text-xs font-mono text-muted-foreground hover:text-foreground"
           >
             Edit profile →

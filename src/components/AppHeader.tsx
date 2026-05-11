@@ -10,6 +10,9 @@ export function AppHeader({ email }: { email?: string | null }) {
           <span className="font-mono text-[11px] uppercase tracking-[0.18em] text-accent">AI</span>
         </Link>
         <div className="flex items-center gap-6 text-sm">
+          <Link to="/profile" className="text-muted-foreground hover:text-foreground transition-colors">
+            Profile
+          </Link>
           {email && <span className="font-mono text-xs text-muted-foreground">{email}</span>}
           <button
             onClick={async () => {

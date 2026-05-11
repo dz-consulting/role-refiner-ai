@@ -24,7 +24,7 @@ export async function callClaude(opts: {
       "content-type": "application/json",
     },
     body: JSON.stringify({
-      model: "claude-sonnet-4-20250514",
+      model: "claude-sonnet-4-5",
       max_tokens: opts.maxTokens ?? 4096,
       system,
       messages: [{ role: "user", content: opts.userPrompt }],

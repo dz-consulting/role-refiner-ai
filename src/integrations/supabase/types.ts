@@ -14,7 +14,108 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      assessments: {
+        Row: {
+          company: string | null
+          created_at: string
+          fit_label: string | null
+          fit_score: number | null
+          fit_summary: string | null
+          id: string
+          job_decoder: Json | null
+          job_description: string
+          requirements: Json | null
+          role_title: string | null
+          screening_risks: Json | null
+          status: string
+          tailored_cv: Json | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          company?: string | null
+          created_at?: string
+          fit_label?: string | null
+          fit_score?: number | null
+          fit_summary?: string | null
+          id?: string
+          job_decoder?: Json | null
+          job_description: string
+          requirements?: Json | null
+          role_title?: string | null
+          screening_risks?: Json | null
+          status?: string
+          tailored_cv?: Json | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          company?: string | null
+          created_at?: string
+          fit_label?: string | null
+          fit_score?: number | null
+          fit_summary?: string | null
+          id?: string
+          job_decoder?: Json | null
+          job_description?: string
+          requirements?: Json | null
+          role_title?: string | null
+          screening_risks?: Json | null
+          status?: string
+          tailored_cv?: Json | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          cv_file_path: string | null
+          id: string
+          name: string | null
+          outcomes: Json | null
+          raw_text: string | null
+          roles: Json | null
+          seniority_signals: Json | null
+          skills: Json | null
+          title: string | null
+          updated_at: string
+          user_id: string
+          years_experience: number | null
+        }
+        Insert: {
+          created_at?: string
+          cv_file_path?: string | null
+          id?: string
+          name?: string | null
+          outcomes?: Json | null
+          raw_text?: string | null
+          roles?: Json | null
+          seniority_signals?: Json | null
+          skills?: Json | null
+          title?: string | null
+          updated_at?: string
+          user_id: string
+          years_experience?: number | null
+        }
+        Update: {
+          created_at?: string
+          cv_file_path?: string | null
+          id?: string
+          name?: string | null
+          outcomes?: Json | null
+          raw_text?: string | null
+          roles?: Json | null
+          seniority_signals?: Json | null
+          skills?: Json | null
+          title?: string | null
+          updated_at?: string
+          user_id?: string
+          years_experience?: number | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

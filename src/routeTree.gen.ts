@@ -9,38 +9,148 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as OnboardingRouteImport } from './routes/onboarding'
+import { Route as DashboardRouteImport } from './routes/dashboard'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AssessRouteImport } from './routes/assess'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as TailorIdRouteImport } from './routes/tailor.$id'
+import { Route as AssessmentIdRouteImport } from './routes/assessment.$id'
 
+const OnboardingRoute = OnboardingRouteImport.update({
+  id: '/onboarding',
+  path: '/onboarding',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DashboardRoute = DashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AssessRoute = AssessRouteImport.update({
+  id: '/assess',
+  path: '/assess',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TailorIdRoute = TailorIdRouteImport.update({
+  id: '/tailor/$id',
+  path: '/tailor/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AssessmentIdRoute = AssessmentIdRouteImport.update({
+  id: '/assessment/$id',
+  path: '/assessment/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/assess': typeof AssessRoute
+  '/auth': typeof AuthRoute
+  '/dashboard': typeof DashboardRoute
+  '/onboarding': typeof OnboardingRoute
+  '/assessment/$id': typeof AssessmentIdRoute
+  '/tailor/$id': typeof TailorIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/assess': typeof AssessRoute
+  '/auth': typeof AuthRoute
+  '/dashboard': typeof DashboardRoute
+  '/onboarding': typeof OnboardingRoute
+  '/assessment/$id': typeof AssessmentIdRoute
+  '/tailor/$id': typeof TailorIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/assess': typeof AssessRoute
+  '/auth': typeof AuthRoute
+  '/dashboard': typeof DashboardRoute
+  '/onboarding': typeof OnboardingRoute
+  '/assessment/$id': typeof AssessmentIdRoute
+  '/tailor/$id': typeof TailorIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/assess'
+    | '/auth'
+    | '/dashboard'
+    | '/onboarding'
+    | '/assessment/$id'
+    | '/tailor/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/assess'
+    | '/auth'
+    | '/dashboard'
+    | '/onboarding'
+    | '/assessment/$id'
+    | '/tailor/$id'
+  id:
+    | '__root__'
+    | '/'
+    | '/assess'
+    | '/auth'
+    | '/dashboard'
+    | '/onboarding'
+    | '/assessment/$id'
+    | '/tailor/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AssessRoute: typeof AssessRoute
+  AuthRoute: typeof AuthRoute
+  DashboardRoute: typeof DashboardRoute
+  OnboardingRoute: typeof OnboardingRoute
+  AssessmentIdRoute: typeof AssessmentIdRoute
+  TailorIdRoute: typeof TailorIdRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/onboarding': {
+      id: '/onboarding'
+      path: '/onboarding'
+      fullPath: '/onboarding'
+      preLoaderRoute: typeof OnboardingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dashboard': {
+      id: '/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof DashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/assess': {
+      id: '/assess'
+      path: '/assess'
+      fullPath: '/assess'
+      preLoaderRoute: typeof AssessRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,11 +158,31 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/tailor/$id': {
+      id: '/tailor/$id'
+      path: '/tailor/$id'
+      fullPath: '/tailor/$id'
+      preLoaderRoute: typeof TailorIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/assessment/$id': {
+      id: '/assessment/$id'
+      path: '/assessment/$id'
+      fullPath: '/assessment/$id'
+      preLoaderRoute: typeof AssessmentIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AssessRoute: AssessRoute,
+  AuthRoute: AuthRoute,
+  DashboardRoute: DashboardRoute,
+  OnboardingRoute: OnboardingRoute,
+  AssessmentIdRoute: AssessmentIdRoute,
+  TailorIdRoute: TailorIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -16,9 +16,10 @@ async function extractFromDocx(file: File): Promise<string> {
 
 async function extractFromPdf(file: File): Promise<string> {
   const pdfjs = await import("pdfjs-dist");
-  // Use CDN worker to avoid bundler issues
+  // Bundle worker with Vite to avoid CDN/version mismatch
+  const workerSrc = (await import("pdfjs-dist/build/pdf.worker.min.mjs?url")).default;
   // @ts-ignore
-  pdfjs.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.mjs`;
+  pdfjs.GlobalWorkerOptions.workerSrc = workerSrc;
   const buf = await file.arrayBuffer();
   const pdf = await pdfjs.getDocument({ data: buf }).promise;
   let text = "";

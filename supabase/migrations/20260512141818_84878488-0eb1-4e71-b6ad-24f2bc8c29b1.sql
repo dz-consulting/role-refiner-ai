@@ -1,0 +1,1 @@
+ALTER TABLE public.assessments ADD COLUMN IF NOT EXISTS intent_to_apply boolean NOT NULL DEFAULT false;

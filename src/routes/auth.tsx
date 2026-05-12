@@ -9,23 +9,30 @@ export const Route = createFileRoute("/auth")({
 function AuthPage() {
   const nav = useNavigate();
   const [mode, setMode] = useState<"signin" | "signup">("signin");
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [err, setErr] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+
+  const usernameToEmail = (u: string) =>
+    `${u.trim().toLowerCase().replace(/[^a-z0-9_.-]/g, "")}@users.jobmatch.local`;
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErr(null);
     setLoading(true);
     try {
+      const uname = username.trim().toLowerCase();
+      if (!/^[a-z0-9_.-]{3,}$/.test(uname)) {
+        throw new Error("Username must be 3+ chars (letters, numbers, . _ -).");
+      }
+      const email = usernameToEmail(uname);
       if (mode === "signup") {
-        const { error } = await supabase.auth.signUp({
-          email,
-          password,
-          options: { emailRedirectTo: window.location.origin },
-        });
+        const { error } = await supabase.auth.signUp({ email, password });
         if (error) throw error;
+        // auto-confirm is on, so sign in immediately
+        const { error: signInErr } = await supabase.auth.signInWithPassword({ email, password });
+        if (signInErr) throw signInErr;
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
@@ -84,13 +91,15 @@ function AuthPage() {
           <div className="space-y-3">
             <div>
               <label className="block text-xs font-mono uppercase tracking-wider text-muted-foreground mb-2">
-                Email
+                Username
               </label>
               <input
-                type="email"
+                type="text"
                 required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                autoComplete="username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                placeholder="e.g. alex_smith"
                 className="w-full bg-input border border-border rounded-md px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
               />
             </div>

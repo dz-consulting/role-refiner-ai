@@ -102,6 +102,9 @@ function AssessmentView() {
           </div>
         </Section>
 
+        {/* Section B: Company Intelligence */}
+        <CompanyIntelligence intel={a.company_intel} />
+
         {/* Section C: Requirements */}
         <Section title="Requirement breakdown" letter="C">
           <div className="border border-border rounded-md bg-surface overflow-hidden">

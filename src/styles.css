@@ -4,8 +4,8 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/* JobMatch AI — Bloomberg terminal meets modern SaaS
-   Dark navy + white + sharp amber. Serif display, sans body. */
+/* JobMatch — minimal, calm, Linear/Notion-inspired.
+   Light neutral canvas, single sans family, one restrained accent. */
 
 @theme inline {
   --radius-sm: calc(var(--radius) - 4px);
@@ -37,82 +37,84 @@
   --color-warning-foreground: var(--warning-foreground);
   --color-surface: var(--surface);
   --color-surface-foreground: var(--surface-foreground);
-  --font-display: "Fraunces", "Source Serif 4", ui-serif, Georgia, serif;
+  /* Single sans family across the app. font-display / font-mono kept as
+     aliases so existing className usage stays valid but renders identically. */
+  --font-display: "Inter", ui-sans-serif, system-ui, -apple-system, sans-serif;
   --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, sans-serif;
-  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --font-mono: "Inter", ui-sans-serif, system-ui, -apple-system, sans-serif;
 }
 
 :root {
-  --radius: 0.375rem;
+  --radius: 0.5rem;
 
-  /* Dark navy canvas */
-  --background: oklch(0.18 0.025 250);
-  --foreground: oklch(0.97 0.005 250);
+  /* Near-white canvas, soft gray surface */
+  --background: oklch(0.995 0 0);
+  --foreground: oklch(0.22 0.005 250);
 
-  --surface: oklch(0.22 0.028 250);
-  --surface-foreground: oklch(0.97 0.005 250);
+  --surface: oklch(0.985 0.002 250);
+  --surface-foreground: oklch(0.22 0.005 250);
 
-  --card: oklch(0.22 0.028 250);
-  --card-foreground: oklch(0.97 0.005 250);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.22 0.005 250);
 
-  --popover: oklch(0.22 0.028 250);
-  --popover-foreground: oklch(0.97 0.005 250);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.22 0.005 250);
 
-  /* White acts as primary on the dark canvas */
-  --primary: oklch(0.97 0.005 250);
-  --primary-foreground: oklch(0.18 0.025 250);
+  /* Near-black primary for buttons/text emphasis */
+  --primary: oklch(0.22 0.005 250);
+  --primary-foreground: oklch(0.99 0 0);
 
-  --secondary: oklch(0.27 0.028 250);
-  --secondary-foreground: oklch(0.97 0.005 250);
+  --secondary: oklch(0.96 0.003 250);
+  --secondary-foreground: oklch(0.28 0.006 250);
 
-  --muted: oklch(0.27 0.028 250);
-  --muted-foreground: oklch(0.7 0.018 250);
+  --muted: oklch(0.965 0.003 250);
+  --muted-foreground: oklch(0.52 0.008 250);
 
-  /* Sharp amber accent */
-  --accent: oklch(0.78 0.165 70);
-  --accent-foreground: oklch(0.18 0.025 250);
+  /* Single restrained accent (indigo-ish) used sparingly */
+  --accent: oklch(0.55 0.15 265);
+  --accent-foreground: oklch(0.99 0 0);
 
-  --destructive: oklch(0.62 0.21 25);
-  --destructive-foreground: oklch(0.98 0.005 250);
+  --destructive: oklch(0.58 0.2 25);
+  --destructive-foreground: oklch(0.99 0 0);
 
-  --success: oklch(0.7 0.15 155);
-  --success-foreground: oklch(0.18 0.025 250);
+  --success: oklch(0.62 0.13 155);
+  --success-foreground: oklch(0.99 0 0);
 
-  --warning: oklch(0.78 0.165 70);
-  --warning-foreground: oklch(0.18 0.025 250);
+  --warning: oklch(0.7 0.13 70);
+  --warning-foreground: oklch(0.22 0.005 250);
 
-  --border: oklch(0.32 0.025 250);
-  --input: oklch(0.27 0.028 250);
-  --ring: oklch(0.78 0.165 70);
+  /* Subtle dividers, very light */
+  --border: oklch(0.93 0.003 250);
+  --input: oklch(1 0 0);
+  --ring: oklch(0.55 0.15 265);
 }
 
 .dark {
-  /* App is dark by default — keep tokens identical */
-  --background: oklch(0.18 0.025 250);
-  --foreground: oklch(0.97 0.005 250);
-  --surface: oklch(0.22 0.028 250);
-  --surface-foreground: oklch(0.97 0.005 250);
-  --card: oklch(0.22 0.028 250);
-  --card-foreground: oklch(0.97 0.005 250);
-  --popover: oklch(0.22 0.028 250);
-  --popover-foreground: oklch(0.97 0.005 250);
-  --primary: oklch(0.97 0.005 250);
-  --primary-foreground: oklch(0.18 0.025 250);
-  --secondary: oklch(0.27 0.028 250);
-  --secondary-foreground: oklch(0.97 0.005 250);
-  --muted: oklch(0.27 0.028 250);
-  --muted-foreground: oklch(0.7 0.018 250);
-  --accent: oklch(0.78 0.165 70);
-  --accent-foreground: oklch(0.18 0.025 250);
-  --destructive: oklch(0.62 0.21 25);
-  --destructive-foreground: oklch(0.98 0.005 250);
-  --success: oklch(0.7 0.15 155);
-  --success-foreground: oklch(0.18 0.025 250);
-  --warning: oklch(0.78 0.165 70);
-  --warning-foreground: oklch(0.18 0.025 250);
-  --border: oklch(0.32 0.025 250);
-  --input: oklch(0.27 0.028 250);
-  --ring: oklch(0.78 0.165 70);
+  --background: oklch(0.995 0 0);
+  --foreground: oklch(0.22 0.005 250);
+  --surface: oklch(0.985 0.002 250);
+  --surface-foreground: oklch(0.22 0.005 250);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.22 0.005 250);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.22 0.005 250);
+  --primary: oklch(0.22 0.005 250);
+  --primary-foreground: oklch(0.99 0 0);
+  --secondary: oklch(0.96 0.003 250);
+  --secondary-foreground: oklch(0.28 0.006 250);
+  --muted: oklch(0.965 0.003 250);
+  --muted-foreground: oklch(0.52 0.008 250);
+  --accent: oklch(0.55 0.15 265);
+  --accent-foreground: oklch(0.99 0 0);
+  --destructive: oklch(0.58 0.2 25);
+  --destructive-foreground: oklch(0.99 0 0);
+  --success: oklch(0.62 0.13 155);
+  --success-foreground: oklch(0.99 0 0);
+  --warning: oklch(0.7 0.13 70);
+  --warning-foreground: oklch(0.22 0.005 250);
+  --border: oklch(0.93 0.003 250);
+  --input: oklch(1 0 0);
+  --ring: oklch(0.55 0.15 265);
 }
 
 @layer base {
@@ -124,17 +126,18 @@
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
   }
-  h1, h2, h3, h4 { font-family: var(--font-display); letter-spacing: -0.01em; }
+  h1, h2, h3, h4 {
+    font-family: var(--font-display);
+    letter-spacing: -0.015em;
+    font-weight: 600;
+  }
 }
 
 @layer utilities {
-  .font-display { font-family: var(--font-display); }
+  .font-display { font-family: var(--font-display); font-weight: 600; letter-spacing: -0.015em; }
   .font-mono { font-family: var(--font-mono); }
   .terminal-rule {
-    background-image: linear-gradient(to right, var(--color-border) 50%, transparent 50%);
-    background-size: 8px 1px;
-    background-repeat: repeat-x;
-    background-position: left center;
+    background-color: var(--color-border);
     height: 1px;
   }
 }

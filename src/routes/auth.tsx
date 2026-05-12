@@ -97,15 +97,15 @@ function AuthPage() {
           <div className="space-y-3">
             <div>
               <label className="block text-xs font-mono uppercase tracking-wider text-muted-foreground mb-2">
-                Username
+                Username or email
               </label>
               <input
                 type="text"
                 required
                 autoComplete="username"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                placeholder="e.g. alex_smith"
+                value={identifier}
+                onChange={(e) => setIdentifier(e.target.value)}
+                placeholder="alex_smith or alex@example.com"
                 className="w-full bg-input border border-border rounded-md px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
               />
             </div>

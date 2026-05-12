@@ -103,6 +103,10 @@ If you genuinely don't recognize the company, say "Unknown company" in what_they
     ]);
 
     const result = extractJson(assessRaw);
+    if (typeof result.fit_score === "number") {
+      const clamped = Math.max(0, Math.min(10, result.fit_score));
+      result.fit_score = Math.round(clamped * 2) / 2;
+    }
     try {
       result.company_intel = extractJson(intelRaw);
     } catch (_e) {

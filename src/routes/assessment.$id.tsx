@@ -43,6 +43,11 @@ function AssessmentView() {
     nav({ to: "/dashboard" });
   };
 
+  const unlockIntel = async () => {
+    await supabase.from("assessments").update({ intent_to_apply: true }).eq("id", id);
+    setA({ ...a, intent_to_apply: true });
+  };
+
   const dec = a.job_decoder ?? {};
   const reqs: any[] = Array.isArray(a.requirements) ? a.requirements : [];
   const risks: string[] = Array.isArray(a.screening_risks) ? a.screening_risks : [];

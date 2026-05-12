@@ -187,6 +187,13 @@ function Tile({ label, children }: { label: string; children: React.ReactNode })
   );
 }
 
+function formatFitScore(score: number | null | undefined) {
+  if (score === null || score === undefined || Number.isNaN(Number(score))) return "—";
+  const n = Math.max(0, Math.min(10, Number(score)));
+  const rounded = Math.round(n * 2) / 2;
+  return Number.isInteger(rounded) ? rounded.toString() : rounded.toFixed(1);
+}
+
 function FitBadge({ score, label }: { score: number; label: string }) {
   const tone =
     label === "STRONG FIT"
@@ -197,7 +204,7 @@ function FitBadge({ score, label }: { score: number; label: string }) {
   return (
     <div className={`border-2 rounded-md p-5 text-right min-w-[180px] ${tone}`}>
       <div className="font-display text-5xl tabular-nums leading-none">
-        {score ?? "—"}<span className="text-2xl text-muted-foreground">/10</span>
+        {formatFitScore(score)}<span className="text-2xl text-muted-foreground">/10</span>
       </div>
       <div className="font-mono text-[11px] uppercase tracking-[0.18em] mt-2">{label}</div>
     </div>

@@ -39,7 +39,7 @@ Return JSON exactly matching this schema:
     "unstated_requirements": string[],
     "red_flags": string[]
   },
-  "fit_score": number,
+  "fit_score": number,  // between 0 and 10, only half-point increments allowed (e.g. 0, 0.5, 1, 1.5, ... 10)
   "fit_label": "STRONG FIT" | "PARTIAL FIT" | "POOR FIT",
   "fit_summary": string,
   "requirements": [
@@ -103,6 +103,10 @@ If you genuinely don't recognize the company, say "Unknown company" in what_they
     ]);
 
     const result = extractJson(assessRaw);
+    if (typeof result.fit_score === "number") {
+      const clamped = Math.max(0, Math.min(10, result.fit_score));
+      result.fit_score = Math.round(clamped * 2) / 2;
+    }
     try {
       result.company_intel = extractJson(intelRaw);
     } catch (_e) {

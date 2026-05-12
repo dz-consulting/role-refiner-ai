@@ -218,3 +218,180 @@ function MatchPill({ strength }: { strength: string }) {
     </span>
   );
 }
+
+function CompanyIntelligence({ intel }: { intel: any }) {
+  if (!intel) {
+    return (
+      <Section title="Company intelligence" letter="B">
+        <div className="border border-border bg-surface rounded-md p-5 text-sm text-muted-foreground">
+          Company intelligence unavailable for this assessment.
+        </div>
+      </Section>
+    );
+  }
+
+  const wtd = intel.what_they_do ?? {};
+  const health = intel.health ?? {};
+  const ai = intel.ai_maturity ?? {};
+  const hm = intel.hiring_manager ?? {};
+  const culture = intel.culture ?? {};
+
+  return (
+    <Section title="Company intelligence" letter="B">
+      <div className="space-y-3">
+        <IntelCard title="What they actually do" defaultOpen>
+          <p className="text-sm leading-relaxed">{wtd.summary ?? "—"}</p>
+          <div className="flex flex-wrap gap-2 mt-3">
+            {wtd.business_model && <Chip>{wtd.business_model}</Chip>}
+            {wtd.stage && <Chip>{wtd.stage}</Chip>}
+          </div>
+        </IntelCard>
+
+        <IntelCard title="Company health">
+          <Row label="Funding">{health.funding_status ?? "Unknown"}</Row>
+          <Row label="Headcount">{health.headcount_trend ?? "Unknown"}</Row>
+          {Array.isArray(health.recent_news) && health.recent_news.length > 0 && (
+            <div className="mt-3">
+              <div className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground mb-1.5">
+                Recent
+              </div>
+              <ul className="space-y-1.5 text-sm">
+                {health.recent_news.map((n: string, i: number) => (
+                  <li key={i} className="flex gap-2"><span className="text-accent">→</span>{n}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+          <FlagsGrid green={health.green_flags} red={health.red_flags} />
+        </IntelCard>
+
+        <IntelCard title="AI maturity signal">
+          <div className="flex items-center gap-3 mb-3">
+            <span className="font-display text-xl">{ai.rating ?? "—"}</span>
+          </div>
+          {ai.evidence && <p className="text-sm leading-relaxed text-muted-foreground">{ai.evidence}</p>}
+          {ai.why_it_matters && (
+            <div className="mt-3 border-l-2 border-accent pl-4 text-sm leading-relaxed">
+              <span className="font-mono text-[11px] uppercase tracking-[0.18em] text-accent block mb-1">
+                Why this matters for you
+              </span>
+              {ai.why_it_matters}
+            </div>
+          )}
+        </IntelCard>
+
+        <IntelCard title="Hiring manager intel">
+          {hm.name ? (
+            <>
+              <Row label="Name">{hm.name}</Row>
+              {hm.tenure && <Row label="Tenure">{hm.tenure}</Row>}
+              {hm.background && <p className="text-sm mt-3 leading-relaxed">{hm.background}</p>}
+              {hm.recent_focus && (
+                <div className="mt-3 text-sm">
+                  <span className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground block mb-1">
+                    Recent focus
+                  </span>
+                  {hm.recent_focus}
+                </div>
+              )}
+            </>
+          ) : (
+            <>
+              <div className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground mb-2">
+                No hiring manager named — founding team
+              </div>
+              <p className="text-sm leading-relaxed">{hm.founding_team_fallback ?? "Unknown"}</p>
+            </>
+          )}
+        </IntelCard>
+
+        <IntelCard title="Culture signals">
+          {culture.employee_signal && (
+            <p className="text-sm leading-relaxed">{culture.employee_signal}</p>
+          )}
+          {culture.work_style && (
+            <div className="mt-3 text-sm">
+              <span className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground block mb-1">
+                Work style
+              </span>
+              {culture.work_style}
+            </div>
+          )}
+          {Array.isArray(culture.watch_outs) && culture.watch_outs.length > 0 && (
+            <div className="mt-3">
+              <div className="font-mono text-[11px] uppercase tracking-[0.18em] text-destructive mb-1.5">
+                Watch-outs
+              </div>
+              <ul className="space-y-1.5 text-sm">
+                {culture.watch_outs.map((w: string, i: number) => (
+                  <li key={i} className="flex gap-2"><span className="text-destructive">!</span>{w}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </IntelCard>
+      </div>
+    </Section>
+  );
+}
+
+function IntelCard({ title, children, defaultOpen = false }: { title: string; children: ReactNode; defaultOpen?: boolean }) {
+  const [open, setOpen] = useState(defaultOpen);
+  return (
+    <div className="border border-border bg-surface rounded-md overflow-hidden">
+      <button
+        onClick={() => setOpen(!open)}
+        className="w-full flex items-center justify-between px-5 py-3.5 hover:bg-background/40 transition-colors"
+      >
+        <span className="font-display text-base">{title}</span>
+        <span className="font-mono text-xs text-muted-foreground">{open ? "−" : "+"}</span>
+      </button>
+      {open && <div className="px-5 pb-5 pt-1 border-t border-border">{children}</div>}
+    </div>
+  );
+}
+
+function Row({ label, children }: { label: string; children: ReactNode }) {
+  return (
+    <div className="flex gap-4 text-sm py-1.5">
+      <div className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground w-28 pt-0.5 shrink-0">
+        {label}
+      </div>
+      <div>{children}</div>
+    </div>
+  );
+}
+
+function Chip({ children }: { children: ReactNode }) {
+  return (
+    <span className="text-[10px] font-mono uppercase tracking-wider px-2 py-1 border border-border rounded text-muted-foreground">
+      {children}
+    </span>
+  );
+}
+
+function FlagsGrid({ green, red }: { green?: string[]; red?: string[] }) {
+  const hasGreen = Array.isArray(green) && green.length > 0;
+  const hasRed = Array.isArray(red) && red.length > 0;
+  if (!hasGreen && !hasRed) return null;
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+      {hasGreen && (
+        <div>
+          <div className="font-mono text-[11px] uppercase tracking-[0.18em] text-success mb-1.5">Green flags</div>
+          <ul className="space-y-1.5 text-sm">
+            {green!.map((g, i) => <li key={i} className="flex gap-2"><span className="text-success">✓</span>{g}</li>)}
+          </ul>
+        </div>
+      )}
+      {hasRed && (
+        <div>
+          <div className="font-mono text-[11px] uppercase tracking-[0.18em] text-destructive mb-1.5">Red flags</div>
+          <ul className="space-y-1.5 text-sm">
+            {red!.map((r, i) => <li key={i} className="flex gap-2"><span className="text-destructive">!</span>{r}</li>)}
+          </ul>
+        </div>
+      )}
+    </div>
+  );
+}

@@ -18,7 +18,7 @@ Deno.serve(async (req) => {
       );
     }
 
-    const prompt = `You will assess fit between this user's CV profile and a specific job description. Return ONLY valid JSON, no markdown.
+    const assessPrompt = `You will assess fit between this user's CV profile and a specific job description. Return ONLY valid JSON, no markdown.
 
 CV PROFILE:
 ${JSON.stringify(profile, null, 2)}
@@ -34,24 +34,80 @@ Return JSON exactly matching this schema:
   "role_title": string|null,
   "job_decoder": {
     "ai_maturity": "naive" | "emerging" | "mature" | "ai-native",
-    "ai_maturity_reason": string,                // one sentence
-    "real_seniority": string,                    // e.g. "Staff / Principal IC, 12+ yrs"
-    "unstated_requirements": string[],           // 2-3 items the JD implies but doesn't say
-    "red_flags": string[]                        // empty array if none
+    "ai_maturity_reason": string,
+    "real_seniority": string,
+    "unstated_requirements": string[],
+    "red_flags": string[]
   },
-  "fit_score": number,                           // 0-10, integer or one decimal
+  "fit_score": number,
   "fit_label": "STRONG FIT" | "PARTIAL FIT" | "POOR FIT",
-  "fit_summary": string,                         // ONE honest sentence, no softening
-  "requirements": [                              // minimum 6 rows, one per key requirement
+  "fit_summary": string,
+  "requirements": [
     { "requirement": string, "evidence": string, "match_strength": "Strong" | "Partial" | "Gap" }
   ],
-  "screening_risks": string[]                    // 2-3 blunt items that could screen them out
+  "screening_risks": string[]
 }
 
 Be direct. Do not hedge. If the user lacks evidence for a requirement, mark it Gap and say so.`;
 
-    const raw = await callClaude({ userPrompt: prompt, maxTokens: 4000 });
-    const result = extractJson(raw);
+    const intelPrompt = `You will produce a company intelligence dossier for a job candidate. Return ONLY valid JSON, no markdown.
+
+Use what you know about the company from the JD and your training knowledge. Be honest about uncertainty: when you don't know, say "Unknown" or null rather than inventing facts. Do NOT regurgitate marketing copy.
+
+CANDIDATE BACKGROUND (for the "why this matters" angle):
+${JSON.stringify({ title: profile.title, years_experience: profile.years_experience, skills: profile.skills?.slice?.(0, 20) }, null, 2)}
+
+JOB DESCRIPTION:
+"""
+${jobDescription.slice(0, 20000)}
+"""
+
+Return JSON exactly matching this schema:
+{
+  "what_they_do": {
+    "summary": string,                              // 2-3 sentences plain English, what they actually do and how they make money
+    "business_model": "SaaS" | "Marketplace" | "Enterprise" | "Consumer" | "Other",
+    "stage": "Early startup" | "Growth" | "Scale-up" | "Enterprise" | "Unknown"
+  },
+  "health": {
+    "funding_status": string,                       // e.g. "Series C, $80M, 2023" or "Unknown"
+    "headcount_trend": "Growing" | "Stable" | "Contracting" | "Unknown",
+    "recent_news": string[],                        // 2-3 significant items, or [] if unknown
+    "green_flags": string[],
+    "red_flags": string[]
+  },
+  "ai_maturity": {
+    "rating": "AI-washing" | "AI-curious" | "AI-enabled" | "AI-native",
+    "evidence": string,                             // one paragraph, what signals support this rating
+    "why_it_matters": string                        // one paragraph tied to the candidate's background
+  },
+  "hiring_manager": {
+    "name": string|null,                            // null if not in the JD
+    "background": string|null,                      // null if name unknown
+    "tenure": string|null,
+    "recent_focus": string|null,
+    "founding_team_fallback": string|null           // populate if hiring manager name is null
+  },
+  "culture": {
+    "employee_signal": string,                      // aggregate signal: what employees say (Glassdoor/LinkedIn/Blind patterns), or "Unknown"
+    "work_style": string,                           // remote/hybrid/in-office, pace, ICs vs management heavy, etc.
+    "watch_outs": string[]                          // honest concerns from public signal, [] if none
+  }
+}
+
+If you genuinely don't recognize the company, say "Unknown company" in what_they_do.summary and use Unknown / null / [] throughout. Do not fabricate.`;
+
+    const [assessRaw, intelRaw] = await Promise.all([
+      callClaude({ userPrompt: assessPrompt, maxTokens: 4000 }),
+      callClaude({ userPrompt: intelPrompt, maxTokens: 3000 }),
+    ]);
+
+    const result = extractJson(assessRaw);
+    try {
+      result.company_intel = extractJson(intelRaw);
+    } catch (_e) {
+      result.company_intel = null;
+    }
 
     return new Response(JSON.stringify(result), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },

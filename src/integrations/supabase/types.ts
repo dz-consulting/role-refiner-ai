@@ -17,6 +17,7 @@ export type Database = {
       assessments: {
         Row: {
           company: string | null
+          company_intel: Json | null
           created_at: string
           fit_label: string | null
           fit_score: number | null
@@ -34,6 +35,7 @@ export type Database = {
         }
         Insert: {
           company?: string | null
+          company_intel?: Json | null
           created_at?: string
           fit_label?: string | null
           fit_score?: number | null
@@ -51,6 +53,7 @@ export type Database = {
         }
         Update: {
           company?: string | null
+          company_intel?: Json | null
           created_at?: string
           fit_label?: string | null
           fit_score?: number | null

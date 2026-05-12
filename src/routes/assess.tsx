@@ -109,6 +109,7 @@ function AssessNew() {
           job_decoder: data.job_decoder,
           requirements: data.requirements,
           screening_risks: data.screening_risks,
+          company_intel: data.company_intel,
         }).select("id").single();
       if (insErr) throw insErr;
       nav({ to: "/assessment/$id", params: { id: inserted.id } });

@@ -197,7 +197,7 @@ function FitBadge({ score, label }: { score: number; label: string }) {
   return (
     <div className={`border-2 rounded-md p-5 text-right min-w-[180px] ${tone}`}>
       <div className="font-display text-5xl tabular-nums leading-none">
-        {score ?? "—"}<span className="text-2xl text-muted-foreground">/10</span>
+        {formatFitScore(score)}<span className="text-2xl text-muted-foreground">/10</span>
       </div>
       <div className="font-mono text-[11px] uppercase tracking-[0.18em] mt-2">{label}</div>
     </div>

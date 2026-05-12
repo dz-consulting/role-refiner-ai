@@ -187,6 +187,13 @@ function Tile({ label, children }: { label: string; children: React.ReactNode })
   );
 }
 
+function formatFitScore(score: number | null | undefined) {
+  if (score === null || score === undefined || Number.isNaN(Number(score))) return "—";
+  const n = Math.max(0, Math.min(10, Number(score)));
+  const rounded = Math.round(n * 2) / 2;
+  return Number.isInteger(rounded) ? rounded.toString() : rounded.toFixed(1);
+}
+
 function FitBadge({ score, label }: { score: number; label: string }) {
   const tone =
     label === "STRONG FIT"

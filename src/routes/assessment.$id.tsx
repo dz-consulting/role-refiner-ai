@@ -105,9 +105,24 @@ function AssessmentView() {
           </div>
         </Section>
 
-        {/* Section B: Company Intelligence */}
-        <CompanyIntelligence intel={a.company_intel} />
-
+        {/* Section B: Company Intelligence — only after user decides to apply */}
+        {a.intent_to_apply ? (
+          <CompanyIntelligence intel={a.company_intel} />
+        ) : (
+          <Section title="Company intelligence" letter="B">
+            <div className="border border-border bg-surface rounded-md p-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+              <div className="text-sm text-muted-foreground max-w-md">
+                Deep dive on the company — what they actually do, health signals, AI maturity, hiring manager intel and culture watch-outs. Unlock when you've decided this role is worth pursuing.
+              </div>
+              <button
+                onClick={unlockIntel}
+                className="bg-accent text-accent-foreground font-medium px-5 py-2.5 rounded-md hover:opacity-90 text-sm shrink-0"
+              >
+                I'm applying — show intel
+              </button>
+            </div>
+          </Section>
+        )}
         {/* Section C: Requirements */}
         <Section title="Requirement breakdown" letter="C">
           <div className="border border-border rounded-md bg-surface overflow-hidden">

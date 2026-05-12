@@ -39,7 +39,7 @@ Return JSON exactly matching this schema:
     "unstated_requirements": string[],
     "red_flags": string[]
   },
-  "fit_score": number,
+  "fit_score": number,  // between 0 and 10, only half-point increments allowed (e.g. 0, 0.5, 1, 1.5, ... 10)
   "fit_label": "STRONG FIT" | "PARTIAL FIT" | "POOR FIT",
   "fit_summary": string,
   "requirements": [

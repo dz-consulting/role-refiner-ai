@@ -9,28 +9,34 @@ export const Route = createFileRoute("/auth")({
 function AuthPage() {
   const nav = useNavigate();
   const [mode, setMode] = useState<"signin" | "signup">("signin");
-  const [username, setUsername] = useState("");
+  const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [err, setErr] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
+  const isEmail = (v: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim());
   const usernameToEmail = (u: string) =>
     `${u.trim().toLowerCase().replace(/[^a-z0-9_.-]/g, "")}@users.jobmatch.local`;
+
+  const resolveEmail = (raw: string) => {
+    const v = raw.trim();
+    if (isEmail(v)) return v.toLowerCase();
+    const uname = v.toLowerCase();
+    if (!/^[a-z0-9_.-]{3,}$/.test(uname)) {
+      throw new Error("Enter a valid email or a username (3+ chars: letters, numbers, . _ -).");
+    }
+    return usernameToEmail(uname);
+  };
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErr(null);
     setLoading(true);
     try {
-      const uname = username.trim().toLowerCase();
-      if (!/^[a-z0-9_.-]{3,}$/.test(uname)) {
-        throw new Error("Username must be 3+ chars (letters, numbers, . _ -).");
-      }
-      const email = usernameToEmail(uname);
+      const email = resolveEmail(identifier);
       if (mode === "signup") {
         const { error } = await supabase.auth.signUp({ email, password });
         if (error) throw error;
-        // auto-confirm is on, so sign in immediately
         const { error: signInErr } = await supabase.auth.signInWithPassword({ email, password });
         if (signInErr) throw signInErr;
       } else {
@@ -91,15 +97,15 @@ function AuthPage() {
           <div className="space-y-3">
             <div>
               <label className="block text-xs font-mono uppercase tracking-wider text-muted-foreground mb-2">
-                Username
+                Username or email
               </label>
               <input
                 type="text"
                 required
                 autoComplete="username"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                placeholder="e.g. alex_smith"
+                value={identifier}
+                onChange={(e) => setIdentifier(e.target.value)}
+                placeholder="alex_smith or alex@example.com"
                 className="w-full bg-input border border-border rounded-md px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
               />
             </div>

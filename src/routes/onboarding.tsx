@@ -1,14 +1,12 @@
 import { createFileRoute, useNavigate, redirect } from "@tanstack/react-router";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { requireAuth } from "@/lib/feature-flags";
 import { extractTextFromFile } from "@/lib/cv-extract";
 import { AppHeader } from "@/components/AppHeader";
 
 export const Route = createFileRoute("/onboarding")({
-  beforeLoad: async () => {
-    const { data } = await supabase.auth.getSession();
-    if (!data.session) throw redirect({ to: "/auth" });
-  },
+  beforeLoad: requireAuth,
   component: OnboardingPage,
 });
 

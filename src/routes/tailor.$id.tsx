@@ -1,14 +1,12 @@
 import { createFileRoute, redirect, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { requireAuth } from "@/lib/feature-flags";
 import { AppHeader } from "@/components/AppHeader";
 import { downloadTailoredCvPdf, type TailoredCV } from "@/lib/pdf";
 
 export const Route = createFileRoute("/tailor/$id")({
-  beforeLoad: async () => {
-    const { data } = await supabase.auth.getSession();
-    if (!data.session) throw redirect({ to: "/auth" });
-  },
+  beforeLoad: requireAuth,
   component: TailorPage,
 });
 

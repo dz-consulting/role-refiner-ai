@@ -23,6 +23,7 @@ export type Database = {
           fit_score: number | null
           fit_summary: string | null
           id: string
+          intent_to_apply: boolean
           job_decoder: Json | null
           job_description: string
           requirements: Json | null
@@ -41,6 +42,7 @@ export type Database = {
           fit_score?: number | null
           fit_summary?: string | null
           id?: string
+          intent_to_apply?: boolean
           job_decoder?: Json | null
           job_description: string
           requirements?: Json | null
@@ -59,6 +61,7 @@ export type Database = {
           fit_score?: number | null
           fit_summary?: string | null
           id?: string
+          intent_to_apply?: boolean
           job_decoder?: Json | null
           job_description?: string
           requirements?: Json | null

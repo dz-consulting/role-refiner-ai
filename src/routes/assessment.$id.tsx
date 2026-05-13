@@ -157,6 +157,40 @@ function AssessmentView() {
           </div>
         </Section>
 
+        {/* Section E: Action items */}
+        {Array.isArray(a.action_items) && a.action_items.length > 0 && (
+          <Section title="Action items to close gaps" letter="E">
+            <div className="border border-border rounded-md bg-surface overflow-hidden">
+              {a.action_items.map((item: any, i: number) => (
+                <div key={i} className="px-5 py-4 border-b border-border last:border-0">
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="flex gap-3 items-baseline">
+                      <span className="font-mono text-[11px] text-muted-foreground tabular-nums">{String(i + 1).padStart(2, "0")}</span>
+                      <div>
+                        <div className="font-medium text-sm">{item.title}</div>
+                        {item.detail && <div className="text-sm text-muted-foreground mt-1 leading-relaxed">{item.detail}</div>}
+                        {item.addresses && (
+                          <div className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground mt-2">
+                            Closes: {item.addresses}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                    <div className="flex flex-col items-end gap-1 shrink-0">
+                      {item.priority && <PriorityPill value={item.priority} />}
+                      {item.effort && (
+                        <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground">
+                          {item.effort}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </Section>
+        )}
+
         {/* Actions */}
         <div className="mt-12 flex flex-wrap items-center gap-3 border-t border-border pt-6">
           <Link

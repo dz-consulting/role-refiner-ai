@@ -75,7 +75,7 @@ function Dashboard() {
         {/* Assessments */}
         <div className="mt-24">
           <div className="flex items-baseline justify-between">
-            <h2 className="font-display text-2xl">Assessments</h2>
+            <h2 className="font-display text-3xl">Assessments</h2>
             <span className="label-eyebrow">{assessments.length} total</span>
           </div>
 

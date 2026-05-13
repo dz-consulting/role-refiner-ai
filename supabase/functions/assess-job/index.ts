@@ -3,37 +3,8 @@ import { callClaude, extractJson } from "../_shared/claude.ts";
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
-
-  // Debug: ping Langfuse directly so we can see auth/schema errors.
-  let bodyJson: any = {};
-  try { bodyJson = await req.json(); } catch (_) {}
-  if (bodyJson?.debug === "langfuse") {
-    const pub = Deno.env.get("LANGFUSE_PUBLIC_KEY") ?? "";
-    const sec = Deno.env.get("LANGFUSE_SECRET_KEY") ?? "";
-    const now = new Date().toISOString();
-    const payload = {
-      batch: [{
-        type: "trace-create",
-        id: crypto.randomUUID(),
-        timestamp: now,
-        body: { id: crypto.randomUUID(), timestamp: now, name: "debug-ping", input: "ping", output: "pong" },
-      }],
-    };
-    const res = await fetch("https://cloud.langfuse.com/api/public/ingestion", {
-      method: "POST",
-      headers: { Authorization: `Basic ${btoa(`${pub}:${sec}`)}`, "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
-    const body = await res.text();
-    return new Response(JSON.stringify({
-      hasPublic: !!pub, hasSecret: !!sec,
-      publicPrefix: pub.slice(0, 6), secretPrefix: sec.slice(0, 6),
-      status: res.status, body,
-    }, null, 2), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
-  }
-
   try {
-    const { profile, jobDescription } = bodyJson;
+    const { profile, jobDescription } = await req.json();
     if (!profile || !jobDescription) {
       return new Response(JSON.stringify({ error: "profile and jobDescription required" }), {
         status: 400,

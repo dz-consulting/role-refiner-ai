@@ -85,6 +85,7 @@ function AssessNew() {
         roles: prof.roles,
         outcomes: prof.outcomes,
         seniority_signals: prof.seniority_signals,
+        preferences: (prof as any).preferences ?? {},
       };
 
       const { data, error: fnErr } = await supabase.functions.invoke("assess-job", {

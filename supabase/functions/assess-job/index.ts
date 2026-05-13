@@ -18,9 +18,9 @@ Deno.serve(async (req) => {
       );
     }
 
-    const assessPrompt = `You will assess fit between this user's CV profile and a specific job description. Return ONLY valid JSON, no markdown.
+    const assessPrompt = `You will assess fit between this user's CV profile and a specific job description. The profile includes a "preferences" object describing what the candidate wants in their next role (company size, locations, work arrangement, travel willingness, industries, role types, compensation floor, deal-breakers, motivations, free-form notes). Treat preferences as first-class signal: a job that mismatches stated deal-breakers, location, work arrangement, travel, comp floor, or company-size preference should lower the fit_score and surface as screening risks and action items, even if the candidate is technically qualified. Conversely, strong preference alignment is a positive signal worth calling out in fit_summary. Return ONLY valid JSON, no markdown.
 
-CV PROFILE:
+CV PROFILE (includes preferences):
 {{profile}}
 
 JOB DESCRIPTION:
@@ -51,7 +51,7 @@ Return JSON exactly matching this schema:
   ]
 }
 
-Generate 4-7 concrete, specific action_items the candidate can take to close gaps and increase fit. Each item: a short imperative title, a 1-2 sentence detail with how to do it, a priority, an effort estimate (Quick = under a day, Medium = a few days, Deep = a week+), and "addresses" naming the specific gap, requirement, or screening risk it tackles. Prioritize actions that close Gap requirements and screening risks. Be direct. Do not hedge. If the user lacks evidence for a requirement, mark it Gap and say so.`;
+Generate 4-7 concrete, specific action_items the candidate can take to close gaps and increase fit. Each item: a short imperative title, a 1-2 sentence detail with how to do it, a priority, an effort estimate (Quick = under a day, Medium = a few days, Deep = a week+), and "addresses" naming the specific gap, requirement, or screening risk it tackles. Prioritize actions that close Gap requirements and screening risks. Be direct. Do not hedge. If the user lacks evidence for a requirement, mark it Gap and say so. If the job clearly conflicts with a stated preference or deal-breaker, include that as a screening risk and (where possible) an action item to verify or negotiate.`;
 
     const intelPrompt = `You will produce a company intelligence dossier for a job candidate. Return ONLY valid JSON, no markdown.
 

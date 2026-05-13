@@ -77,6 +77,48 @@ export type Database = {
         }
         Relationships: []
       }
+      claude_logs: {
+        Row: {
+          created_at: string | null
+          error: string | null
+          function_name: string | null
+          id: string
+          input_tokens: number | null
+          latency_ms: number | null
+          model: string | null
+          output_tokens: number | null
+          response: string | null
+          system_prompt: string | null
+          user_prompt: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          error?: string | null
+          function_name?: string | null
+          id?: string
+          input_tokens?: number | null
+          latency_ms?: number | null
+          model?: string | null
+          output_tokens?: number | null
+          response?: string | null
+          system_prompt?: string | null
+          user_prompt?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          error?: string | null
+          function_name?: string | null
+          id?: string
+          input_tokens?: number | null
+          latency_ms?: number | null
+          model?: string | null
+          output_tokens?: number | null
+          response?: string | null
+          system_prompt?: string | null
+          user_prompt?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string

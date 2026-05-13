@@ -51,7 +51,8 @@ function AssessmentView() {
   const dec = a.job_decoder ?? {};
   const reqs: any[] = Array.isArray(a.requirements) ? a.requirements : [];
   const risks: string[] = Array.isArray(a.screening_risks) ? a.screening_risks : [];
-  const actionItems: any[] = Array.isArray(a.action_items) ? a.action_items : [];
+  const savedActionItems: any[] = Array.isArray(a.action_items) ? a.action_items : [];
+  const actionItems: any[] = savedActionItems.length > 0 ? savedActionItems : buildFallbackActionItems(reqs, risks);
 
   return (
     <div className="min-h-screen">
@@ -162,6 +163,11 @@ function AssessmentView() {
         <Section title="Action items to close gaps" letter="E">
           {actionItems.length > 0 ? (
             <div className="border border-border rounded-md bg-surface overflow-hidden">
+              {savedActionItems.length === 0 && (
+                <div className="px-5 py-3 border-b border-border text-xs text-muted-foreground">
+                  Generated from the gaps and risks in this assessment.
+                </div>
+              )}
               {actionItems.map((item: any, i: number) => (
                 <div key={i} className="px-5 py-4 border-b border-border last:border-0">
                   <div className="flex items-start justify-between gap-4">

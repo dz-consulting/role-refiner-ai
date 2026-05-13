@@ -58,11 +58,11 @@ Generate 4-7 concrete, specific action_items the candidate can take to close gap
 Use what you know about the company from the JD and your training knowledge. Be honest about uncertainty: when you don't know, say "Unknown" or null rather than inventing facts. Do NOT regurgitate marketing copy.
 
 CANDIDATE BACKGROUND (for the "why this matters" angle):
-${JSON.stringify({ title: profile.title, years_experience: profile.years_experience, skills: profile.skills?.slice?.(0, 20) }, null, 2)}
+{{candidateBackground}}
 
 JOB DESCRIPTION:
 """
-${jobDescription.slice(0, 20000)}
+{{jobDescription}}
 """
 
 Return JSON exactly matching this schema:

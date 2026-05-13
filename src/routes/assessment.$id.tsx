@@ -141,17 +141,26 @@ function AssessmentView() {
 
         {/* 03 — Requirements */}
         <Section number="03" title="Requirement breakdown">
-          <ul>
-            {reqs.map((r, i) => (
-              <li key={i} className="grid grid-cols-[1fr_auto] gap-4 items-baseline border-b border-border py-5">
-                <div>
-                  <div className="font-display text-lg">{r.requirement}</div>
-                  <div className="text-sm text-muted-foreground mt-1.5 leading-relaxed">{r.evidence}</div>
-                </div>
-                <MatchPill strength={r.match_strength} />
-              </li>
-            ))}
-          </ul>
+          <div className="overflow-x-auto">
+            <table className="w-full border-collapse">
+              <thead>
+                <tr className="border-b border-foreground">
+                  <th className="label-eyebrow text-left py-3 pr-6 align-bottom w-[35%]">Job requirement</th>
+                  <th className="label-eyebrow text-left py-3 pr-6 align-bottom">Evidence from CV</th>
+                  <th className="label-eyebrow text-left py-3 align-bottom w-[110px]">Rating</th>
+                </tr>
+              </thead>
+              <tbody>
+                {reqs.map((r, i) => (
+                  <tr key={i} className="border-b border-border align-top">
+                    <td className="py-5 pr-6 font-display text-lg leading-snug">{r.requirement}</td>
+                    <td className="py-5 pr-6 text-sm text-muted-foreground leading-relaxed">{r.evidence}</td>
+                    <td className="py-5"><MatchPill strength={r.match_strength} /></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </Section>
 
         {/* 04 — Screening risks */}

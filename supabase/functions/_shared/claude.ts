@@ -126,5 +126,13 @@ export async function callClaude(opts: {
     });
 
     return responseText;
+  } catch (err) {
+    console.error("callClaude error:", err);
+    throw err;
+  }
+}
 
-  } catch (
+export function extractJson(raw: string): any {
+  const cleaned = raw.replace(/```json\s*|\s*```/g, "").trim();
+  return JSON.parse(cleaned);
+}

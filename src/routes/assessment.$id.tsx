@@ -442,7 +442,7 @@ function CompanyIntelligence({ intel }: { intel: any }) {
         </IntelBlock>
 
         <IntelBlock title="AI maturity signal">
-          <div className="font-display text-2xl mb-2">{ai.rating ?? "—"}</div>
+          <div className="font-display text-xl mb-2">{ai.rating ?? "—"}</div>
           {ai.evidence && <p className="leading-relaxed text-muted-foreground">{ai.evidence}</p>}
           {ai.why_it_matters && (
             <div className="mt-4 border-l-2 border-foreground pl-4">

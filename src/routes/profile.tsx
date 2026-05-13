@@ -198,7 +198,7 @@ function ProfilePage() {
           {profile.raw_text && (
             <Block
               title="Raw CV text"
-              number="06"
+              number="07"
               action={
                 <button
                   onClick={() => setShowRaw((v) => !v)}

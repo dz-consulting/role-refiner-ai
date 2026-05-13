@@ -333,24 +333,20 @@ function formatFitScore(score: number | null | undefined) {
 
 function PriorityPill({ value }: { value: string }) {
   const map: Record<string, string> = {
-    High: "border-destructive text-destructive",
-    Medium: "border-warning text-warning",
-    Low: "border-border text-muted-foreground",
+    High: "border-destructive! text-destructive",
+    Medium: "border-warning! text-warning",
+    Low: "",
   };
-  return (
-    <span className={`text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 border ${map[value] ?? "border-border text-muted-foreground"}`}>
-      {value}
-    </span>
-  );
+  return <span className={`label-tag ${map[value] ?? ""}`}>{value}</span>;
 }
 
 function RatingCorrector({ original, corrected, onChange }: { original: string; corrected?: string; onChange: (v: string) => void }) {
   const current = corrected ?? original;
   const options = ["Strong", "Partial", "Gap"];
   const colorFor = (v: string) =>
-    v === "Strong" ? "border-success text-success"
-    : v === "Partial" ? "border-warning text-warning"
-    : "border-destructive text-destructive";
+    v === "Strong" ? "border-success! text-success"
+    : v === "Partial" ? "border-warning! text-warning"
+    : "border-destructive! text-destructive";
   return (
     <div className="flex flex-col gap-1.5">
       <div className="flex gap-1">
@@ -360,9 +356,7 @@ function RatingCorrector({ original, corrected, onChange }: { original: string; 
             <button
               key={opt}
               onClick={() => onChange(opt)}
-              className={`text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 border transition-colors ${
-                active ? colorFor(opt) : "border-border text-muted-foreground hover:text-foreground"
-              }`}
+              className={`label-tag transition-colors ${active ? colorFor(opt) : "hover:text-foreground"}`}
             >
               {opt}
             </button>
@@ -370,7 +364,7 @@ function RatingCorrector({ original, corrected, onChange }: { original: string; 
         })}
       </div>
       {corrected && corrected !== original && (
-        <div className="text-[10px] font-mono text-muted-foreground">
+        <div className="text-[10px] font-mono text-muted-foreground tracking-wider">
           AI said {original} · you corrected
         </div>
       )}
@@ -380,15 +374,11 @@ function RatingCorrector({ original, corrected, onChange }: { original: string; 
 
 function MatchPill({ strength }: { strength: string }) {
   const map: Record<string, string> = {
-    Strong: "border-success text-success",
-    Partial: "border-warning text-warning",
-    Gap: "border-destructive text-destructive",
+    Strong: "border-success! text-success",
+    Partial: "border-warning! text-warning",
+    Gap: "border-destructive! text-destructive",
   };
-  return (
-    <span className={`text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 border ${map[strength] ?? "border-border text-muted-foreground"}`}>
-      {strength}
-    </span>
-  );
+  return <span className={`label-tag ${map[strength] ?? ""}`}>{strength}</span>;
 }
 
 function buildFallbackActionItems(requirements: any[], risks: string[]) {

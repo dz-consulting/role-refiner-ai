@@ -89,7 +89,7 @@ function ProfilePage() {
     return (
       <div className="min-h-screen">
         <AppHeader email={email} />
-        <div className="max-w-4xl mx-auto p-8 font-mono text-xs text-muted-foreground">Loading...</div>
+        <div className="max-w-3xl mx-auto px-8 py-24 text-sm text-muted-foreground">Loading…</div>
       </div>
     );
   }
@@ -97,32 +97,28 @@ function ProfilePage() {
   return (
     <div className="min-h-screen">
       <AppHeader email={email} />
-      <main className="max-w-4xl mx-auto px-8 py-12">
-        <div className="flex items-baseline justify-between">
-          <div>
-            <div className="font-mono text-[11px] uppercase tracking-[0.18em] text-accent mb-2">
-              Your profile
-            </div>
-            <h1 className="font-display text-4xl tracking-tight">Extracted from your CV</h1>
-            <p className="text-muted-foreground mt-2 text-sm">
-              Edit anything that's wrong. This profile powers every assessment.
-            </p>
-          </div>
-          <Link to="/dashboard" className="text-xs font-mono text-muted-foreground hover:text-foreground">
-            ← Dashboard
-          </Link>
-        </div>
+      <main className="max-w-3xl mx-auto px-8 py-16">
+        <Link to="/dashboard" className="text-xs font-mono text-muted-foreground hover:text-foreground">
+          ← Dashboard
+        </Link>
+
+        <header className="mt-12">
+          <div className="label-eyebrow">Your profile</div>
+          <h1 className="font-display text-5xl mt-3">Extracted from your CV.</h1>
+          <p className="text-muted-foreground mt-4 text-lg max-w-xl">
+            Edit anything that's wrong. This profile powers every assessment.
+          </p>
+        </header>
 
         {error && (
-          <div className="mt-6 text-sm text-destructive border border-destructive/30 bg-destructive/10 rounded px-3 py-2">
+          <div className="mt-8 text-sm text-destructive border-l-2 border-destructive pl-3 py-1">
             {error}
           </div>
         )}
 
-        <div className="mt-8 space-y-8">
-          <div className="border border-border rounded-md bg-surface p-6">
-            <SectionLabel>Identity</SectionLabel>
-            <div className="grid grid-cols-2 gap-4 mt-4">
+        <div className="mt-16 space-y-16">
+          <Block title="Identity" number="01">
+            <div className="grid grid-cols-2 gap-8">
               <Field label="Name" value={profile.name} onChange={(v) => update({ name: v })} />
               <Field label="Current title" value={profile.title} onChange={(v) => update({ title: v })} />
               <Field
@@ -132,25 +128,27 @@ function ProfilePage() {
                 onChange={(v) => update({ years_experience: parseInt(v) || 0 })}
               />
             </div>
-          </div>
+          </Block>
 
-          <ListEditor label="Skills" items={profile.skills} onChange={(items) => update({ skills: items })} />
-          <ListEditor label="Key outcomes" items={profile.outcomes} onChange={(items) => update({ outcomes: items })} multiline />
-          <ListEditor label="Seniority signals" items={profile.seniority_signals} onChange={(items) => update({ seniority_signals: items })} />
+          <ListEditor number="02" label="Skills" items={profile.skills} onChange={(items) => update({ skills: items })} />
+          <ListEditor number="03" label="Key outcomes" items={profile.outcomes} onChange={(items) => update({ outcomes: items })} multiline />
+          <ListEditor number="04" label="Seniority signals" items={profile.seniority_signals} onChange={(items) => update({ seniority_signals: items })} />
 
-          <div className="border border-border rounded-md bg-surface p-6">
-            <div className="flex items-center justify-between">
-              <SectionLabel>Roles</SectionLabel>
+          <Block
+            title="Roles"
+            number="05"
+            action={
               <button
                 onClick={() => update({ roles: [...profile.roles, { title: "", company: "", duration: "" }] })}
-                className="text-xs font-mono text-accent hover:underline"
+                className="text-xs font-mono text-muted-foreground hover:text-foreground"
               >
                 + Add role
               </button>
-            </div>
-            <div className="space-y-3 mt-4">
+            }
+          >
+            <div className="space-y-4">
               {profile.roles.map((r, i) => (
-                <div key={i} className="grid grid-cols-[1fr_1fr_1fr_auto] gap-3">
+                <div key={i} className="grid grid-cols-[1fr_1fr_1fr_auto] gap-3 items-center">
                   <input
                     placeholder="Title"
                     value={r.title}
@@ -159,7 +157,7 @@ function ProfilePage() {
                       next[i] = { ...r, title: e.target.value };
                       update({ roles: next });
                     }}
-                    className="bg-input border border-border rounded px-3 py-2 text-sm"
+                    className="bg-transparent border-b border-border focus:border-foreground py-2 text-sm focus:outline-none"
                   />
                   <input
                     placeholder="Company"
@@ -169,7 +167,7 @@ function ProfilePage() {
                       next[i] = { ...r, company: e.target.value };
                       update({ roles: next });
                     }}
-                    className="bg-input border border-border rounded px-3 py-2 text-sm"
+                    className="bg-transparent border-b border-border focus:border-foreground py-2 text-sm focus:outline-none"
                   />
                   <input
                     placeholder="Duration"
@@ -179,50 +177,52 @@ function ProfilePage() {
                       next[i] = { ...r, duration: e.target.value };
                       update({ roles: next });
                     }}
-                    className="bg-input border border-border rounded px-3 py-2 text-sm"
+                    className="bg-transparent border-b border-border focus:border-foreground py-2 text-sm focus:outline-none"
                   />
                   <button
                     onClick={() => update({ roles: profile.roles.filter((_, idx) => idx !== i) })}
-                    className="text-muted-foreground hover:text-destructive text-sm px-2"
+                    className="text-muted-foreground hover:text-destructive text-sm"
                   >
                     ✕
                   </button>
                 </div>
               ))}
             </div>
-          </div>
+          </Block>
 
           {profile.raw_text && (
-            <div className="border border-border rounded-md bg-surface p-6">
-              <div className="flex items-center justify-between">
-                <SectionLabel>Raw CV text</SectionLabel>
+            <Block
+              title="Raw CV text"
+              number="06"
+              action={
                 <button
                   onClick={() => setShowRaw((v) => !v)}
-                  className="text-xs font-mono text-accent hover:underline"
+                  className="text-xs font-mono text-muted-foreground hover:text-foreground"
                 >
                   {showRaw ? "Hide" : "Show"}
                 </button>
-              </div>
+              }
+            >
               {showRaw && (
-                <pre className="mt-4 text-xs font-mono whitespace-pre-wrap text-muted-foreground max-h-96 overflow-auto border border-border rounded p-3 bg-background">
+                <pre className="text-xs font-mono whitespace-pre-wrap text-muted-foreground max-h-96 overflow-auto border border-border p-4 bg-card">
                   {profile.raw_text}
                 </pre>
               )}
-            </div>
+            </Block>
           )}
 
-          <div className="flex items-center justify-between border-t border-border pt-6">
-            <Link to="/onboarding" className="text-xs font-mono text-muted-foreground hover:text-foreground">
-              Re-upload CV →
+          <div className="flex items-center justify-between border-t border-foreground pt-8">
+            <Link to="/onboarding" className="text-sm underline underline-offset-4 text-muted-foreground hover:text-foreground">
+              Re-upload CV
             </Link>
-            <div className="flex items-center gap-4">
-              {saved && <span className="font-mono text-xs text-success">Saved</span>}
+            <div className="flex items-center gap-6">
+              {saved && <span className="font-serif-italic text-sm text-success">Saved</span>}
               <button
                 onClick={save}
                 disabled={saving}
-                className="bg-accent text-accent-foreground font-medium px-6 py-2.5 rounded-md hover:opacity-90 disabled:opacity-50"
+                className="bg-foreground text-background px-6 py-3 hover:opacity-90 disabled:opacity-50"
               >
-                {saving ? "Saving..." : "Save changes"}
+                {saving ? "Saving…" : "Save changes"}
               </button>
             </div>
           </div>
@@ -232,11 +232,18 @@ function ProfilePage() {
   );
 }
 
-function SectionLabel({ children }: { children: React.ReactNode }) {
+function Block({ number, title, children, action }: { number: string; title: string; children: React.ReactNode; action?: React.ReactNode }) {
   return (
-    <div className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
+    <section>
+      <div className="flex items-baseline justify-between mb-6">
+        <div className="flex items-baseline gap-4">
+          <span className="font-mono text-xs text-muted-foreground tabular-nums">{number}</span>
+          <h2 className="font-display text-2xl">{title}</h2>
+        </div>
+        {action}
+      </div>
       {children}
-    </div>
+    </section>
   );
 }
 
@@ -245,57 +252,59 @@ function Field({
 }: { label: string; value: string; onChange: (v: string) => void; type?: string }) {
   return (
     <label className="block">
-      <div className="text-xs font-mono uppercase tracking-wider text-muted-foreground mb-1.5">{label}</div>
+      <div className="label-eyebrow mb-2">{label}</div>
       <input
         type={type}
         value={value ?? ""}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full bg-input border border-border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+        className="w-full bg-transparent border-b border-border focus:border-foreground py-2 text-base focus:outline-none transition-colors"
       />
     </label>
   );
 }
 
 function ListEditor({
-  label, items, onChange, multiline,
-}: { label: string; items: string[]; onChange: (items: string[]) => void; multiline?: boolean }) {
+  number, label, items, onChange, multiline,
+}: { number: string; label: string; items: string[]; onChange: (items: string[]) => void; multiline?: boolean }) {
   return (
-    <div className="border border-border rounded-md bg-surface p-6">
-      <div className="flex items-center justify-between">
-        <SectionLabel>{label}</SectionLabel>
-        <button onClick={() => onChange([...items, ""])} className="text-xs font-mono text-accent hover:underline">
+    <Block
+      number={number}
+      title={label}
+      action={
+        <button onClick={() => onChange([...items, ""])} className="text-xs font-mono text-muted-foreground hover:text-foreground">
           + Add
         </button>
-      </div>
-      <div className="mt-4 space-y-2">
+      }
+    >
+      <div className="space-y-3">
         {items.map((it, i) => (
-          <div key={i} className="flex gap-2">
+          <div key={i} className="flex gap-3 items-start">
             {multiline ? (
               <textarea
                 value={it}
                 onChange={(e) => { const n = [...items]; n[i] = e.target.value; onChange(n); }}
                 rows={2}
-                className="flex-1 bg-input border border-border rounded px-3 py-2 text-sm"
+                className="flex-1 bg-card border border-border focus:border-foreground p-3 text-sm focus:outline-none transition-colors"
               />
             ) : (
               <input
                 value={it}
                 onChange={(e) => { const n = [...items]; n[i] = e.target.value; onChange(n); }}
-                className="flex-1 bg-input border border-border rounded px-3 py-2 text-sm"
+                className="flex-1 bg-transparent border-b border-border focus:border-foreground py-2 text-sm focus:outline-none transition-colors"
               />
             )}
             <button
               onClick={() => onChange(items.filter((_, idx) => idx !== i))}
-              className="text-muted-foreground hover:text-destructive text-sm px-2"
+              className="text-muted-foreground hover:text-destructive text-sm pt-2"
             >
               ✕
             </button>
           </div>
         ))}
         {items.length === 0 && (
-          <div className="text-xs font-mono text-muted-foreground italic">None extracted</div>
+          <div className="text-sm font-serif-italic text-muted-foreground">None extracted.</div>
         )}
       </div>
-    </div>
+    </Block>
   );
 }

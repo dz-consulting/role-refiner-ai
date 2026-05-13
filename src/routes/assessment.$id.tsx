@@ -74,6 +74,17 @@ function AssessmentView() {
           {a.fit_summary}
         </p>
 
+        <a
+          href="#action-items"
+          className="mt-6 flex items-center justify-between gap-4 border border-border bg-surface rounded-md px-5 py-4 hover:bg-background/40 transition-colors"
+        >
+          <div>
+            <div className="font-mono text-[11px] uppercase tracking-[0.18em] text-accent">Action items</div>
+            <div className="text-sm text-muted-foreground mt-1">Review {actionItems.length} next steps to close gaps.</div>
+          </div>
+          <span className="font-mono text-xs text-muted-foreground">Jump ↓</span>
+        </a>
+
         {/* Section A: Job Decoder */}
         <Section title="Job decoder" letter="A">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -160,7 +171,7 @@ function AssessmentView() {
         </Section>
 
         {/* Section E: Action items */}
-        <Section title="Action items to close gaps" letter="E">
+        <Section title="Action items to close gaps" letter="E" id="action-items">
           {actionItems.length > 0 ? (
             <div className="border border-border rounded-md bg-surface overflow-hidden">
               {savedActionItems.length === 0 && (

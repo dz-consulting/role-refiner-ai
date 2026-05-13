@@ -14,6 +14,56 @@ export type Database = {
   }
   public: {
     Tables: {
+      assessment_feedback: {
+        Row: {
+          assessment_id: string
+          comment: string | null
+          corrected_value: string | null
+          created_at: string
+          id: string
+          langfuse_trace_id: string | null
+          original_value: string | null
+          target_key: string
+          target_type: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          assessment_id: string
+          comment?: string | null
+          corrected_value?: string | null
+          created_at?: string
+          id?: string
+          langfuse_trace_id?: string | null
+          original_value?: string | null
+          target_key: string
+          target_type: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          assessment_id?: string
+          comment?: string | null
+          corrected_value?: string | null
+          created_at?: string
+          id?: string
+          langfuse_trace_id?: string | null
+          original_value?: string | null
+          target_key?: string
+          target_type?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "assessment_feedback_assessment_id_fkey"
+            columns: ["assessment_id"]
+            isOneToOne: false
+            referencedRelation: "assessments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       assessments: {
         Row: {
           action_items: Json | null
@@ -27,6 +77,7 @@ export type Database = {
           intent_to_apply: boolean
           job_decoder: Json | null
           job_description: string
+          langfuse_assess_trace_id: string | null
           requirements: Json | null
           role_title: string | null
           screening_risks: Json | null
@@ -47,6 +98,7 @@ export type Database = {
           intent_to_apply?: boolean
           job_decoder?: Json | null
           job_description: string
+          langfuse_assess_trace_id?: string | null
           requirements?: Json | null
           role_title?: string | null
           screening_risks?: Json | null
@@ -67,6 +119,7 @@ export type Database = {
           intent_to_apply?: boolean
           job_decoder?: Json | null
           job_description?: string
+          langfuse_assess_trace_id?: string | null
           requirements?: Json | null
           role_title?: string | null
           screening_risks?: Json | null

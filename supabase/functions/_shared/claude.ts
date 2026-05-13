@@ -117,7 +117,7 @@ export async function callClaude(opts: {
   systemSuffix?: string;
   maxTokens?: number;
   functionName?: string;
-}): Promise<string> {
+}): Promise<{ text: string; traceId: string }> {
   const apiKey = Deno.env.get("ANTHROPIC_API_KEY");
   if (!apiKey) throw new Error("ANTHROPIC_API_KEY missing");
 
@@ -213,7 +213,31 @@ export async function callClaude(opts: {
     ],
   });
 
-  return responseText;
+  return { text: responseText, traceId };
+}
+
+/** Post a numeric score (or categorical via stringValue) to an existing Langfuse trace. */
+export async function sendLangfuseScore(opts: {
+  traceId: string;
+  name: string;
+  value?: number;
+  stringValue?: string;
+  comment?: string;
+}): Promise<void> {
+  if (!LANGFUSE_PUBLIC_KEY || !LANGFUSE_SECRET_KEY) return;
+  const ts = new Date().toISOString();
+  const body: Record<string, unknown> = {
+    id: makeId(),
+    traceId: opts.traceId,
+    name: opts.name,
+    timestamp: ts,
+  };
+  if (typeof opts.value === "number") body.value = opts.value;
+  if (opts.stringValue) body.stringValue = opts.stringValue;
+  if (opts.comment) body.comment = opts.comment;
+  await sendToLangfuse({
+    batch: [{ type: "score-create", id: makeId(), timestamp: ts, body }],
+  });
 }
 
 export function extractJson(raw: string): any {

@@ -100,7 +100,7 @@ Return JSON exactly matching this schema:
 
 If you genuinely don't recognize the company, say "Unknown company" in what_they_do.summary and use Unknown / null / [] throughout. Do not fabricate.`;
 
-    const [assessRaw, intelRaw] = await Promise.all([
+    const [assessRes, intelRes] = await Promise.all([
       callClaude({
         promptName: "assess-job.fit-assessment",
         userPrompt: assessPrompt,
@@ -123,16 +123,17 @@ If you genuinely don't recognize the company, say "Unknown company" in what_they
       }),
     ]);
 
-    const result = extractJson(assessRaw);
+    const result = extractJson(assessRes.text);
     if (typeof result.fit_score === "number") {
       const clamped = Math.max(0, Math.min(10, result.fit_score));
       result.fit_score = Math.round(clamped * 2) / 2;
     }
     try {
-      result.company_intel = extractJson(intelRaw);
+      result.company_intel = extractJson(intelRes.text);
     } catch (_e) {
       result.company_intel = null;
     }
+    result.langfuse_assess_trace_id = assessRes.traceId;
 
     return new Response(JSON.stringify(result), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },

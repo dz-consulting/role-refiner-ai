@@ -47,7 +47,7 @@ Return ONLY valid JSON, no markdown, matching this schema:
 
 ATS-friendly. Plain language. No fluff. No invented metrics.`;
 
-    const raw = await callClaude({
+    const { text: raw } = await callClaude({
       promptName: "tailor-cv.rewrite",
       userPrompt: prompt,
       variables: {

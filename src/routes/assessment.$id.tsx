@@ -14,14 +14,43 @@ function AssessmentView() {
   const nav = useNavigate();
   const [a, setA] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [feedback, setFeedback] = useState<Record<string, string>>({});
 
   useEffect(() => {
     (async () => {
       const { data } = await supabase.from("assessments").select("*").eq("id", id).maybeSingle();
       setA(data);
+      const { data: fb } = await supabase
+        .from("assessment_feedback")
+        .select("target_key, corrected_value")
+        .eq("assessment_id", id)
+        .eq("target_type", "requirement");
+      if (fb) {
+        const map: Record<string, string> = {};
+        fb.forEach((row: any) => { if (row.corrected_value) map[row.target_key] = row.corrected_value; });
+        setFeedback(map);
+      }
       setLoading(false);
     })();
   }, [id]);
+
+  const submitCorrection = async (req: any, corrected: string) => {
+    const original = req.match_strength;
+    setFeedback((prev) => ({ ...prev, [req.requirement]: corrected }));
+    try {
+      await supabase.functions.invoke("submit-feedback", {
+        body: {
+          assessment_id: id,
+          target_type: "requirement",
+          target_key: req.requirement,
+          original_value: original,
+          corrected_value: corrected,
+        },
+      });
+    } catch (e) {
+      console.error("feedback submit failed", e);
+    }
+  };
 
   if (loading) {
     return (
@@ -147,7 +176,7 @@ function AssessmentView() {
                 <tr className="border-b border-foreground">
                   <th className="label-eyebrow text-left py-3 pr-6 align-bottom w-[35%]">Job requirement</th>
                   <th className="label-eyebrow text-left py-3 pr-6 align-bottom">Evidence from CV</th>
-                  <th className="label-eyebrow text-left py-3 align-bottom w-[110px]">Rating</th>
+                  <th className="label-eyebrow text-left py-3 align-bottom w-[180px]">Rating</th>
                 </tr>
               </thead>
               <tbody>
@@ -155,7 +184,13 @@ function AssessmentView() {
                   <tr key={i} className="border-b border-border align-top">
                     <td className="py-5 pr-6 font-display text-lg leading-snug">{r.requirement}</td>
                     <td className="py-5 pr-6 text-sm text-muted-foreground leading-relaxed">{r.evidence}</td>
-                    <td className="py-5"><MatchPill strength={r.match_strength} /></td>
+                    <td className="py-5">
+                      <RatingCorrector
+                        original={r.match_strength}
+                        corrected={feedback[r.requirement]}
+                        onChange={(v) => submitCorrection(r, v)}
+                      />
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -292,6 +327,40 @@ function PriorityPill({ value }: { value: string }) {
     <span className={`text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 border ${map[value] ?? "border-border text-muted-foreground"}`}>
       {value}
     </span>
+  );
+}
+
+function RatingCorrector({ original, corrected, onChange }: { original: string; corrected?: string; onChange: (v: string) => void }) {
+  const current = corrected ?? original;
+  const options = ["Strong", "Partial", "Gap"];
+  const colorFor = (v: string) =>
+    v === "Strong" ? "border-success text-success"
+    : v === "Partial" ? "border-warning text-warning"
+    : "border-destructive text-destructive";
+  return (
+    <div className="flex flex-col gap-1.5">
+      <div className="flex gap-1">
+        {options.map((opt) => {
+          const active = current === opt;
+          return (
+            <button
+              key={opt}
+              onClick={() => onChange(opt)}
+              className={`text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 border transition-colors ${
+                active ? colorFor(opt) : "border-border text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              {opt}
+            </button>
+          );
+        })}
+      </div>
+      {corrected && corrected !== original && (
+        <div className="text-[10px] font-mono text-muted-foreground">
+          AI said {original} · you corrected
+        </div>
+      )}
+    </div>
   );
 }
 

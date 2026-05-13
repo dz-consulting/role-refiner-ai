@@ -238,7 +238,7 @@ function Block({ number, title, children, action }: { number: string; title: str
       <div className="flex items-baseline justify-between mb-6">
         <div className="flex items-baseline gap-4">
           <span className="font-mono text-xs text-muted-foreground tabular-nums">{number}</span>
-          <h2 className="font-display text-2xl">{title}</h2>
+          <h2 className="font-display text-3xl">{title}</h2>
         </div>
         {action}
       </div>

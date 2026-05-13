@@ -234,11 +234,7 @@ function AssessmentView() {
                     </div>
                     <div className="flex flex-col items-end gap-1.5 shrink-0">
                       {item.priority && <PriorityPill value={item.priority} />}
-                      {item.effort && (
-                        <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground">
-                          {item.effort}
-                        </span>
-                      )}
+                      {item.effort && <span className="label-tag">{item.effort}</span>}
                     </div>
                   </div>
                 </li>
@@ -333,24 +329,20 @@ function formatFitScore(score: number | null | undefined) {
 
 function PriorityPill({ value }: { value: string }) {
   const map: Record<string, string> = {
-    High: "border-destructive text-destructive",
-    Medium: "border-warning text-warning",
-    Low: "border-border text-muted-foreground",
+    High: "border-destructive! text-destructive",
+    Medium: "border-warning! text-warning",
+    Low: "",
   };
-  return (
-    <span className={`text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 border ${map[value] ?? "border-border text-muted-foreground"}`}>
-      {value}
-    </span>
-  );
+  return <span className={`label-tag ${map[value] ?? ""}`}>{value}</span>;
 }
 
 function RatingCorrector({ original, corrected, onChange }: { original: string; corrected?: string; onChange: (v: string) => void }) {
   const current = corrected ?? original;
   const options = ["Strong", "Partial", "Gap"];
   const colorFor = (v: string) =>
-    v === "Strong" ? "border-success text-success"
-    : v === "Partial" ? "border-warning text-warning"
-    : "border-destructive text-destructive";
+    v === "Strong" ? "border-success! text-success"
+    : v === "Partial" ? "border-warning! text-warning"
+    : "border-destructive! text-destructive";
   return (
     <div className="flex flex-col gap-1.5">
       <div className="flex gap-1">
@@ -360,9 +352,7 @@ function RatingCorrector({ original, corrected, onChange }: { original: string; 
             <button
               key={opt}
               onClick={() => onChange(opt)}
-              className={`text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 border transition-colors ${
-                active ? colorFor(opt) : "border-border text-muted-foreground hover:text-foreground"
-              }`}
+              className={`label-tag transition-colors ${active ? colorFor(opt) : "hover:text-foreground"}`}
             >
               {opt}
             </button>
@@ -370,7 +360,7 @@ function RatingCorrector({ original, corrected, onChange }: { original: string; 
         })}
       </div>
       {corrected && corrected !== original && (
-        <div className="text-[10px] font-mono text-muted-foreground">
+        <div className="text-[10px] font-mono text-muted-foreground tracking-wider">
           AI said {original} · you corrected
         </div>
       )}
@@ -380,15 +370,11 @@ function RatingCorrector({ original, corrected, onChange }: { original: string; 
 
 function MatchPill({ strength }: { strength: string }) {
   const map: Record<string, string> = {
-    Strong: "border-success text-success",
-    Partial: "border-warning text-warning",
-    Gap: "border-destructive text-destructive",
+    Strong: "border-success! text-success",
+    Partial: "border-warning! text-warning",
+    Gap: "border-destructive! text-destructive",
   };
-  return (
-    <span className={`text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 border ${map[strength] ?? "border-border text-muted-foreground"}`}>
-      {strength}
-    </span>
-  );
+  return <span className={`label-tag ${map[strength] ?? ""}`}>{strength}</span>;
 }
 
 function buildFallbackActionItems(requirements: any[], risks: string[]) {
@@ -456,7 +442,7 @@ function CompanyIntelligence({ intel }: { intel: any }) {
         </IntelBlock>
 
         <IntelBlock title="AI maturity signal">
-          <div className="font-display text-2xl mb-2">{ai.rating ?? "—"}</div>
+          <div className="font-display text-xl mb-2">{ai.rating ?? "—"}</div>
           {ai.evidence && <p className="leading-relaxed text-muted-foreground">{ai.evidence}</p>}
           {ai.why_it_matters && (
             <div className="mt-4 border-l-2 border-foreground pl-4">
@@ -532,11 +518,7 @@ function Row({ label, children }: { label: string; children: ReactNode }) {
 }
 
 function Chip({ children }: { children: ReactNode }) {
-  return (
-    <span className="text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 border border-border text-muted-foreground">
-      {children}
-    </span>
-  );
+  return <span className="label-tag">{children}</span>;
 }
 
 function FlagsGrid({ green, red }: { green?: string[]; red?: string[] }) {

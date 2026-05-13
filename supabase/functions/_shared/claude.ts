@@ -2,36 +2,30 @@ const SYSTEM_PROMPT = `You are a senior technical recruiter and career strategis
 You are direct, honest, and do not soften bad news. Your job is to give the user accurate signal, not encouragement. If a role is a poor fit, say so clearly.
 The user's CV profile will be provided with each request. Use it as ground truth about their experience. Do not invent or assume experience they have not demonstrated.`;
 
-const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
-const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+const LANGFUSE_SECRET_KEY = Deno.env.get("LANGFUSE_SECRET_KEY")!;
+const LANGFUSE_PUBLIC_KEY = Deno.env.get("LANGFUSE_PUBLIC_KEY")!;
+const LANGFUSE_BASE_URL = "https://cloud.langfuse.com";
 
-async function logToSupabase(entry: {
-  function_name: string;
-  system_prompt: string;
-  user_prompt: string;
-  response: string | null;
-  model: string;
-  input_tokens: number | null;
-  output_tokens: number | null;
-  latency_ms: number;
-  error: string | null;
-}) {
+function makeId() {
+  return crypto.randomUUID();
+}
+
+async function sendToLangfuse(payload: object) {
   try {
-    await fetch(`${SUPABASE_URL}/rest/v1/claude_logs`, {
+    const credentials = btoa(`${LANGFUSE_PUBLIC_KEY}:${LANGFUSE_SECRET_KEY}`);
+    await fetch(`${LANGFUSE_BASE_URL}/api/public/ingestion`, {
       method: "POST",
       headers: {
-        apikey: SUPABASE_SERVICE_ROLE_KEY,
-        Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
+        "Authorization": `Basic ${credentials}`,
         "Content-Type": "application/json",
-        Prefer: "return=minimal",
       },
-      body: JSON.stringify(entry),
+      body: JSON.stringify(payload),
     });
   } catch (err) {
-    console.error("Logging failed (non-fatal):", err);
+    console.error("Langfuse logging failed (non-fatal):", err);
   }
 }
-console.log("callClaude called, SUPABASE_URL:", Deno.env.get("SUPABASE_URL"));
+
 export async function callClaude(opts: {
   userPrompt: string;
   systemSuffix?: string;
@@ -41,9 +35,13 @@ export async function callClaude(opts: {
   const apiKey = Deno.env.get("ANTHROPIC_API_KEY");
   if (!apiKey) throw new Error("ANTHROPIC_API_KEY missing");
 
-  const system = opts.systemSuffix ? `${SYSTEM_PROMPT}\n\n${opts.systemSuffix}` : SYSTEM_PROMPT;
+  const system = opts.systemSuffix
+    ? `${SYSTEM_PROMPT}\n\n${opts.systemSuffix}`
+    : SYSTEM_PROMPT;
 
-  const startTime = Date.now();
+  const traceId = makeId();
+  const generationId = makeId();
+  const startTime = new Date().toISOString();
 
   try {
     const res = await fetch("https://api.anthropic.com/v1/messages", {
@@ -63,61 +61,51 @@ export async function callClaude(opts: {
 
     if (!res.ok) {
       const t = await res.text();
-      await logToSupabase({
-        function_name: opts.functionName ?? "unknown",
-        system_prompt: system,
-        user_prompt: opts.userPrompt,
-        response: null,
-        model: "claude-sonnet-4-5",
-        input_tokens: null,
-        output_tokens: null,
-        latency_ms: Date.now() - startTime,
-        error: `Claude API error ${res.status}: ${t}`,
-      });
       throw new Error(`Claude API error ${res.status}: ${t}`);
     }
 
     const data = await res.json();
     const responseText = data.content?.[0]?.text ?? "";
+    const endTime = new Date().toISOString();
 
-    await logToSupabase({
-      function_name: opts.functionName ?? "unknown",
-      system_prompt: system,
-      user_prompt: opts.userPrompt,
-      response: responseText,
-      model: "claude-sonnet-4-5",
-      input_tokens: data.usage?.input_tokens ?? null,
-      output_tokens: data.usage?.output_tokens ?? null,
-      latency_ms: Date.now() - startTime,
-      error: null,
+    await sendToLangfuse({
+      batch: [
+        {
+          type: "trace-create",
+          id: makeId(),
+          timestamp: startTime,
+          body: {
+            id: traceId,
+            name: opts.functionName ?? "unknown",
+            input: opts.userPrompt,
+            output: responseText,
+          },
+        },
+        {
+          type: "generation-create",
+          id: makeId(),
+          timestamp: startTime,
+          body: {
+            id: generationId,
+            traceId,
+            name: opts.functionName ?? "unknown",
+            model: "claude-sonnet-4-5",
+            startTime,
+            endTime,
+            input: [
+              { role: "system", content: system },
+              { role: "user", content: opts.userPrompt },
+            ],
+            output: { role: "assistant", content: responseText },
+            usage: {
+              input: data.usage?.input_tokens ?? 0,
+              output: data.usage?.output_tokens ?? 0,
+            },
+          },
+        },
+      ],
     });
 
     return responseText;
-  } catch (err) {
-    if (!(err instanceof Error && err.message.startsWith("Claude API error"))) {
-      await logToSupabase({
-        function_name: opts.functionName ?? "unknown",
-        system_prompt: system,
-        user_prompt: opts.userPrompt,
-        response: null,
-        model: "claude-sonnet-4-5",
-        input_tokens: null,
-        output_tokens: null,
-        latency_ms: Date.now() - startTime,
-        error: String(err),
-      });
-    }
-    throw err;
-  }
-}
 
-export function extractJson(text: string): any {
-  const cleaned = text
-    .replace(/^```(?:json)?\s*/i, "")
-    .replace(/```\s*$/i, "")
-    .trim();
-  const start = cleaned.indexOf("{");
-  const end = cleaned.lastIndexOf("}");
-  if (start === -1 || end === -1) throw new Error("No JSON found in response");
-  return JSON.parse(cleaned.slice(start, end + 1));
-}
+  } catch (

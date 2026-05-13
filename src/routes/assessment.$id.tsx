@@ -315,6 +315,15 @@ function DefRow({ label, value, note }: { label: string; value: ReactNode; note?
   );
 }
 
+function summarizeToBullets(text: string | null | undefined, max = 3): string[] {
+  if (!text) return [];
+  const parts = String(text)
+    .split(/(?<=[.!?])\s+|\n+|\s•\s|\s-\s/)
+    .map((s) => s.trim().replace(/^[-•]\s*/, ""))
+    .filter((s) => s.length > 0);
+  return parts.slice(0, max);
+}
+
 function formatFitScore(score: number | null | undefined) {
   if (score === null || score === undefined || Number.isNaN(Number(score))) return "—";
   const n = Math.max(0, Math.min(10, Number(score)));

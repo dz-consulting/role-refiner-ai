@@ -26,10 +26,16 @@ Deno.serve(async (req) => {
 
 CV:
 """
-${cvText.slice(0, 30000)}
+{{cvText}}
 """`;
 
-    const raw = await callClaude({ userPrompt: prompt, maxTokens: 2000 });
+    const raw = await callClaude({
+      promptName: "extract-cv.profile",
+      userPrompt: prompt,
+      variables: { cvText: cvText.slice(0, 30000) },
+      maxTokens: 2000,
+      functionName: "extract-cv.profile",
+    });
     const profile = extractJson(raw);
 
     return new Response(JSON.stringify({ profile }), {

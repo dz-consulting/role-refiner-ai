@@ -14,14 +14,43 @@ function AssessmentView() {
   const nav = useNavigate();
   const [a, setA] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [feedback, setFeedback] = useState<Record<string, string>>({});
 
   useEffect(() => {
     (async () => {
       const { data } = await supabase.from("assessments").select("*").eq("id", id).maybeSingle();
       setA(data);
+      const { data: fb } = await supabase
+        .from("assessment_feedback")
+        .select("target_key, corrected_value")
+        .eq("assessment_id", id)
+        .eq("target_type", "requirement");
+      if (fb) {
+        const map: Record<string, string> = {};
+        fb.forEach((row: any) => { if (row.corrected_value) map[row.target_key] = row.corrected_value; });
+        setFeedback(map);
+      }
       setLoading(false);
     })();
   }, [id]);
+
+  const submitCorrection = async (req: any, corrected: string) => {
+    const original = req.match_strength;
+    setFeedback((prev) => ({ ...prev, [req.requirement]: corrected }));
+    try {
+      await supabase.functions.invoke("submit-feedback", {
+        body: {
+          assessment_id: id,
+          target_type: "requirement",
+          target_key: req.requirement,
+          original_value: original,
+          corrected_value: corrected,
+        },
+      });
+    } catch (e) {
+      console.error("feedback submit failed", e);
+    }
+  };
 
   if (loading) {
     return (

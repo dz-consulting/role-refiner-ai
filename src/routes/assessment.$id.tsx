@@ -107,9 +107,14 @@ function AssessmentView() {
             </div>
           </div>
 
-          <p className="mt-10 font-display text-2xl leading-snug max-w-2xl">
-            {a.fit_summary}
-          </p>
+          <ul className="mt-10 space-y-3 max-w-2xl">
+            {summarizeToBullets(a.fit_summary, 3).map((b, i) => (
+              <li key={i} className="flex gap-3 font-display text-lg leading-snug">
+                <span className="text-muted-foreground font-mono text-xs pt-2">→</span>
+                <span>{b}</span>
+              </li>
+            ))}
+          </ul>
         </header>
 
         {/* Quick jump to action items */}

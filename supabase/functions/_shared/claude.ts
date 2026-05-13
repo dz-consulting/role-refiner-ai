@@ -31,7 +31,7 @@ async function logToSupabase(entry: {
     console.error("Logging failed (non-fatal):", err);
   }
 }
-
+console.log("callClaude called, SUPABASE_URL:", Deno.env.get("SUPABASE_URL"));
 export async function callClaude(opts: {
   userPrompt: string;
   systemSuffix?: string;

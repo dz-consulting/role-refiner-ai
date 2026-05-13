@@ -195,6 +195,10 @@ function ProfilePage() {
             </div>
           </Block>
 
+          <Block title="Preferences" number="06">
+            <PreferencesEditor value={preferences} onChange={setPreferences} />
+          </Block>
+
           {profile.raw_text && (
             <Block
               title="Raw CV text"

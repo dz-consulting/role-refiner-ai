@@ -240,9 +240,9 @@ function AssessmentView() {
   );
 }
 
-function Section({ title, letter, children }: { title: string; letter: string; children: React.ReactNode }) {
+function Section({ title, letter, children, id }: { title: string; letter: string; children: React.ReactNode; id?: string }) {
   return (
-    <section className="mt-12">
+    <section id={id} className="mt-12 scroll-mt-8">
       <div className="flex items-baseline gap-3 mb-4">
         <span className="font-mono text-[11px] uppercase tracking-[0.18em] text-accent">Section {letter}</span>
         <h2 className="font-display text-2xl">{title}</h2>

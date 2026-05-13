@@ -16,15 +16,15 @@ Deno.serve(async (req) => {
 
 ORIGINAL CV TEXT:
 """
-${cvText.slice(0, 25000)}
+{{cvText}}
 """
 
 EXTRACTED PROFILE (ground truth):
-${JSON.stringify(profile, null, 2)}
+{{profile}}
 
 TARGET JOB DESCRIPTION:
 """
-${jobDescription.slice(0, 15000)}
+{{jobDescription}}
 """
 
 Return ONLY valid JSON, no markdown, matching this schema:

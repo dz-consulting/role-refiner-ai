@@ -33,7 +33,7 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const { profile, jobDescription } = await req.json();
+    const { profile, jobDescription } = bodyJson;
     if (!profile || !jobDescription) {
       return new Response(JSON.stringify({ error: "profile and jobDescription required" }), {
         status: 400,

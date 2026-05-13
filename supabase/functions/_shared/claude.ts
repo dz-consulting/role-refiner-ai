@@ -89,6 +89,7 @@ export async function callClaude(opts: {
           timestamp: startTime,
           body: {
             id: traceId,
+            timestamp: startTime,
             name: opts.functionName ?? "unknown",
             input: opts.userPrompt,
             output: responseText,

@@ -522,11 +522,7 @@ function Row({ label, children }: { label: string; children: ReactNode }) {
 }
 
 function Chip({ children }: { children: ReactNode }) {
-  return (
-    <span className="text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 border border-border text-muted-foreground">
-      {children}
-    </span>
-  );
+  return <span className="label-tag">{children}</span>;
 }
 
 function FlagsGrid({ green, red }: { green?: string[]; red?: string[] }) {

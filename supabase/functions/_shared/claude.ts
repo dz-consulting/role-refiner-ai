@@ -117,7 +117,7 @@ export async function callClaude(opts: {
   systemSuffix?: string;
   maxTokens?: number;
   functionName?: string;
-}): Promise<string> {
+}): Promise<{ text: string; traceId: string }> {
   const apiKey = Deno.env.get("ANTHROPIC_API_KEY");
   if (!apiKey) throw new Error("ANTHROPIC_API_KEY missing");
 

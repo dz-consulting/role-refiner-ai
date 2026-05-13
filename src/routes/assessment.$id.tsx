@@ -302,6 +302,29 @@ function MatchPill({ strength }: { strength: string }) {
   );
 }
 
+function buildFallbackActionItems(requirements: any[], risks: string[]) {
+  const gapItems = requirements
+    .filter((r) => r?.match_strength === "Gap" || r?.match_strength === "Partial")
+    .slice(0, 5)
+    .map((r) => ({
+      title: `Add evidence for ${r.requirement}`,
+      detail: `Strengthen your CV with a concrete example, metric, or project that proves this requirement: ${r.requirement}.`,
+      priority: r.match_strength === "Gap" ? "High" : "Medium",
+      effort: "Medium",
+      addresses: r.requirement,
+    }));
+
+  const riskItems = risks.slice(0, Math.max(0, 5 - gapItems.length)).map((risk) => ({
+    title: "Reduce a screening risk",
+    detail: `Add a clear counter-signal in your CV or cover note so a recruiter does not screen you out for: ${risk}.`,
+    priority: "High",
+    effort: "Quick",
+    addresses: risk,
+  }));
+
+  return [...gapItems, ...riskItems];
+}
+
 function CompanyIntelligence({ intel }: { intel: any }) {
   if (!intel) {
     return (

@@ -21,11 +21,11 @@ Deno.serve(async (req) => {
     const assessPrompt = `You will assess fit between this user's CV profile and a specific job description. Return ONLY valid JSON, no markdown.
 
 CV PROFILE:
-${JSON.stringify(profile, null, 2)}
+{{profile}}
 
 JOB DESCRIPTION:
 """
-${jobDescription.slice(0, 20000)}
+{{jobDescription}}
 """
 
 Return JSON exactly matching this schema:

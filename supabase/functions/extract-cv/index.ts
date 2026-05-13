@@ -29,7 +29,7 @@ CV:
 {{cvText}}
 """`;
 
-    const raw = await callClaude({
+    const { text: raw } = await callClaude({
       promptName: "extract-cv.profile",
       userPrompt: prompt,
       variables: { cvText: cvText.slice(0, 30000) },

@@ -47,7 +47,17 @@ Return ONLY valid JSON, no markdown, matching this schema:
 
 ATS-friendly. Plain language. No fluff. No invented metrics.`;
 
-    const raw = await callClaude({ userPrompt: prompt, maxTokens: 4000 });
+    const raw = await callClaude({
+      promptName: "tailor-cv.rewrite",
+      userPrompt: prompt,
+      variables: {
+        cvText: cvText.slice(0, 25000),
+        profile: JSON.stringify(profile, null, 2),
+        jobDescription: jobDescription.slice(0, 15000),
+      },
+      maxTokens: 4000,
+      functionName: "tailor-cv.rewrite",
+    });
     const tailored = extractJson(raw);
 
     return new Response(JSON.stringify({ tailored }), {

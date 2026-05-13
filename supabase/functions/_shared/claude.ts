@@ -12,8 +12,15 @@ function makeId() {
 
 async function sendToLangfuse(payload: object) {
   try {
+    if (!LANGFUSE_PUBLIC_KEY || !LANGFUSE_SECRET_KEY) {
+      console.error("Langfuse keys missing", {
+        hasPublic: !!LANGFUSE_PUBLIC_KEY,
+        hasSecret: !!LANGFUSE_SECRET_KEY,
+      });
+      return;
+    }
     const credentials = btoa(`${LANGFUSE_PUBLIC_KEY}:${LANGFUSE_SECRET_KEY}`);
-    await fetch(`${LANGFUSE_BASE_URL}/api/public/ingestion`, {
+    const res = await fetch(`${LANGFUSE_BASE_URL}/api/public/ingestion`, {
       method: "POST",
       headers: {
         "Authorization": `Basic ${credentials}`,
@@ -21,6 +28,12 @@ async function sendToLangfuse(payload: object) {
       },
       body: JSON.stringify(payload),
     });
+    if (!res.ok) {
+      const body = await res.text();
+      console.error(`Langfuse ingestion failed: ${res.status} ${body}`);
+    } else {
+      console.log(`Langfuse ingestion ok: ${res.status}`);
+    }
   } catch (err) {
     console.error("Langfuse logging failed (non-fatal):", err);
   }

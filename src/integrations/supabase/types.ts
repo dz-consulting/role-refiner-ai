@@ -179,6 +179,7 @@ export type Database = {
           id: string
           name: string | null
           outcomes: Json | null
+          preferences: Json
           raw_text: string | null
           roles: Json | null
           seniority_signals: Json | null
@@ -194,6 +195,7 @@ export type Database = {
           id?: string
           name?: string | null
           outcomes?: Json | null
+          preferences?: Json
           raw_text?: string | null
           roles?: Json | null
           seniority_signals?: Json | null
@@ -209,6 +211,7 @@ export type Database = {
           id?: string
           name?: string | null
           outcomes?: Json | null
+          preferences?: Json
           raw_text?: string | null
           roles?: Json | null
           seniority_signals?: Json | null

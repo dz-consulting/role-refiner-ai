@@ -5,6 +5,11 @@ The user's CV profile will be provided with each request. Use it as ground truth
 const LANGFUSE_SECRET_KEY = Deno.env.get("LANGFUSE_SECRET_KEY")!;
 const LANGFUSE_PUBLIC_KEY = Deno.env.get("LANGFUSE_PUBLIC_KEY")!;
 const LANGFUSE_BASE_URL = "https://cloud.langfuse.com";
+console.log("[claude.ts] boot", {
+  hasPublic: !!LANGFUSE_PUBLIC_KEY,
+  hasSecret: !!LANGFUSE_SECRET_KEY,
+  publicPrefix: LANGFUSE_PUBLIC_KEY?.slice(0, 6),
+});
 
 function makeId() {
   return crypto.randomUUID();
@@ -121,5 +126,13 @@ export async function callClaude(opts: {
     });
 
     return responseText;
+  } catch (err) {
+    console.error("callClaude error:", err);
+    throw err;
+  }
+}
 
-  } catch (
+export function extractJson(raw: string): any {
+  const cleaned = raw.replace(/```json\s*|\s*```/g, "").trim();
+  return JSON.parse(cleaned);
+}

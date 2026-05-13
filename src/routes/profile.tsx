@@ -3,6 +3,8 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { requireAuth } from "@/lib/feature-flags";
 import { AppHeader } from "@/components/AppHeader";
+import { PreferencesEditor } from "@/components/PreferencesEditor";
+import { Preferences, emptyPreferences, mergePreferences } from "@/lib/preferences";
 
 export const Route = createFileRoute("/profile")({
   beforeLoad: requireAuth,
@@ -26,6 +28,7 @@ function ProfilePage() {
   const [saving, setSaving] = useState(false);
   const [email, setEmail] = useState<string | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
+  const [preferences, setPreferences] = useState<Preferences>(emptyPreferences());
   const [showRaw, setShowRaw] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
@@ -48,6 +51,7 @@ function ProfilePage() {
         seniority_signals: (prof.seniority_signals as any) ?? [],
         raw_text: prof.raw_text ?? "",
       });
+      setPreferences(mergePreferences((prof as any).preferences));
       setLoading(false);
     })();
   }, []);
@@ -73,6 +77,7 @@ function ProfilePage() {
           roles: profile.roles,
           outcomes: profile.outcomes,
           seniority_signals: profile.seniority_signals,
+          preferences: preferences as any,
         })
         .eq("user_id", user.id);
       if (upErr) throw upErr;
@@ -190,10 +195,14 @@ function ProfilePage() {
             </div>
           </Block>
 
+          <Block title="Preferences" number="06">
+            <PreferencesEditor value={preferences} onChange={setPreferences} />
+          </Block>
+
           {profile.raw_text && (
             <Block
               title="Raw CV text"
-              number="06"
+              number="07"
               action={
                 <button
                   onClick={() => setShowRaw((v) => !v)}

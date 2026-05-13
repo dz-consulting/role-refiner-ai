@@ -4,6 +4,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { requireAuth } from "@/lib/feature-flags";
 import { extractTextFromFile } from "@/lib/cv-extract";
 import { AppHeader } from "@/components/AppHeader";
+import { PreferencesEditor } from "@/components/PreferencesEditor";
+import { Preferences, emptyPreferences } from "@/lib/preferences";
 
 export const Route = createFileRoute("/onboarding")({
   beforeLoad: requireAuth,
@@ -22,10 +24,11 @@ type Profile = {
 
 function OnboardingPage() {
   const nav = useNavigate();
-  const [step, setStep] = useState<"upload" | "extracting" | "review" | "saving">("upload");
+  const [step, setStep] = useState<"upload" | "extracting" | "review" | "preferences" | "saving">("upload");
   const [error, setError] = useState<string | null>(null);
   const [progress, setProgress] = useState("");
   const [profile, setProfile] = useState<Profile | null>(null);
+  const [preferences, setPreferences] = useState<Preferences>(emptyPreferences());
   const [cvText, setCvText] = useState("");
   const [cvFilePath, setCvFilePath] = useState("");
 
@@ -78,6 +81,7 @@ function OnboardingPage() {
           roles: profile.roles,
           outcomes: profile.outcomes,
           seniority_signals: profile.seniority_signals,
+          preferences: preferences as any,
           raw_text: cvText,
           cv_file_path: cvFilePath,
         }, { onConflict: "user_id" });
@@ -116,7 +120,38 @@ function OnboardingPage() {
         )}
 
         {step === "review" && profile && (
-          <ProfileEditor profile={profile} setProfile={setProfile} onSave={save} />
+          <ProfileEditor
+            profile={profile}
+            setProfile={setProfile}
+            onSave={() => { setError(null); setStep("preferences"); window.scrollTo(0, 0); }}
+          />
+        )}
+
+        {step === "preferences" && (
+          <div className="mt-16 space-y-12">
+            <div>
+              <div className="label-eyebrow">Step 2 · Preferences</div>
+              <h2 className="font-display text-4xl mt-3">What makes a job fit you?</h2>
+              <p className="text-muted-foreground mt-3 text-base max-w-xl">
+                These signals power every assessment. Skip what you don't care about.
+              </p>
+            </div>
+            <PreferencesEditor value={preferences} onChange={setPreferences} />
+            <div className="flex items-center justify-between border-t border-foreground pt-8">
+              <button
+                onClick={() => setStep("review")}
+                className="text-sm underline underline-offset-4 text-muted-foreground hover:text-foreground"
+              >
+                ← Back to profile
+              </button>
+              <button
+                onClick={save}
+                className="bg-foreground text-background px-6 py-3 hover:opacity-90"
+              >
+                Finish setup →
+              </button>
+            </div>
+          </div>
         )}
       </main>
     </div>
@@ -227,7 +262,7 @@ function ProfileEditor({
           onClick={onSave}
           className="bg-foreground text-background px-6 py-3 hover:opacity-90"
         >
-          Save and continue →
+          Continue to preferences →
         </button>
       </div>
     </div>

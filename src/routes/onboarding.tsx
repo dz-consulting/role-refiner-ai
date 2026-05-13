@@ -33,12 +33,12 @@ function OnboardingPage() {
     setError(null);
     setStep("extracting");
     try {
-      setProgress("Reading your CV...");
+      setProgress("Reading your CV…");
       const text = await extractTextFromFile(file);
       if (text.length < 200) throw new Error("That CV looks empty. Try another file.");
       setCvText(text);
 
-      setProgress("Uploading...");
+      setProgress("Uploading…");
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
       const path = `${user.id}/${Date.now()}_${file.name}`;
@@ -46,7 +46,7 @@ function OnboardingPage() {
       if (upErr) throw upErr;
       setCvFilePath(path);
 
-      setProgress("Extracting structured profile with AI...");
+      setProgress("Extracting structured profile with AI…");
       const { data, error: fnErr } = await supabase.functions.invoke("extract-cv", {
         body: { cvText: text },
       });
@@ -92,17 +92,15 @@ function OnboardingPage() {
   return (
     <div className="min-h-screen">
       <AppHeader />
-      <main className="max-w-3xl mx-auto px-8 py-16">
-        <div className="font-mono text-[11px] uppercase tracking-[0.18em] text-accent mb-3">
-          Step 1 of 1 · Onboarding
-        </div>
-        <h1 className="font-display text-4xl tracking-tight">Upload your CV</h1>
-        <p className="text-muted-foreground mt-3">
+      <main className="max-w-3xl mx-auto px-8 py-24">
+        <div className="label-eyebrow">Step 1 of 1 · Onboarding</div>
+        <h1 className="font-display text-5xl mt-3">Upload your CV.</h1>
+        <p className="text-muted-foreground mt-4 text-lg max-w-xl">
           One upload powers every assessment after this. PDF or Word.
         </p>
 
         {error && (
-          <div className="mt-6 text-sm text-destructive border border-destructive/30 bg-destructive/10 rounded px-3 py-2">
+          <div className="mt-8 text-sm text-destructive border-l-2 border-destructive pl-3 py-1">
             {error}
           </div>
         )}
@@ -110,9 +108,9 @@ function OnboardingPage() {
         {step === "upload" && <Uploader onFile={handleFile} />}
 
         {(step === "extracting" || step === "saving") && (
-          <div className="mt-10 border border-border rounded-md p-10 bg-surface text-center">
-            <div className="font-mono text-xs text-muted-foreground animate-pulse">
-              {step === "saving" ? "Saving your profile..." : progress}
+          <div className="mt-16 py-16 text-center">
+            <div className="font-serif-italic text-2xl text-muted-foreground animate-pulse">
+              {step === "saving" ? "Saving your profile…" : progress}
             </div>
           </div>
         )}
@@ -137,8 +135,8 @@ function Uploader({ onFile }: { onFile: (f: File) => void }) {
         const f = e.dataTransfer.files[0];
         if (f) onFile(f);
       }}
-      className={`mt-10 block border-2 border-dashed rounded-md p-16 text-center cursor-pointer transition ${
-        drag ? "border-accent bg-accent/5" : "border-border bg-surface hover:bg-surface/70"
+      className={`mt-16 block border border-dashed py-24 text-center cursor-pointer transition ${
+        drag ? "border-foreground bg-foreground/[0.03]" : "border-border hover:border-foreground/60"
       }`}
     >
       <input
@@ -147,8 +145,8 @@ function Uploader({ onFile }: { onFile: (f: File) => void }) {
         className="hidden"
         onChange={(e) => e.target.files?.[0] && onFile(e.target.files[0])}
       />
-      <div className="font-display text-2xl">Drop your CV here</div>
-      <div className="text-sm text-muted-foreground mt-2">or click to browse · PDF, DOC, DOCX</div>
+      <div className="font-display text-3xl">Drop your CV here</div>
+      <div className="text-sm text-muted-foreground mt-3">or click to browse · PDF, DOC, DOCX</div>
     </label>
   );
 }
@@ -165,10 +163,10 @@ function ProfileEditor({
   const update = (patch: Partial<Profile>) => setProfile({ ...profile, ...patch });
 
   return (
-    <div className="mt-10 space-y-8">
-      <div className="border border-border rounded-md bg-surface p-6">
-        <SectionLabel>Identity</SectionLabel>
-        <div className="grid grid-cols-2 gap-4 mt-4">
+    <div className="mt-16 space-y-16">
+      <section>
+        <div className="label-eyebrow mb-6">Identity</div>
+        <div className="grid grid-cols-2 gap-8">
           <Field label="Name" value={profile.name} onChange={(v) => update({ name: v })} />
           <Field label="Current title" value={profile.title} onChange={(v) => update({ title: v })} />
           <Field
@@ -178,28 +176,15 @@ function ProfileEditor({
             onChange={(v) => update({ years_experience: parseInt(v) || 0 })}
           />
         </div>
-      </div>
+      </section>
 
-      <ListEditor
-        label="Skills"
-        items={profile.skills}
-        onChange={(items) => update({ skills: items })}
-      />
-      <ListEditor
-        label="Key outcomes"
-        items={profile.outcomes}
-        onChange={(items) => update({ outcomes: items })}
-        multiline
-      />
-      <ListEditor
-        label="Seniority signals"
-        items={profile.seniority_signals}
-        onChange={(items) => update({ seniority_signals: items })}
-      />
+      <ListEditor label="Skills" items={profile.skills} onChange={(items) => update({ skills: items })} />
+      <ListEditor label="Key outcomes" items={profile.outcomes} onChange={(items) => update({ outcomes: items })} multiline />
+      <ListEditor label="Seniority signals" items={profile.seniority_signals} onChange={(items) => update({ seniority_signals: items })} />
 
-      <div className="border border-border rounded-md bg-surface p-6">
-        <SectionLabel>Roles</SectionLabel>
-        <div className="space-y-3 mt-4">
+      <section>
+        <div className="label-eyebrow mb-6">Roles</div>
+        <div className="space-y-4">
           {profile.roles.map((r, i) => (
             <div key={i} className="grid grid-cols-3 gap-3">
               <input
@@ -209,7 +194,7 @@ function ProfileEditor({
                   next[i] = { ...r, title: e.target.value };
                   update({ roles: next });
                 }}
-                className="bg-input border border-border rounded px-3 py-2 text-sm"
+                className="bg-transparent border-b border-border focus:border-foreground py-2 text-sm focus:outline-none"
               />
               <input
                 value={r.company}
@@ -218,7 +203,7 @@ function ProfileEditor({
                   next[i] = { ...r, company: e.target.value };
                   update({ roles: next });
                 }}
-                className="bg-input border border-border rounded px-3 py-2 text-sm"
+                className="bg-transparent border-b border-border focus:border-foreground py-2 text-sm focus:outline-none"
               />
               <input
                 value={r.duration}
@@ -227,32 +212,24 @@ function ProfileEditor({
                   next[i] = { ...r, duration: e.target.value };
                   update({ roles: next });
                 }}
-                className="bg-input border border-border rounded px-3 py-2 text-sm"
+                className="bg-transparent border-b border-border focus:border-foreground py-2 text-sm focus:outline-none"
               />
             </div>
           ))}
         </div>
-      </div>
+      </section>
 
-      <div className="flex items-center justify-between border-t border-border pt-6">
-        <div className="text-sm text-muted-foreground">
+      <div className="flex items-center justify-between border-t border-foreground pt-8">
+        <div className="font-serif-italic text-muted-foreground">
           Your profile is ready. Edit anything that's off.
         </div>
         <button
           onClick={onSave}
-          className="bg-accent text-accent-foreground font-medium px-6 py-2.5 rounded-md hover:opacity-90"
+          className="bg-foreground text-background px-6 py-3 hover:opacity-90"
         >
           Save and continue →
         </button>
       </div>
-    </div>
-  );
-}
-
-function SectionLabel({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
-      {children}
     </div>
   );
 }
@@ -270,14 +247,12 @@ function Field({
 }) {
   return (
     <label className="block">
-      <div className="text-xs font-mono uppercase tracking-wider text-muted-foreground mb-1.5">
-        {label}
-      </div>
+      <div className="label-eyebrow mb-2">{label}</div>
       <input
         type={type}
         value={value ?? ""}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full bg-input border border-border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+        className="w-full bg-transparent border-b border-border focus:border-foreground py-2 text-base focus:outline-none transition-colors"
       />
     </label>
   );
@@ -295,19 +270,19 @@ function ListEditor({
   multiline?: boolean;
 }) {
   return (
-    <div className="border border-border rounded-md bg-surface p-6">
-      <div className="flex items-center justify-between">
-        <SectionLabel>{label}</SectionLabel>
+    <section>
+      <div className="flex items-baseline justify-between mb-6">
+        <div className="label-eyebrow">{label}</div>
         <button
           onClick={() => onChange([...items, ""])}
-          className="text-xs font-mono text-accent hover:underline"
+          className="text-xs font-mono text-muted-foreground hover:text-foreground"
         >
           + Add
         </button>
       </div>
-      <div className="mt-4 space-y-2">
+      <div className="space-y-3">
         {items.map((it, i) => (
-          <div key={i} className="flex gap-2">
+          <div key={i} className="flex gap-3 items-start">
             {multiline ? (
               <textarea
                 value={it}
@@ -315,7 +290,7 @@ function ListEditor({
                   const n = [...items]; n[i] = e.target.value; onChange(n);
                 }}
                 rows={2}
-                className="flex-1 bg-input border border-border rounded px-3 py-2 text-sm"
+                className="flex-1 bg-card border border-border focus:border-foreground p-3 text-sm focus:outline-none transition-colors"
               />
             ) : (
               <input
@@ -323,18 +298,18 @@ function ListEditor({
                 onChange={(e) => {
                   const n = [...items]; n[i] = e.target.value; onChange(n);
                 }}
-                className="flex-1 bg-input border border-border rounded px-3 py-2 text-sm"
+                className="flex-1 bg-transparent border-b border-border focus:border-foreground py-2 text-sm focus:outline-none transition-colors"
               />
             )}
             <button
               onClick={() => onChange(items.filter((_, idx) => idx !== i))}
-              className="text-muted-foreground hover:text-destructive text-sm px-2"
+              className="text-muted-foreground hover:text-destructive text-sm pt-2"
             >
               ✕
             </button>
           </div>
         ))}
       </div>
-    </div>
+    </section>
   );
 }

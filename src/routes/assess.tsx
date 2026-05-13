@@ -10,9 +10,9 @@ export const Route = createFileRoute("/assess")({
 });
 
 const STEPS = [
-  "Reading JD...",
-  "Comparing to your profile...",
-  "Building assessment...",
+  "Reading the job description",
+  "Comparing to your profile",
+  "Building the assessment",
 ];
 
 function AssessNew() {
@@ -44,30 +44,28 @@ function AssessNew() {
     return (
       <div className="min-h-screen">
         <AppHeader />
-        <main className="max-w-2xl mx-auto px-8 py-16">
-          <div className="border border-border bg-surface rounded-md p-8">
-            <div className="font-mono text-[11px] uppercase tracking-[0.18em] text-accent">
-              CV required
-            </div>
-            <h1 className="font-display text-3xl mt-2">Upload your CV first</h1>
-            <p className="text-muted-foreground mt-3 text-sm">
-              Every assessment compares a job to your profile. Takes one upload.
-            </p>
-            <button
-              onClick={() => nav({ to: "/onboarding" })}
-              className="mt-6 bg-accent text-accent-foreground font-medium px-5 py-2.5 rounded-md hover:opacity-90"
-            >
-              Upload CV →
-            </button>
-          </div>
+        <main className="max-w-2xl mx-auto px-8 py-24">
+          <div className="label-eyebrow">CV required</div>
+          <h1 className="font-display text-4xl mt-3">Upload your CV first.</h1>
+          <p className="text-muted-foreground mt-4 text-lg">
+            Every assessment compares a job to your profile. Takes one upload.
+          </p>
+          <button
+            onClick={() => nav({ to: "/onboarding" })}
+            className="mt-12 bg-foreground text-background px-6 py-3 hover:opacity-90"
+          >
+            Upload CV →
+          </button>
         </main>
       </div>
     );
   }
 
+  const wordCount = jd.trim().split(/\s+/).filter(Boolean).length;
+
   const run = async () => {
     setError(null);
-    if (jd.trim().split(/\s+/).length < 100) {
+    if (wordCount < 100) {
       setError("This doesn't look like a complete job description. Please paste the full JD.");
       return;
     }
@@ -121,56 +119,52 @@ function AssessNew() {
   return (
     <div className="min-h-screen">
       <AppHeader />
-      <main className="max-w-3xl mx-auto px-8 py-12">
-        <div className="font-mono text-[11px] uppercase tracking-[0.18em] text-accent">
-          New assessment
-        </div>
-        <h1 className="font-display text-4xl tracking-tight mt-2">Paste a job description</h1>
-        <p className="text-muted-foreground mt-2">
+      <main className="max-w-3xl mx-auto px-8 py-24">
+        <div className="label-eyebrow">New assessment</div>
+        <h1 className="font-display text-5xl mt-3">Paste a job description.</h1>
+        <p className="text-muted-foreground mt-4 text-lg">
           Full JD, copied from anywhere. We'll do the rest.
         </p>
 
         <textarea
           value={jd}
           onChange={(e) => setJd(e.target.value)}
-          rows={18}
-          placeholder="Paste the complete job description here..."
+          rows={16}
+          placeholder="Paste the complete job description here…"
           disabled={busy}
-          className="w-full mt-6 bg-input border border-border rounded-md p-4 text-sm font-mono leading-relaxed focus:outline-none focus:ring-2 focus:ring-ring resize-y"
+          className="w-full mt-12 bg-card border border-border p-5 text-sm leading-relaxed focus:outline-none focus:border-foreground resize-y transition-colors"
         />
 
-        <div className="flex items-center justify-between mt-2 text-xs text-muted-foreground font-mono">
-          <span>{jd.trim().split(/\s+/).filter(Boolean).length} words</span>
-          <span>Min. 100 words</span>
+        <div className="flex items-center justify-between mt-3 text-xs font-mono text-muted-foreground">
+          <span>{wordCount} words</span>
+          <span>Minimum 100</span>
         </div>
 
         {error && (
-          <div className="mt-4 text-sm text-destructive border border-destructive/30 bg-destructive/10 rounded px-3 py-2">
+          <div className="mt-6 text-sm text-destructive border-l-2 border-destructive pl-3 py-1">
             {error}
           </div>
         )}
 
         {busy ? (
-          <div className="mt-8 border border-border rounded-md bg-surface p-8">
-            <div className="space-y-3">
-              {STEPS.map((s, i) => (
-                <div key={s} className="flex items-center gap-3 font-mono text-sm">
-                  <span className={i < stepIdx ? "text-success" : i === stepIdx ? "text-accent animate-pulse" : "text-muted-foreground"}>
-                    {i < stepIdx ? "✓" : i === stepIdx ? "→" : "·"}
-                  </span>
-                  <span className={i <= stepIdx ? "text-foreground" : "text-muted-foreground"}>
-                    {s}
-                  </span>
-                </div>
-              ))}
-            </div>
+          <div className="mt-12 space-y-4">
+            {STEPS.map((s, i) => (
+              <div key={s} className="flex items-baseline gap-4 text-base">
+                <span className={`font-mono text-xs w-6 ${i < stepIdx ? "text-foreground" : i === stepIdx ? "text-foreground animate-pulse" : "text-muted-foreground"}`}>
+                  {i < stepIdx ? "✓" : String(i + 1).padStart(2, "0")}
+                </span>
+                <span className={i <= stepIdx ? "text-foreground font-display" : "text-muted-foreground font-display"}>
+                  {s}
+                </span>
+              </div>
+            ))}
           </div>
         ) : (
           <button
             onClick={run}
-            className="mt-6 bg-accent text-accent-foreground font-medium px-6 py-3 rounded-md hover:opacity-90"
+            className="mt-10 bg-foreground text-background px-8 py-4 hover:opacity-90"
           >
-            Run Assessment →
+            Run assessment →
           </button>
         )}
       </main>

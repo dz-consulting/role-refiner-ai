@@ -30,7 +30,6 @@ function TailorPage() {
         ]);
         if (!a || !prof) throw new Error("Missing data");
         setAssessment(a);
-        // Build a brief original summary preview from profile
         const skillArr = (Array.isArray(prof.skills) ? prof.skills : []) as string[];
         const outcomeArr = (Array.isArray(prof.outcomes) ? prof.outcomes : []) as string[];
         const skills = skillArr.slice(0, 6).join(" · ");
@@ -73,56 +72,49 @@ function TailorPage() {
   return (
     <div className="min-h-screen">
       <AppHeader />
-      <main className="max-w-7xl mx-auto px-8 py-10">
+      <main className="max-w-5xl mx-auto px-8 py-16">
         <Link to="/assessment/$id" params={{ id }} className="text-xs font-mono text-muted-foreground hover:text-foreground">
           ← Back to assessment
         </Link>
 
-        <div className="mt-4 flex items-baseline justify-between flex-wrap gap-4">
+        <header className="mt-12 flex items-baseline justify-between flex-wrap gap-6">
           <div>
-            <div className="font-mono text-[11px] uppercase tracking-[0.18em] text-accent">
-              CV Tailoring
-            </div>
-            <h1 className="font-display text-4xl tracking-tight mt-1">
+            <div className="label-eyebrow">CV tailoring · {assessment?.company}</div>
+            <h1 className="font-display text-5xl mt-3 leading-[1.05]">
               {assessment?.role_title || "Tailored CV"}
             </h1>
-            <div className="text-muted-foreground">{assessment?.company}</div>
           </div>
           <button
             disabled={!tailored}
             onClick={() => tailored && downloadTailoredCvPdf(tailored)}
-            className="bg-accent text-accent-foreground font-medium px-5 py-2.5 rounded-md hover:opacity-90 disabled:opacity-40"
+            className="bg-foreground text-background px-6 py-3 hover:opacity-90 disabled:opacity-40"
           >
             Download as PDF ↓
           </button>
-        </div>
+        </header>
 
         {error && (
-          <div className="mt-6 text-sm text-destructive border border-destructive/30 bg-destructive/10 rounded px-3 py-2">
+          <div className="mt-8 text-sm text-destructive border-l-2 border-destructive pl-3 py-1">
             {error}
           </div>
         )}
 
         {loading || generating ? (
-          <div className="mt-10 border border-border rounded-md bg-surface p-10 text-center font-mono text-xs text-muted-foreground animate-pulse">
-            {generating ? "Tailoring your CV with AI..." : "Loading..."}
+          <div className="mt-16 py-16 text-center font-serif-italic text-2xl text-muted-foreground animate-pulse">
+            {generating ? "Tailoring your CV…" : "Loading…"}
           </div>
         ) : (
-          <div className="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div className="border border-border bg-surface rounded-md p-6">
-              <div className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground mb-3">
-                Original profile
-              </div>
+          <div className="mt-16 grid grid-cols-1 lg:grid-cols-2 gap-12">
+            <div>
+              <div className="label-eyebrow mb-4">Original profile</div>
               <pre className="text-sm whitespace-pre-wrap font-sans leading-relaxed text-muted-foreground">
                 {originalSummary}
               </pre>
             </div>
 
             {tailored && (
-              <div className="border border-accent/40 bg-surface rounded-md p-6">
-                <div className="font-mono text-[11px] uppercase tracking-[0.18em] text-accent mb-3">
-                  Tailored for this role
-                </div>
+              <div className="lg:border-l lg:border-foreground lg:pl-12">
+                <div className="label-eyebrow mb-4">Tailored for this role</div>
                 <TailoredEditor cv={tailored} onChange={setTailored} />
               </div>
             )}
@@ -137,38 +129,38 @@ function TailoredEditor({ cv, onChange }: { cv: TailoredCV; onChange: (c: Tailor
   const set = (patch: Partial<TailoredCV>) => onChange({ ...cv, ...patch });
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-6">
       <input
         value={cv.name}
         onChange={(e) => set({ name: e.target.value })}
-        className="w-full bg-transparent font-display text-2xl border-b border-border focus:outline-none focus:border-accent pb-1"
+        className="w-full bg-transparent font-display text-3xl border-b border-border focus:outline-none focus:border-foreground pb-2"
       />
       <input
         value={cv.title}
         onChange={(e) => set({ title: e.target.value })}
-        className="w-full bg-transparent text-lg border-b border-border focus:outline-none focus:border-accent pb-1"
+        className="w-full bg-transparent text-lg border-b border-border focus:outline-none focus:border-foreground pb-2"
       />
       <input
         value={cv.contact}
         onChange={(e) => set({ contact: e.target.value })}
-        className="w-full bg-transparent text-xs font-mono text-muted-foreground border-b border-border focus:outline-none focus:border-accent pb-1"
+        className="w-full bg-transparent text-xs font-mono text-muted-foreground border-b border-border focus:outline-none focus:border-foreground pb-2"
       />
 
       <div>
-        <div className="font-mono text-[11px] uppercase tracking-wider text-muted-foreground mb-1">Summary</div>
+        <div className="label-eyebrow mb-2">Summary</div>
         <textarea
           value={cv.summary}
           onChange={(e) => set({ summary: e.target.value })}
           rows={4}
-          className="w-full bg-input border border-border rounded p-2 text-sm"
+          className="w-full bg-card border border-border focus:border-foreground p-3 text-sm focus:outline-none"
         />
       </div>
 
       <div>
-        <div className="font-mono text-[11px] uppercase tracking-wider text-muted-foreground mb-2">Experience</div>
-        <div className="space-y-4">
+        <div className="label-eyebrow mb-3">Experience</div>
+        <div className="space-y-6">
           {cv.experience.map((exp, i) => (
-            <div key={i} className="border border-border rounded p-3">
+            <div key={i} className="border-b border-border pb-4">
               <input
                 value={`${exp.role} — ${exp.company}`}
                 onChange={(e) => {
@@ -177,7 +169,7 @@ function TailoredEditor({ cv, onChange }: { cv: TailoredCV; onChange: (c: Tailor
                   next[i] = { ...exp, role: role ?? "", company: company ?? "" };
                   set({ experience: next });
                 }}
-                className="w-full bg-transparent font-medium text-sm focus:outline-none"
+                className="w-full bg-transparent font-display text-lg focus:outline-none"
               />
               <input
                 value={exp.duration}
@@ -189,8 +181,8 @@ function TailoredEditor({ cv, onChange }: { cv: TailoredCV; onChange: (c: Tailor
                 className="w-full bg-transparent text-xs text-muted-foreground focus:outline-none mb-2"
               />
               {exp.bullets.map((b, j) => (
-                <div key={j} className="flex gap-2 mt-1">
-                  <span className="text-muted-foreground">•</span>
+                <div key={j} className="flex gap-2 mt-2">
+                  <span className="text-muted-foreground pt-1">•</span>
                   <textarea
                     value={b}
                     onChange={(e) => {
@@ -199,7 +191,7 @@ function TailoredEditor({ cv, onChange }: { cv: TailoredCV; onChange: (c: Tailor
                       set({ experience: next });
                     }}
                     rows={2}
-                    className="flex-1 bg-input/50 border border-border rounded p-1.5 text-sm"
+                    className="flex-1 bg-transparent border-b border-border focus:border-foreground p-1 text-sm focus:outline-none"
                   />
                 </div>
               ))}
@@ -209,12 +201,12 @@ function TailoredEditor({ cv, onChange }: { cv: TailoredCV; onChange: (c: Tailor
       </div>
 
       <div>
-        <div className="font-mono text-[11px] uppercase tracking-wider text-muted-foreground mb-2">Skills</div>
+        <div className="label-eyebrow mb-2">Skills</div>
         <textarea
           value={cv.skills.join(", ")}
           onChange={(e) => set({ skills: e.target.value.split(",").map((s) => s.trim()).filter(Boolean) })}
           rows={2}
-          className="w-full bg-input border border-border rounded p-2 text-sm"
+          className="w-full bg-card border border-border focus:border-foreground p-3 text-sm focus:outline-none"
         />
       </div>
     </div>

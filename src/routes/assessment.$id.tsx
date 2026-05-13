@@ -176,7 +176,7 @@ function AssessmentView() {
                 <tr className="border-b border-foreground">
                   <th className="label-eyebrow text-left py-3 pr-6 align-bottom w-[35%]">Job requirement</th>
                   <th className="label-eyebrow text-left py-3 pr-6 align-bottom">Evidence from CV</th>
-                  <th className="label-eyebrow text-left py-3 align-bottom w-[110px]">Rating</th>
+                  <th className="label-eyebrow text-left py-3 align-bottom w-[180px]">Rating</th>
                 </tr>
               </thead>
               <tbody>
@@ -184,7 +184,13 @@ function AssessmentView() {
                   <tr key={i} className="border-b border-border align-top">
                     <td className="py-5 pr-6 font-display text-lg leading-snug">{r.requirement}</td>
                     <td className="py-5 pr-6 text-sm text-muted-foreground leading-relaxed">{r.evidence}</td>
-                    <td className="py-5"><MatchPill strength={r.match_strength} /></td>
+                    <td className="py-5">
+                      <RatingCorrector
+                        original={r.match_strength}
+                        corrected={feedback[r.requirement]}
+                        onChange={(v) => submitCorrection(r, v)}
+                      />
+                    </td>
                   </tr>
                 ))}
               </tbody>

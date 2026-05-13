@@ -265,6 +265,19 @@ function FitBadge({ score, label }: { score: number; label: string }) {
   );
 }
 
+function PriorityPill({ value }: { value: string }) {
+  const map: Record<string, string> = {
+    High: "border-destructive/40 text-destructive bg-destructive/5",
+    Medium: "border-warning/40 text-warning bg-warning/5",
+    Low: "border-border text-muted-foreground",
+  };
+  return (
+    <span className={`text-[10px] font-mono uppercase tracking-wider px-2 py-1 border rounded ${map[value] ?? "border-border text-muted-foreground"}`}>
+      {value}
+    </span>
+  );
+}
+
 function MatchPill({ strength }: { strength: string }) {
   const map: Record<string, string> = {
     Strong: "border-success/40 text-success bg-success/5",

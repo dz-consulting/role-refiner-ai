@@ -5,7 +5,9 @@ Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   // Debug: ping Langfuse directly so we can see auth/schema errors.
-  if (req.headers.get("x-debug") === "langfuse") {
+  let bodyJson: any = {};
+  try { bodyJson = await req.json(); } catch (_) {}
+  if (bodyJson?.debug === "langfuse") {
     const pub = Deno.env.get("LANGFUSE_PUBLIC_KEY") ?? "";
     const sec = Deno.env.get("LANGFUSE_SECRET_KEY") ?? "";
     const now = new Date().toISOString();

@@ -108,7 +108,7 @@ If you genuinely don't recognize the company, say "Unknown company" in what_they
           profile: JSON.stringify(profile, null, 2),
           jobDescription: jobDescription.slice(0, 20000),
         },
-        maxTokens: 4000,
+        maxTokens: 8000,
         functionName: "assess-job.fit-assessment",
       }),
       callClaude({

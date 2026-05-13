@@ -150,4 +150,22 @@
     text-transform: uppercase;
     color: var(--color-muted-foreground);
   }
+  /* Small monospace tag/pill — used for ratings, priority, chips */
+  .label-tag {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 2px 8px;
+    border: 1px solid var(--color-border);
+    color: var(--color-muted-foreground);
+    display: inline-block;
+    line-height: 1.4;
+  }
+  /* Hint/caption — small muted descriptive text */
+  .text-caption {
+    font-size: 13px;
+    line-height: 1.55;
+    color: var(--color-muted-foreground);
+  }
 }

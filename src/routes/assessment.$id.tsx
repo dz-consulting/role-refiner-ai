@@ -26,14 +26,14 @@ function AssessmentView() {
   if (loading) {
     return (
       <div className="min-h-screen"><AppHeader />
-        <div className="max-w-5xl mx-auto p-8 font-mono text-xs text-muted-foreground">Loading...</div>
+        <div className="max-w-3xl mx-auto px-8 py-24 text-sm text-muted-foreground">Loading…</div>
       </div>
     );
   }
   if (!a) {
     return (
       <div className="min-h-screen"><AppHeader />
-        <div className="max-w-5xl mx-auto p-8">Assessment not found.</div>
+        <div className="max-w-3xl mx-auto px-8 py-24">Assessment not found.</div>
       </div>
     );
   }
@@ -57,144 +57,133 @@ function AssessmentView() {
   return (
     <div className="min-h-screen">
       <AppHeader />
-      <main className="max-w-5xl mx-auto px-8 py-10">
+      <main className="max-w-3xl mx-auto px-8 py-16">
         <Link to="/dashboard" className="text-xs font-mono text-muted-foreground hover:text-foreground">
           ← Dashboard
         </Link>
 
-        <div className="mt-4 flex items-baseline justify-between gap-6">
-          <div>
-            <h1 className="font-display text-4xl tracking-tight">{a.role_title || "Untitled role"}</h1>
-            <div className="text-muted-foreground mt-1">{a.company || "—"}</div>
+        {/* Hero */}
+        <header className="mt-12">
+          <div className="label-eyebrow">{a.company || "—"}</div>
+          <h1 className="font-display text-5xl mt-3 leading-[1.05]">{a.role_title || "Untitled role"}</h1>
+
+          <div className="mt-12 flex items-baseline gap-6 border-t border-foreground pt-8">
+            <div className="font-display text-7xl tabular-nums leading-none">
+              {formatFitScore(a.fit_score)}
+              <span className="text-3xl text-muted-foreground">/10</span>
+            </div>
+            <div>
+              <div className="label-eyebrow">{a.fit_label}</div>
+              <div className="font-serif-italic text-lg mt-2 text-muted-foreground">Fit score</div>
+            </div>
           </div>
-          <FitBadge score={a.fit_score} label={a.fit_label} />
-        </div>
 
-        <p className="mt-6 text-lg leading-relaxed border-l-2 border-accent pl-5">
-          {a.fit_summary}
-        </p>
+          <p className="mt-10 font-display text-2xl leading-snug max-w-2xl">
+            {a.fit_summary}
+          </p>
+        </header>
 
+        {/* Quick jump to action items */}
         <a
           href="#action-items"
-          className="mt-6 flex items-center justify-between gap-4 border border-border bg-surface rounded-md px-5 py-4 hover:bg-background/40 transition-colors"
+          className="mt-12 flex items-baseline justify-between gap-4 border-b border-border pb-4 hover:text-foreground transition-colors group"
         >
-          <div>
-            <div className="font-mono text-[11px] uppercase tracking-[0.18em] text-accent">Action items</div>
-            <div className="text-sm text-muted-foreground mt-1">Review {actionItems.length} next steps to close gaps.</div>
-          </div>
-          <span className="font-mono text-xs text-muted-foreground">Jump ↓</span>
+          <span className="font-display text-lg">
+            {actionItems.length} next steps to close gaps
+          </span>
+          <span className="text-xs font-mono text-muted-foreground group-hover:text-foreground">Read ↓</span>
         </a>
 
-        {/* Section A: Job Decoder */}
-        <Section title="Job decoder" letter="A">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Tile label="Company AI maturity">
-              <div className="font-display text-2xl capitalize">{dec.ai_maturity ?? "—"}</div>
-              <div className="text-sm text-muted-foreground mt-1">{dec.ai_maturity_reason}</div>
-            </Tile>
-            <Tile label="Real seniority">
-              <div className="font-display text-2xl">{dec.real_seniority ?? "—"}</div>
-            </Tile>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-            <Tile label="Unstated requirements">
-              <ul className="space-y-1.5 mt-1 text-sm">
-                {(dec.unstated_requirements ?? []).map((r: string, i: number) => (
-                  <li key={i} className="flex gap-2"><span className="text-accent">→</span>{r}</li>
+        {/* 01 — Job decoder */}
+        <Section number="01" title="Job decoder">
+          <DefList>
+            <DefRow label="Company AI maturity" value={<span className="capitalize">{dec.ai_maturity ?? "—"}</span>} note={dec.ai_maturity_reason} />
+            <DefRow label="Real seniority" value={dec.real_seniority ?? "—"} />
+          </DefList>
+
+          {Array.isArray(dec.unstated_requirements) && dec.unstated_requirements.length > 0 && (
+            <SubSection title="Unstated requirements">
+              <ul className="space-y-2">
+                {dec.unstated_requirements.map((r: string, i: number) => (
+                  <li key={i} className="flex gap-3"><span className="text-muted-foreground font-mono text-xs pt-1">→</span><span>{r}</span></li>
                 ))}
               </ul>
-            </Tile>
-            <Tile label="Red flags">
-              {(dec.red_flags ?? []).length === 0 ? (
-                <div className="text-sm text-muted-foreground">None.</div>
-              ) : (
-                <ul className="space-y-1.5 mt-1 text-sm">
-                  {dec.red_flags.map((r: string, i: number) => (
-                    <li key={i} className="flex gap-2"><span className="text-destructive">!</span>{r}</li>
-                  ))}
-                </ul>
-              )}
-            </Tile>
-          </div>
+            </SubSection>
+          )}
+
+          {Array.isArray(dec.red_flags) && dec.red_flags.length > 0 && (
+            <SubSection title="Red flags">
+              <ul className="space-y-2">
+                {dec.red_flags.map((r: string, i: number) => (
+                  <li key={i} className="flex gap-3"><span className="text-destructive font-mono text-xs pt-1">!</span><span>{r}</span></li>
+                ))}
+              </ul>
+            </SubSection>
+          )}
         </Section>
 
-        {/* Section B: Company Intelligence — only after user decides to apply */}
+        {/* 02 — Company intelligence */}
         {a.intent_to_apply ? (
           <CompanyIntelligence intel={a.company_intel} />
         ) : (
-          <Section title="Company intelligence" letter="B">
-            <div className="border border-border bg-surface rounded-md p-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-              <div className="text-sm text-muted-foreground max-w-md">
-                Deep dive on the company — what they actually do, health signals, AI maturity, hiring manager intel and culture watch-outs. Unlock when you've decided this role is worth pursuing.
-              </div>
-              <button
-                onClick={unlockIntel}
-                className="bg-accent text-accent-foreground font-medium px-5 py-2.5 rounded-md hover:opacity-90 text-sm shrink-0"
-              >
-                I'm applying — show intel
-              </button>
-            </div>
+          <Section number="02" title="Company intelligence">
+            <p className="text-muted-foreground max-w-xl">
+              Deep dive on the company — what they actually do, health signals, AI maturity, hiring manager intel and culture watch-outs. Unlock when you've decided this role is worth pursuing.
+            </p>
+            <button
+              onClick={unlockIntel}
+              className="mt-6 bg-foreground text-background px-6 py-3 hover:opacity-90"
+            >
+              I'm applying — show intel →
+            </button>
           </Section>
         )}
-        {/* Section C: Requirements */}
-        <Section title="Requirement breakdown" letter="C">
-          <div className="border border-border rounded-md bg-surface overflow-hidden">
-            <div className="grid grid-cols-[1fr_1.5fr_120px] gap-4 px-5 py-3 border-b border-border font-mono text-[11px] uppercase tracking-wider text-muted-foreground">
-              <div>Requirement</div>
-              <div>Evidence from your CV</div>
-              <div className="text-right">Match</div>
-            </div>
+
+        {/* 03 — Requirements */}
+        <Section number="03" title="Requirement breakdown">
+          <ul>
             {reqs.map((r, i) => (
-              <div key={i} className="grid grid-cols-[1fr_1.5fr_120px] gap-4 px-5 py-4 border-b border-border last:border-0 text-sm">
-                <div className="font-medium">{r.requirement}</div>
-                <div className="text-muted-foreground">{r.evidence}</div>
-                <div className="text-right">
-                  <MatchPill strength={r.match_strength} />
+              <li key={i} className="grid grid-cols-[1fr_auto] gap-4 items-baseline border-b border-border py-5">
+                <div>
+                  <div className="font-display text-lg">{r.requirement}</div>
+                  <div className="text-sm text-muted-foreground mt-1.5 leading-relaxed">{r.evidence}</div>
                 </div>
-              </div>
+                <MatchPill strength={r.match_strength} />
+              </li>
             ))}
-          </div>
+          </ul>
         </Section>
 
-        {/* Section D: Screening risks */}
-        <Section title="Screening risks" letter="D">
-          <div className="border border-destructive/30 bg-destructive/5 rounded-md p-5">
-            <ul className="space-y-3">
+        {/* 04 — Screening risks */}
+        {risks.length > 0 && (
+          <Section number="04" title="Screening risks">
+            <ol className="space-y-5">
               {risks.map((r, i) => (
-                <li key={i} className="flex gap-3 text-sm">
-                  <span className="font-mono text-destructive font-bold">{String(i + 1).padStart(2, "0")}</span>
-                  <span>{r}</span>
+                <li key={i} className="flex gap-5">
+                  <span className="font-display text-2xl tabular-nums text-muted-foreground">{String(i + 1).padStart(2, "0")}</span>
+                  <span className="pt-1 leading-relaxed">{r}</span>
                 </li>
               ))}
-            </ul>
-          </div>
-        </Section>
+            </ol>
+          </Section>
+        )}
 
-        {/* Section E: Action items */}
-        <Section title="Action items to close gaps" letter="E" id="action-items">
+        {/* 05 — Action items */}
+        <Section number="05" title="Action items to close gaps" id="action-items">
           {actionItems.length > 0 ? (
-            <div className="border border-border rounded-md bg-surface overflow-hidden">
-              {savedActionItems.length === 0 && (
-                <div className="px-5 py-3 border-b border-border text-xs text-muted-foreground">
-                  Generated from the gaps and risks in this assessment.
-                </div>
-              )}
+            <ul>
               {actionItems.map((item: any, i: number) => (
-                <div key={i} className="px-5 py-4 border-b border-border last:border-0">
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="flex gap-3 items-baseline">
-                      <span className="font-mono text-[11px] text-muted-foreground tabular-nums">{String(i + 1).padStart(2, "0")}</span>
-                      <div>
-                        <div className="font-medium text-sm">{item.title}</div>
-                        {item.detail && <div className="text-sm text-muted-foreground mt-1 leading-relaxed">{item.detail}</div>}
-                        {item.addresses && (
-                          <div className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground mt-2">
-                            Closes: {item.addresses}
-                          </div>
-                        )}
-                      </div>
+                <li key={i} className="border-b border-border py-6">
+                  <div className="grid grid-cols-[auto_1fr_auto] gap-5 items-baseline">
+                    <span className="font-display text-2xl tabular-nums text-muted-foreground">{String(i + 1).padStart(2, "0")}</span>
+                    <div>
+                      <div className="font-display text-lg leading-snug">{item.title}</div>
+                      {item.detail && <div className="text-sm text-muted-foreground mt-2 leading-relaxed">{item.detail}</div>}
+                      {item.addresses && (
+                        <div className="label-eyebrow mt-3">Closes · {item.addresses}</div>
+                      )}
                     </div>
-                    <div className="flex flex-col items-end gap-1 shrink-0">
+                    <div className="flex flex-col items-end gap-1.5 shrink-0">
                       {item.priority && <PriorityPill value={item.priority} />}
                       {item.effort && (
                         <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground">
@@ -203,34 +192,34 @@ function AssessmentView() {
                       )}
                     </div>
                   </div>
-                </div>
+                </li>
               ))}
-            </div>
+            </ul>
           ) : (
-            <div className="border border-border rounded-md bg-surface p-5 text-sm text-muted-foreground">
-              No action items were saved for this assessment. Run a new assessment to generate tailored next steps.
-            </div>
+            <p className="text-muted-foreground italic font-display text-lg">
+              No action items for this assessment.
+            </p>
           )}
         </Section>
 
         {/* Actions */}
-        <div className="mt-12 flex flex-wrap items-center gap-3 border-t border-border pt-6">
+        <div className="mt-24 pt-12 border-t border-foreground flex flex-wrap items-center gap-6">
           <Link
             to="/tailor/$id"
             params={{ id }}
-            className="bg-accent text-accent-foreground font-medium px-5 py-2.5 rounded-md hover:opacity-90"
+            className="bg-foreground text-background px-6 py-3 hover:opacity-90"
           >
             Tailor my CV for this role →
           </Link>
           <button
             onClick={() => updateStatus("applied")}
-            className="border border-border px-5 py-2.5 rounded-md hover:bg-surface text-sm"
+            className="text-sm underline underline-offset-4 hover:text-foreground text-muted-foreground"
           >
             Save to tracker
           </button>
           <button
             onClick={() => updateStatus("skipped")}
-            className="text-muted-foreground hover:text-foreground px-3 py-2.5 text-sm"
+            className="text-sm text-muted-foreground hover:text-foreground"
           >
             Not a fit, skip
           </button>
@@ -240,25 +229,39 @@ function AssessmentView() {
   );
 }
 
-function Section({ title, letter, children, id }: { title: string; letter: string; children: React.ReactNode; id?: string }) {
+function Section({ number, title, children, id }: { number: string; title: string; children: React.ReactNode; id?: string }) {
   return (
-    <section id={id} className="mt-12 scroll-mt-8">
-      <div className="flex items-baseline gap-3 mb-4">
-        <span className="font-mono text-[11px] uppercase tracking-[0.18em] text-accent">Section {letter}</span>
-        <h2 className="font-display text-2xl">{title}</h2>
+    <section id={id} className="mt-24 scroll-mt-8">
+      <div className="flex items-baseline gap-4 mb-8">
+        <span className="font-mono text-xs text-muted-foreground tabular-nums">{number}</span>
+        <h2 className="font-display text-3xl">{title}</h2>
       </div>
       {children}
     </section>
   );
 }
 
-function Tile({ label, children }: { label: string; children: React.ReactNode }) {
+function SubSection({ title, children }: { title: string; children: ReactNode }) {
   return (
-    <div className="border border-border bg-surface rounded-md p-5">
-      <div className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground mb-2">
-        {label}
-      </div>
+    <div className="mt-8">
+      <div className="label-eyebrow mb-3">{title}</div>
       {children}
+    </div>
+  );
+}
+
+function DefList({ children }: { children: ReactNode }) {
+  return <dl>{children}</dl>;
+}
+
+function DefRow({ label, value, note }: { label: string; value: ReactNode; note?: string }) {
+  return (
+    <div className="grid grid-cols-[180px_1fr] gap-6 py-5 border-b border-border items-baseline">
+      <dt className="label-eyebrow">{label}</dt>
+      <dd>
+        <div className="font-display text-xl">{value}</div>
+        {note && <div className="text-sm text-muted-foreground mt-1.5 leading-relaxed">{note}</div>}
+      </dd>
     </div>
   );
 }
@@ -270,31 +273,14 @@ function formatFitScore(score: number | null | undefined) {
   return Number.isInteger(rounded) ? rounded.toString() : rounded.toFixed(1);
 }
 
-function FitBadge({ score, label }: { score: number; label: string }) {
-  const tone =
-    label === "STRONG FIT"
-      ? "border-success text-success"
-      : label === "PARTIAL FIT"
-      ? "border-warning text-warning"
-      : "border-destructive text-destructive";
-  return (
-    <div className={`border-2 rounded-md p-5 text-right min-w-[180px] ${tone}`}>
-      <div className="font-display text-5xl tabular-nums leading-none">
-        {formatFitScore(score)}<span className="text-2xl text-muted-foreground">/10</span>
-      </div>
-      <div className="font-mono text-[11px] uppercase tracking-[0.18em] mt-2">{label}</div>
-    </div>
-  );
-}
-
 function PriorityPill({ value }: { value: string }) {
   const map: Record<string, string> = {
-    High: "border-destructive/40 text-destructive bg-destructive/5",
-    Medium: "border-warning/40 text-warning bg-warning/5",
+    High: "border-destructive text-destructive",
+    Medium: "border-warning text-warning",
     Low: "border-border text-muted-foreground",
   };
   return (
-    <span className={`text-[10px] font-mono uppercase tracking-wider px-2 py-1 border rounded ${map[value] ?? "border-border text-muted-foreground"}`}>
+    <span className={`text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 border ${map[value] ?? "border-border text-muted-foreground"}`}>
       {value}
     </span>
   );
@@ -302,12 +288,12 @@ function PriorityPill({ value }: { value: string }) {
 
 function MatchPill({ strength }: { strength: string }) {
   const map: Record<string, string> = {
-    Strong: "border-success/40 text-success bg-success/5",
-    Partial: "border-warning/40 text-warning bg-warning/5",
-    Gap: "border-destructive/40 text-destructive bg-destructive/5",
+    Strong: "border-success text-success",
+    Partial: "border-warning text-warning",
+    Gap: "border-destructive text-destructive",
   };
   return (
-    <span className={`text-[10px] font-mono uppercase tracking-wider px-2 py-1 border rounded ${map[strength] ?? "border-border text-muted-foreground"}`}>
+    <span className={`text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 border ${map[strength] ?? "border-border text-muted-foreground"}`}>
       {strength}
     </span>
   );
@@ -339,10 +325,8 @@ function buildFallbackActionItems(requirements: any[], risks: string[]) {
 function CompanyIntelligence({ intel }: { intel: any }) {
   if (!intel) {
     return (
-      <Section title="Company intelligence" letter="B">
-        <div className="border border-border bg-surface rounded-md p-5 text-sm text-muted-foreground">
-          Company intelligence unavailable for this assessment.
-        </div>
+      <Section number="02" title="Company intelligence">
+        <p className="text-muted-foreground italic font-display text-lg">Company intelligence unavailable for this assessment.</p>
       </Section>
     );
   }
@@ -354,126 +338,102 @@ function CompanyIntelligence({ intel }: { intel: any }) {
   const culture = intel.culture ?? {};
 
   return (
-    <Section title="Company intelligence" letter="B">
-      <div className="space-y-3">
-        <IntelCard title="What they actually do" defaultOpen>
-          <p className="text-sm leading-relaxed">{wtd.summary ?? "—"}</p>
+    <Section number="02" title="Company intelligence">
+      <div>
+        <IntelBlock title="What they actually do" defaultOpen>
+          <p className="leading-relaxed">{wtd.summary ?? "—"}</p>
           <div className="flex flex-wrap gap-2 mt-3">
             {wtd.business_model && <Chip>{wtd.business_model}</Chip>}
             {wtd.stage && <Chip>{wtd.stage}</Chip>}
           </div>
-        </IntelCard>
+        </IntelBlock>
 
-        <IntelCard title="Company health">
+        <IntelBlock title="Company health">
           <Row label="Funding">{health.funding_status ?? "Unknown"}</Row>
           <Row label="Headcount">{health.headcount_trend ?? "Unknown"}</Row>
           {Array.isArray(health.recent_news) && health.recent_news.length > 0 && (
-            <div className="mt-3">
-              <div className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground mb-1.5">
-                Recent
-              </div>
-              <ul className="space-y-1.5 text-sm">
+            <SubSection title="Recent">
+              <ul className="space-y-2">
                 {health.recent_news.map((n: string, i: number) => (
-                  <li key={i} className="flex gap-2"><span className="text-accent">→</span>{n}</li>
+                  <li key={i} className="flex gap-3"><span className="text-muted-foreground font-mono text-xs pt-1">→</span><span>{n}</span></li>
                 ))}
               </ul>
-            </div>
+            </SubSection>
           )}
           <FlagsGrid green={health.green_flags} red={health.red_flags} />
-        </IntelCard>
+        </IntelBlock>
 
-        <IntelCard title="AI maturity signal">
-          <div className="flex items-center gap-3 mb-3">
-            <span className="font-display text-xl">{ai.rating ?? "—"}</span>
-          </div>
-          {ai.evidence && <p className="text-sm leading-relaxed text-muted-foreground">{ai.evidence}</p>}
+        <IntelBlock title="AI maturity signal">
+          <div className="font-display text-2xl mb-2">{ai.rating ?? "—"}</div>
+          {ai.evidence && <p className="leading-relaxed text-muted-foreground">{ai.evidence}</p>}
           {ai.why_it_matters && (
-            <div className="mt-3 border-l-2 border-accent pl-4 text-sm leading-relaxed">
-              <span className="font-mono text-[11px] uppercase tracking-[0.18em] text-accent block mb-1">
-                Why this matters for you
-              </span>
-              {ai.why_it_matters}
+            <div className="mt-4 border-l-2 border-foreground pl-4">
+              <div className="label-eyebrow mb-1">Why this matters for you</div>
+              <p className="leading-relaxed">{ai.why_it_matters}</p>
             </div>
           )}
-        </IntelCard>
+        </IntelBlock>
 
-        <IntelCard title="Hiring manager intel">
+        <IntelBlock title="Hiring manager intel">
           {hm.name ? (
             <>
               <Row label="Name">{hm.name}</Row>
               {hm.tenure && <Row label="Tenure">{hm.tenure}</Row>}
-              {hm.background && <p className="text-sm mt-3 leading-relaxed">{hm.background}</p>}
+              {hm.background && <p className="mt-3 leading-relaxed">{hm.background}</p>}
               {hm.recent_focus && (
-                <div className="mt-3 text-sm">
-                  <span className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground block mb-1">
-                    Recent focus
-                  </span>
-                  {hm.recent_focus}
-                </div>
+                <SubSection title="Recent focus">
+                  <p className="leading-relaxed">{hm.recent_focus}</p>
+                </SubSection>
               )}
             </>
           ) : (
             <>
-              <div className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground mb-2">
-                No hiring manager named — founding team
-              </div>
-              <p className="text-sm leading-relaxed">{hm.founding_team_fallback ?? "Unknown"}</p>
+              <div className="label-eyebrow mb-2">No hiring manager named — founding team</div>
+              <p className="leading-relaxed">{hm.founding_team_fallback ?? "Unknown"}</p>
             </>
           )}
-        </IntelCard>
+        </IntelBlock>
 
-        <IntelCard title="Culture signals">
-          {culture.employee_signal && (
-            <p className="text-sm leading-relaxed">{culture.employee_signal}</p>
-          )}
+        <IntelBlock title="Culture signals">
+          {culture.employee_signal && <p className="leading-relaxed">{culture.employee_signal}</p>}
           {culture.work_style && (
-            <div className="mt-3 text-sm">
-              <span className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground block mb-1">
-                Work style
-              </span>
-              {culture.work_style}
-            </div>
+            <SubSection title="Work style"><p className="leading-relaxed">{culture.work_style}</p></SubSection>
           )}
           {Array.isArray(culture.watch_outs) && culture.watch_outs.length > 0 && (
-            <div className="mt-3">
-              <div className="font-mono text-[11px] uppercase tracking-[0.18em] text-destructive mb-1.5">
-                Watch-outs
-              </div>
-              <ul className="space-y-1.5 text-sm">
+            <SubSection title="Watch-outs">
+              <ul className="space-y-2">
                 {culture.watch_outs.map((w: string, i: number) => (
-                  <li key={i} className="flex gap-2"><span className="text-destructive">!</span>{w}</li>
+                  <li key={i} className="flex gap-3"><span className="text-destructive font-mono text-xs pt-1">!</span><span>{w}</span></li>
                 ))}
               </ul>
-            </div>
+            </SubSection>
           )}
-        </IntelCard>
+        </IntelBlock>
       </div>
     </Section>
   );
 }
 
-function IntelCard({ title, children, defaultOpen = false }: { title: string; children: ReactNode; defaultOpen?: boolean }) {
+function IntelBlock({ title, children, defaultOpen = false }: { title: string; children: ReactNode; defaultOpen?: boolean }) {
   const [open, setOpen] = useState(defaultOpen);
   return (
-    <div className="border border-border bg-surface rounded-md overflow-hidden">
+    <div className="border-b border-border">
       <button
         onClick={() => setOpen(!open)}
-        className="w-full flex items-center justify-between px-5 py-3.5 hover:bg-background/40 transition-colors"
+        className="w-full flex items-baseline justify-between py-5 hover:text-foreground transition-colors group"
       >
-        <span className="font-display text-base">{title}</span>
-        <span className="font-mono text-xs text-muted-foreground">{open ? "−" : "+"}</span>
+        <span className="font-display text-xl">{title}</span>
+        <span className="font-mono text-sm text-muted-foreground group-hover:text-foreground">{open ? "−" : "+"}</span>
       </button>
-      {open && <div className="px-5 pb-5 pt-1 border-t border-border">{children}</div>}
+      {open && <div className="pb-8 pt-1">{children}</div>}
     </div>
   );
 }
 
 function Row({ label, children }: { label: string; children: ReactNode }) {
   return (
-    <div className="flex gap-4 text-sm py-1.5">
-      <div className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground w-28 pt-0.5 shrink-0">
-        {label}
-      </div>
+    <div className="grid grid-cols-[140px_1fr] gap-4 py-2">
+      <div className="label-eyebrow pt-1">{label}</div>
       <div>{children}</div>
     </div>
   );
@@ -481,7 +441,7 @@ function Row({ label, children }: { label: string; children: ReactNode }) {
 
 function Chip({ children }: { children: ReactNode }) {
   return (
-    <span className="text-[10px] font-mono uppercase tracking-wider px-2 py-1 border border-border rounded text-muted-foreground">
+    <span className="text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 border border-border text-muted-foreground">
       {children}
     </span>
   );
@@ -492,20 +452,20 @@ function FlagsGrid({ green, red }: { green?: string[]; red?: string[] }) {
   const hasRed = Array.isArray(red) && red.length > 0;
   if (!hasGreen && !hasRed) return null;
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-6">
       {hasGreen && (
         <div>
-          <div className="font-mono text-[11px] uppercase tracking-[0.18em] text-success mb-1.5">Green flags</div>
-          <ul className="space-y-1.5 text-sm">
-            {green!.map((g, i) => <li key={i} className="flex gap-2"><span className="text-success">✓</span>{g}</li>)}
+          <div className="label-eyebrow mb-2" style={{ color: "var(--color-success)" }}>Green flags</div>
+          <ul className="space-y-2">
+            {green!.map((g, i) => <li key={i} className="flex gap-3"><span className="text-success font-mono text-xs pt-1">✓</span><span>{g}</span></li>)}
           </ul>
         </div>
       )}
       {hasRed && (
         <div>
-          <div className="font-mono text-[11px] uppercase tracking-[0.18em] text-destructive mb-1.5">Red flags</div>
-          <ul className="space-y-1.5 text-sm">
-            {red!.map((r, i) => <li key={i} className="flex gap-2"><span className="text-destructive">!</span>{r}</li>)}
+          <div className="label-eyebrow mb-2" style={{ color: "var(--color-destructive)" }}>Red flags</div>
+          <ul className="space-y-2">
+            {red!.map((r, i) => <li key={i} className="flex gap-3"><span className="text-destructive font-mono text-xs pt-1">!</span><span>{r}</span></li>)}
           </ul>
         </div>
       )}

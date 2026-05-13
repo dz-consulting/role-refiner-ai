@@ -33,11 +33,11 @@ async function sendToLangfuse(payload: object) {
       },
       body: JSON.stringify(payload),
     });
+    const body = await res.text();
     if (!res.ok) {
-      const body = await res.text();
       console.error(`Langfuse ingestion failed: ${res.status} ${body}`);
     } else {
-      console.log(`Langfuse ingestion ok: ${res.status}`);
+      console.log(`Langfuse ingestion ${res.status}: ${body}`);
     }
   } catch (err) {
     console.error("Langfuse logging failed (non-fatal):", err);

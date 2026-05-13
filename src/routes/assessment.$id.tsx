@@ -51,6 +51,7 @@ function AssessmentView() {
   const dec = a.job_decoder ?? {};
   const reqs: any[] = Array.isArray(a.requirements) ? a.requirements : [];
   const risks: string[] = Array.isArray(a.screening_risks) ? a.screening_risks : [];
+  const actionItems: any[] = Array.isArray(a.action_items) ? a.action_items : [];
 
   return (
     <div className="min-h-screen">
@@ -158,10 +159,10 @@ function AssessmentView() {
         </Section>
 
         {/* Section E: Action items */}
-        {Array.isArray(a.action_items) && a.action_items.length > 0 && (
-          <Section title="Action items to close gaps" letter="E">
+        <Section title="Action items to close gaps" letter="E">
+          {actionItems.length > 0 ? (
             <div className="border border-border rounded-md bg-surface overflow-hidden">
-              {a.action_items.map((item: any, i: number) => (
+              {actionItems.map((item: any, i: number) => (
                 <div key={i} className="px-5 py-4 border-b border-border last:border-0">
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex gap-3 items-baseline">
@@ -188,8 +189,12 @@ function AssessmentView() {
                 </div>
               ))}
             </div>
-          </Section>
-        )}
+          ) : (
+            <div className="border border-border rounded-md bg-surface p-5 text-sm text-muted-foreground">
+              No action items were saved for this assessment. Run a new assessment to generate tailored next steps.
+            </div>
+          )}
+        </Section>
 
         {/* Actions */}
         <div className="mt-12 flex flex-wrap items-center gap-3 border-t border-border pt-6">

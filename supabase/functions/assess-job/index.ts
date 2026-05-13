@@ -21,11 +21,11 @@ Deno.serve(async (req) => {
     const assessPrompt = `You will assess fit between this user's CV profile and a specific job description. Return ONLY valid JSON, no markdown.
 
 CV PROFILE:
-${JSON.stringify(profile, null, 2)}
+{{profile}}
 
 JOB DESCRIPTION:
 """
-${jobDescription.slice(0, 20000)}
+{{jobDescription}}
 """
 
 Return JSON exactly matching this schema:
@@ -58,11 +58,11 @@ Generate 4-7 concrete, specific action_items the candidate can take to close gap
 Use what you know about the company from the JD and your training knowledge. Be honest about uncertainty: when you don't know, say "Unknown" or null rather than inventing facts. Do NOT regurgitate marketing copy.
 
 CANDIDATE BACKGROUND (for the "why this matters" angle):
-${JSON.stringify({ title: profile.title, years_experience: profile.years_experience, skills: profile.skills?.slice?.(0, 20) }, null, 2)}
+{{candidateBackground}}
 
 JOB DESCRIPTION:
 """
-${jobDescription.slice(0, 20000)}
+{{jobDescription}}
 """
 
 Return JSON exactly matching this schema:
@@ -101,8 +101,26 @@ Return JSON exactly matching this schema:
 If you genuinely don't recognize the company, say "Unknown company" in what_they_do.summary and use Unknown / null / [] throughout. Do not fabricate.`;
 
     const [assessRaw, intelRaw] = await Promise.all([
-      callClaude({ userPrompt: assessPrompt, maxTokens: 4000, functionName: "assess-job.fit-assessment" }),
-      callClaude({ userPrompt: intelPrompt, maxTokens: 3000, functionName: "assess-job.company-intel" }),
+      callClaude({
+        promptName: "assess-job.fit-assessment",
+        userPrompt: assessPrompt,
+        variables: {
+          profile: JSON.stringify(profile, null, 2),
+          jobDescription: jobDescription.slice(0, 20000),
+        },
+        maxTokens: 4000,
+        functionName: "assess-job.fit-assessment",
+      }),
+      callClaude({
+        promptName: "assess-job.company-intel",
+        userPrompt: intelPrompt,
+        variables: {
+          candidateBackground: JSON.stringify({ title: profile.title, years_experience: profile.years_experience, skills: profile.skills?.slice?.(0, 20) }, null, 2),
+          jobDescription: jobDescription.slice(0, 20000),
+        },
+        maxTokens: 3000,
+        functionName: "assess-job.company-intel",
+      }),
     ]);
 
     const result = extractJson(assessRaw);

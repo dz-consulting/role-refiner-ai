@@ -16,6 +16,7 @@ export type Database = {
     Tables: {
       assessments: {
         Row: {
+          action_items: Json | null
           company: string | null
           company_intel: Json | null
           created_at: string
@@ -35,6 +36,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          action_items?: Json | null
           company?: string | null
           company_intel?: Json | null
           created_at?: string
@@ -54,6 +56,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          action_items?: Json | null
           company?: string | null
           company_intel?: Json | null
           created_at?: string

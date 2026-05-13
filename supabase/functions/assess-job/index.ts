@@ -45,10 +45,13 @@ Return JSON exactly matching this schema:
   "requirements": [
     { "requirement": string, "evidence": string, "match_strength": "Strong" | "Partial" | "Gap" }
   ],
-  "screening_risks": string[]
+  "screening_risks": string[],
+  "action_items": [
+    { "title": string, "detail": string, "priority": "High" | "Medium" | "Low", "effort": "Quick" | "Medium" | "Deep", "addresses": string }
+  ]
 }
 
-Be direct. Do not hedge. If the user lacks evidence for a requirement, mark it Gap and say so.`;
+Generate 4-7 concrete, specific action_items the candidate can take to close gaps and increase fit. Each item: a short imperative title, a 1-2 sentence detail with how to do it, a priority, an effort estimate (Quick = under a day, Medium = a few days, Deep = a week+), and "addresses" naming the specific gap, requirement, or screening risk it tackles. Prioritize actions that close Gap requirements and screening risks. Be direct. Do not hedge. If the user lacks evidence for a requirement, mark it Gap and say so.`;
 
     const intelPrompt = `You will produce a company intelligence dossier for a job candidate. Return ONLY valid JSON, no markdown.
 

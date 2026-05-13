@@ -107,6 +107,7 @@ function AssessNew() {
           screening_risks: data.screening_risks,
           action_items: data.action_items,
           company_intel: data.company_intel,
+          langfuse_assess_trace_id: data.langfuse_assess_trace_id,
         }).select("id").single();
       if (insErr) throw insErr;
       nav({ to: "/assessment/$id", params: { id: inserted.id } });

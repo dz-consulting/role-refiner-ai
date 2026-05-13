@@ -262,7 +262,7 @@ function ProfileEditor({
           onClick={onSave}
           className="bg-foreground text-background px-6 py-3 hover:opacity-90"
         >
-          Save and continue →
+          Continue to preferences →
         </button>
       </div>
     </div>

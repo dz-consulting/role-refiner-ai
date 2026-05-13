@@ -107,9 +107,14 @@ function AssessmentView() {
             </div>
           </div>
 
-          <p className="mt-10 font-display text-2xl leading-snug max-w-2xl">
-            {a.fit_summary}
-          </p>
+          <ul className="mt-10 space-y-3 max-w-2xl">
+            {summarizeToBullets(a.fit_summary, 3).map((b, i) => (
+              <li key={i} className="flex gap-3 font-display text-lg leading-snug">
+                <span className="text-muted-foreground font-mono text-xs pt-2">→</span>
+                <span>{b}</span>
+              </li>
+            ))}
+          </ul>
         </header>
 
         {/* Quick jump to action items */}
@@ -308,6 +313,15 @@ function DefRow({ label, value, note }: { label: string; value: ReactNode; note?
       </dd>
     </div>
   );
+}
+
+function summarizeToBullets(text: string | null | undefined, max = 3): string[] {
+  if (!text) return [];
+  const parts = String(text)
+    .split(/(?<=[.!?])\s+|\n+|\s•\s|\s-\s/)
+    .map((s) => s.trim().replace(/^[-•]\s*/, ""))
+    .filter((s) => s.length > 0);
+  return parts.slice(0, max);
 }
 
 function formatFitScore(score: number | null | undefined) {

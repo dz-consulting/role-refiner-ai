@@ -234,11 +234,7 @@ function AssessmentView() {
                     </div>
                     <div className="flex flex-col items-end gap-1.5 shrink-0">
                       {item.priority && <PriorityPill value={item.priority} />}
-                      {item.effort && (
-                        <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground">
-                          {item.effort}
-                        </span>
-                      )}
+                      {item.effort && <span className="label-tag">{item.effort}</span>}
                     </div>
                   </div>
                 </li>

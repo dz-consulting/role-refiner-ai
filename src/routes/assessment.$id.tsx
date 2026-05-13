@@ -51,6 +51,8 @@ function AssessmentView() {
   const dec = a.job_decoder ?? {};
   const reqs: any[] = Array.isArray(a.requirements) ? a.requirements : [];
   const risks: string[] = Array.isArray(a.screening_risks) ? a.screening_risks : [];
+  const savedActionItems: any[] = Array.isArray(a.action_items) ? a.action_items : [];
+  const actionItems: any[] = savedActionItems.length > 0 ? savedActionItems : buildFallbackActionItems(reqs, risks);
 
   return (
     <div className="min-h-screen">
@@ -71,6 +73,17 @@ function AssessmentView() {
         <p className="mt-6 text-lg leading-relaxed border-l-2 border-accent pl-5">
           {a.fit_summary}
         </p>
+
+        <a
+          href="#action-items"
+          className="mt-6 flex items-center justify-between gap-4 border border-border bg-surface rounded-md px-5 py-4 hover:bg-background/40 transition-colors"
+        >
+          <div>
+            <div className="font-mono text-[11px] uppercase tracking-[0.18em] text-accent">Action items</div>
+            <div className="text-sm text-muted-foreground mt-1">Review {actionItems.length} next steps to close gaps.</div>
+          </div>
+          <span className="font-mono text-xs text-muted-foreground">Jump ↓</span>
+        </a>
 
         {/* Section A: Job Decoder */}
         <Section title="Job decoder" letter="A">
@@ -158,10 +171,15 @@ function AssessmentView() {
         </Section>
 
         {/* Section E: Action items */}
-        {Array.isArray(a.action_items) && a.action_items.length > 0 && (
-          <Section title="Action items to close gaps" letter="E">
+        <Section title="Action items to close gaps" letter="E" id="action-items">
+          {actionItems.length > 0 ? (
             <div className="border border-border rounded-md bg-surface overflow-hidden">
-              {a.action_items.map((item: any, i: number) => (
+              {savedActionItems.length === 0 && (
+                <div className="px-5 py-3 border-b border-border text-xs text-muted-foreground">
+                  Generated from the gaps and risks in this assessment.
+                </div>
+              )}
+              {actionItems.map((item: any, i: number) => (
                 <div key={i} className="px-5 py-4 border-b border-border last:border-0">
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex gap-3 items-baseline">
@@ -188,8 +206,12 @@ function AssessmentView() {
                 </div>
               ))}
             </div>
-          </Section>
-        )}
+          ) : (
+            <div className="border border-border rounded-md bg-surface p-5 text-sm text-muted-foreground">
+              No action items were saved for this assessment. Run a new assessment to generate tailored next steps.
+            </div>
+          )}
+        </Section>
 
         {/* Actions */}
         <div className="mt-12 flex flex-wrap items-center gap-3 border-t border-border pt-6">
@@ -218,9 +240,9 @@ function AssessmentView() {
   );
 }
 
-function Section({ title, letter, children }: { title: string; letter: string; children: React.ReactNode }) {
+function Section({ title, letter, children, id }: { title: string; letter: string; children: React.ReactNode; id?: string }) {
   return (
-    <section className="mt-12">
+    <section id={id} className="mt-12 scroll-mt-8">
       <div className="flex items-baseline gap-3 mb-4">
         <span className="font-mono text-[11px] uppercase tracking-[0.18em] text-accent">Section {letter}</span>
         <h2 className="font-display text-2xl">{title}</h2>
@@ -289,6 +311,29 @@ function MatchPill({ strength }: { strength: string }) {
       {strength}
     </span>
   );
+}
+
+function buildFallbackActionItems(requirements: any[], risks: string[]) {
+  const gapItems = requirements
+    .filter((r) => r?.match_strength === "Gap" || r?.match_strength === "Partial")
+    .slice(0, 5)
+    .map((r) => ({
+      title: `Add evidence for ${r.requirement}`,
+      detail: `Strengthen your CV with a concrete example, metric, or project that proves this requirement: ${r.requirement}.`,
+      priority: r.match_strength === "Gap" ? "High" : "Medium",
+      effort: "Medium",
+      addresses: r.requirement,
+    }));
+
+  const riskItems = risks.slice(0, Math.max(0, 5 - gapItems.length)).map((risk) => ({
+    title: "Reduce a screening risk",
+    detail: `Add a clear counter-signal in your CV or cover note so a recruiter does not screen you out for: ${risk}.`,
+    priority: "High",
+    effort: "Quick",
+    addresses: risk,
+  }));
+
+  return [...gapItems, ...riskItems];
 }
 
 function CompanyIntelligence({ intel }: { intel: any }) {

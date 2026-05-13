@@ -107,6 +107,7 @@ function AssessNew() {
           job_decoder: data.job_decoder,
           requirements: data.requirements,
           screening_risks: data.screening_risks,
+          action_items: data.action_items,
           company_intel: data.company_intel,
         }).select("id").single();
       if (insErr) throw insErr;

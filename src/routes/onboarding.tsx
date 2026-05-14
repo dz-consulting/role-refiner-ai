@@ -22,24 +22,6 @@ type Profile = {
   seniority_signals: string[];
 };
 
-async function uploadCvWithRetry(userId: string, file: File): Promise<string | null> {
-  const safeName = file.name.replace(/[^a-zA-Z0-9._-]+/g, "_");
-  for (let attempt = 1; attempt <= 2; attempt += 1) {
-    const path = `${userId}/${Date.now()}_${attempt}_${safeName}`;
-    try {
-      const { error } = await supabase.storage.from("cvs").upload(path, file, {
-        cacheControl: "3600",
-        upsert: false,
-      });
-      if (!error) return path;
-      if (attempt === 2) return null;
-    } catch {
-      if (attempt === 2) return null;
-    }
-  }
-  return null;
-}
-
 function OnboardingPage() {
   const nav = useNavigate();
   const [step, setStep] = useState<"upload" | "extracting" | "review" | "preferences" | "saving">("upload");
@@ -48,12 +30,10 @@ function OnboardingPage() {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [preferences, setPreferences] = useState<Preferences>(emptyPreferences());
   const [cvText, setCvText] = useState("");
-  const [cvFilePath, setCvFilePath] = useState<string | null>(null);
-  const [uploadWarning, setUploadWarning] = useState<string | null>(null);
+  const [cvFilePath] = useState<string | null>(null);
 
   const handleFile = async (file: File) => {
     setError(null);
-    setUploadWarning(null);
     setStep("extracting");
     try {
       setProgress("Reading your CV…");
@@ -61,14 +41,9 @@ function OnboardingPage() {
       if (text.length < 200) throw new Error("That CV looks empty. Try another file.");
       setCvText(text);
 
-      setProgress("Uploading…");
+      setProgress("Checking your session…");
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
-      const storedPath = await uploadCvWithRetry(user.id, file);
-      setCvFilePath(storedPath);
-      if (!storedPath) {
-        setUploadWarning("The file backup could not be uploaded, but your CV text was read successfully. You can continue setup.");
-      }
 
       setProgress("Extracting structured profile with AI…");
       const { data, error: fnErr } = await supabase.functions.invoke("extract-cv", {
@@ -127,12 +102,6 @@ function OnboardingPage() {
         {error && (
           <div className="mt-8 text-sm text-destructive border-l-2 border-destructive pl-3 py-1">
             {error}
-          </div>
-        )}
-
-        {uploadWarning && (
-          <div className="mt-8 text-sm text-muted-foreground border-l-2 border-warning pl-3 py-1">
-            {uploadWarning}
           </div>
         )}
 

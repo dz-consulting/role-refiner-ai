@@ -30,10 +30,12 @@ function OnboardingPage() {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [preferences, setPreferences] = useState<Preferences>(emptyPreferences());
   const [cvText, setCvText] = useState("");
-  const [cvFilePath, setCvFilePath] = useState("");
+  const [cvFilePath, setCvFilePath] = useState<string | null>(null);
+  const [uploadWarning, setUploadWarning] = useState<string | null>(null);
 
   const handleFile = async (file: File) => {
     setError(null);
+    setUploadWarning(null);
     setStep("extracting");
     try {
       setProgress("Reading your CV…");
@@ -44,10 +46,11 @@ function OnboardingPage() {
       setProgress("Uploading…");
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
-      const path = `${user.id}/${Date.now()}_${file.name}`;
-      const { error: upErr } = await supabase.storage.from("cvs").upload(path, file);
-      if (upErr) throw upErr;
-      setCvFilePath(path);
+      const storedPath = await uploadCvWithRetry(user.id, file);
+      setCvFilePath(storedPath);
+      if (!storedPath) {
+        setUploadWarning("The file backup could not be uploaded, but your CV text was read successfully. You can continue setup.");
+      }
 
       setProgress("Extracting structured profile with AI…");
       const { data, error: fnErr } = await supabase.functions.invoke("extract-cv", {
@@ -106,6 +109,12 @@ function OnboardingPage() {
         {error && (
           <div className="mt-8 text-sm text-destructive border-l-2 border-destructive pl-3 py-1">
             {error}
+          </div>
+        )}
+
+        {uploadWarning && (
+          <div className="mt-8 text-sm text-muted-foreground border-l-2 border-warning pl-3 py-1">
+            {uploadWarning}
           </div>
         )}
 

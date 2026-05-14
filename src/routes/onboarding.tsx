@@ -22,6 +22,24 @@ type Profile = {
   seniority_signals: string[];
 };
 
+async function uploadCvWithRetry(userId: string, file: File): Promise<string | null> {
+  const safeName = file.name.replace(/[^a-zA-Z0-9._-]+/g, "_");
+  for (let attempt = 1; attempt <= 2; attempt += 1) {
+    const path = `${userId}/${Date.now()}_${attempt}_${safeName}`;
+    try {
+      const { error } = await supabase.storage.from("cvs").upload(path, file, {
+        cacheControl: "3600",
+        upsert: false,
+      });
+      if (!error) return path;
+      if (attempt === 2) return null;
+    } catch {
+      if (attempt === 2) return null;
+    }
+  }
+  return null;
+}
+
 function OnboardingPage() {
   const nav = useNavigate();
   const [step, setStep] = useState<"upload" | "extracting" | "review" | "preferences" | "saving">("upload");

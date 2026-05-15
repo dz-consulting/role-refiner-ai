@@ -12,7 +12,9 @@ import { supabase } from "@/integrations/supabase/client";
  *   Use this for UI work, not for end-to-end testing of data flows.
  */
 export const FEATURES = {
-  requireAuth: true,
+  // Beta: sign-in is optional. Anonymous users get a localStorage-backed
+  // experience with a daily assessment limit (see anon-store.ts).
+  requireAuth: false,
   showHeader: true,
 } as const;
 

@@ -3,6 +3,7 @@ import { useEffect, useState, type ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { requireAuth } from "@/lib/feature-flags";
 import { AppHeader } from "@/components/AppHeader";
+import { getAnonAssessment, updateAnonAssessment } from "@/lib/anon-store";
 
 export const Route = createFileRoute("/assessment/$id")({
   beforeLoad: requireAuth,
@@ -15,9 +16,19 @@ function AssessmentView() {
   const [a, setA] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [feedback, setFeedback] = useState<Record<string, string>>({});
+  const [isAnon, setIsAnon] = useState(false);
 
   useEffect(() => {
     (async () => {
+      // Try anon store first when id is anon-prefixed
+      if (id.startsWith("anon-")) {
+        setIsAnon(true);
+        const local = getAnonAssessment(id);
+        setA(local);
+        setFeedback(local?.feedback ?? {});
+        setLoading(false);
+        return;
+      }
       const { data } = await supabase.from("assessments").select("*").eq("id", id).maybeSingle();
       setA(data);
       const { data: fb } = await supabase
@@ -44,6 +55,11 @@ function AssessmentView() {
     const newScore = recomputeFitScore(reqsList, nextFeedback);
     const newLabel = labelForScore(newScore);
     setA((prev: any) => prev ? { ...prev, fit_score: newScore, fit_label: newLabel } : prev);
+
+    if (isAnon) {
+      updateAnonAssessment(id, { fit_score: newScore, fit_label: newLabel, feedback: nextFeedback });
+      return;
+    }
 
     try {
       await Promise.all([
@@ -99,12 +115,20 @@ function AssessmentView() {
   }
 
   const updateStatus = async (status: string) => {
-    await supabase.from("assessments").update({ status }).eq("id", id);
+    if (isAnon) {
+      updateAnonAssessment(id, { status });
+    } else {
+      await supabase.from("assessments").update({ status }).eq("id", id);
+    }
     nav({ to: "/dashboard" });
   };
 
   const unlockIntel = async () => {
-    await supabase.from("assessments").update({ intent_to_apply: true }).eq("id", id);
+    if (isAnon) {
+      updateAnonAssessment(id, { intent_to_apply: true });
+    } else {
+      await supabase.from("assessments").update({ intent_to_apply: true }).eq("id", id);
+    }
     setA({ ...a, intent_to_apply: true });
   };
 

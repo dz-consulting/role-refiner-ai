@@ -5,17 +5,17 @@ import { supabase } from "@/integrations/supabase/client";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "JobMatch — Find out why you keep getting rejected" },
+      { title: "Hindsight — From applied to offer, with a plan" },
       {
         name: "description",
         content:
-          "Most job searches are a black box. JobMatch turns yours into a funnel — track every application, measure conversion at each stage, and fix the leak that's costing you offers.",
+          "Most job searches are pure luck and persistence. Yours doesn't have to be. Track every application, learn from every rejection, and close the gaps that stand between you and the offer.",
       },
-      { property: "og:title", content: "JobMatch — Your job search, measured" },
+      { property: "og:title", content: "Hindsight — From applied to offer, with a plan" },
       {
         property: "og:description",
         content:
-          "Stop guessing why applications go nowhere. Diagnose your funnel, fix the leak, get the offer.",
+          "Track every application. Learn from every rejection. Close the gaps that stand between you and the offer.",
       },
     ],
   }),
@@ -50,7 +50,7 @@ function Nav({ authed }: { authed: boolean }) {
     <header className="border-b border-border">
       <div className="max-w-6xl mx-auto px-6 md:px-10 py-5 flex items-center justify-between">
         <Link to="/" className="font-display text-xl tracking-tight">
-          JobMatch
+          Hindsight
         </Link>
         <nav className="flex items-center gap-6 text-sm">
           <a href="#funnel" className="hidden sm:inline text-muted-foreground hover:text-foreground">
@@ -86,13 +86,13 @@ function Hero({ authed, onCta }: { authed: boolean; onCta: () => void }) {
         <div className="md:col-span-7">
           <div className="label-eyebrow">Beta · Free during launch</div>
           <h1 className="font-display text-5xl md:text-7xl mt-6 leading-[1.02]">
-            Find out why you keep getting{" "}
-            <span className="font-serif-italic">rejected</span>.
+            From <span className="font-serif-italic">applied</span> to{" "}
+            <span className="font-serif-italic">offer</span>, with a plan.
           </h1>
           <p className="mt-8 text-lg md:text-xl text-muted-foreground leading-relaxed max-w-xl">
-            Most job searches are a black box. JobMatch turns yours into a funnel —
-            track every application, measure conversion at each stage, and fix the leak
-            that's costing you offers.
+            Most job searches are pure luck and persistence. Yours doesn't have to be.
+            Track every application, learn from every rejection, and close the gaps that
+            stand between you and the offer.
           </p>
           <div className="mt-12 flex flex-col sm:flex-row gap-4">
             <button
@@ -119,12 +119,12 @@ function Hero({ authed, onCta }: { authed: boolean; onCta: () => void }) {
             <div className="label-eyebrow">The hard truth</div>
             <p className="font-display text-3xl md:text-4xl mt-4 leading-[1.1]">
               The average job seeker sends{" "}
-              <span className="font-serif-italic">100+ applications</span> and lands{" "}
+              <span className="font-serif-italic">200 CVs</span> and lands{" "}
               <span className="font-serif-italic">1 offer</span>.
             </p>
             <div className="mt-8 pt-6 border-t border-border text-sm text-muted-foreground">
-              That's a <span className="text-foreground font-medium">1% conversion rate</span> —
-              and most candidates have no idea where they're losing the other 99.
+              That's a <span className="text-foreground font-medium">0.5% success rate</span> —
+              and most candidates have no idea where they're losing the other 199.
             </div>
           </div>
         </div>
@@ -133,70 +133,164 @@ function Hero({ authed, onCta }: { authed: boolean; onCta: () => void }) {
   );
 }
 
-/* ───────────────────────── Funnel ───────────────────────── */
+/* ───────────────────────── Funnel teaching diagram ───────────────────────── */
 
-const FUNNEL_STAGES = [
-  { label: "Applications", count: 100, conv: null, leak: null },
-  { label: "Recruiter screen", count: 25, conv: "25%", leak: "Wrong-fit targeting · weak CV match" },
-  { label: "1st interview", count: 10, conv: "40%", leak: "Recruiter pitch · salary mismatch" },
-  { label: "Onsite / final", count: 4, conv: "40%", leak: "Story doesn't land · weak 'why us'" },
-  { label: "Offer", count: 1, conv: "25%", leak: "Competency gaps · negotiation" },
+// Modeled on a typical PM hiring funnel: 200 CVs → 1 offer.
+const TYPICAL_FUNNEL = [
+  { label: "CVs sent", count: 200, conv: null,  cost: "30 sec each" },
+  { label: "Phone screen", count: 20, conv: "10%", cost: "20 min" },
+  { label: "Hiring manager", count: 10, conv: "50%", cost: "45 min" },
+  { label: "Second round", count: 6, conv: "60%", cost: "45 min" },
+  { label: "Final round", count: 3, conv: "50%", cost: "60 min" },
+  { label: "Offer", count: 1, conv: "33%", cost: "—" },
+];
+
+// Same shape, but with the reasons surfaced — what Hindsight gives you.
+const HINDSIGHT_FUNNEL = [
+  { label: "CVs sent", count: 200, conv: null,  reason: "Start" },
+  { label: "Phone screen", count: 20, conv: "10%", reason: "CV doesn't match the JD's actual priorities" },
+  { label: "Hiring manager", count: 10, conv: "50%", reason: "Recruiter pitch is generic · salary mismatch" },
+  { label: "Second round", count: 6, conv: "60%", reason: "Story doesn't land · weak 'why this company'" },
+  { label: "Final round", count: 3, conv: "50%", reason: "Specific competency gap (system design, case)" },
+  { label: "Offer", count: 1, conv: "33%", reason: "Negotiation, competing offers, scope concerns" },
 ];
 
 function Funnel() {
-  const max = FUNNEL_STAGES[0].count;
+  const max = TYPICAL_FUNNEL[0].count;
   return (
     <section id="funnel" className="border-b border-border">
       <div className="max-w-6xl mx-auto px-6 md:px-10 py-24 md:py-32">
-        <div className="label-eyebrow">The product</div>
+        <div className="label-eyebrow">Why most job searches feel impossible</div>
         <h2 className="font-display text-4xl md:text-6xl mt-4 max-w-3xl leading-[1.05]">
-          Your job search, as a <span className="font-serif-italic">funnel</span>.
+          200 CVs in. <span className="font-serif-italic">1 offer out.</span>
         </h2>
         <p className="mt-6 text-lg text-muted-foreground max-w-2xl">
-          Every stage has a conversion rate. Every drop-off has a reason. We measure both —
-          then tell you which one is worth fixing first.
+          Hiring is a series of filters. Each round drops most candidates. The math is
+          brutal — and most job seekers can't see it, let alone fix it.
         </p>
 
-        <div className="mt-16 space-y-1">
-          {FUNNEL_STAGES.map((s, i) => {
-            const width = (s.count / max) * 100;
-            return (
-              <div key={s.label} className="grid grid-cols-12 gap-4 md:gap-8 items-center py-3">
-                <div className="col-span-12 md:col-span-3 flex items-baseline gap-3">
-                  <span className="font-mono text-xs text-muted-foreground w-6">
-                    {String(i + 1).padStart(2, "0")}
-                  </span>
-                  <span className="font-display text-xl">{s.label}</span>
-                </div>
-                <div className="col-span-8 md:col-span-5">
-                  <div
-                    className="bg-foreground text-background h-12 flex items-center px-4 transition-all"
-                    style={{ width: `${width}%`, minWidth: "60px" }}
-                  >
-                    <span className="font-mono text-sm tabular-nums">{s.count}</span>
+        {/* Diagram 1: the typical funnel */}
+        <div className="mt-16 border border-border bg-card p-6 md:p-10">
+          <div className="flex items-baseline justify-between gap-4 mb-8">
+            <div>
+              <div className="label-eyebrow">Diagram 01</div>
+              <h3 className="font-display text-2xl mt-1">The typical hiring funnel</h3>
+            </div>
+            <div className="text-xs font-mono text-muted-foreground hidden sm:block">
+              candidates remaining at each stage
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            {TYPICAL_FUNNEL.map((s, i) => {
+              const width = (s.count / max) * 100;
+              return (
+                <div key={s.label} className="grid grid-cols-12 gap-3 md:gap-6 items-center">
+                  <div className="col-span-12 md:col-span-3 flex items-baseline gap-2">
+                    <span className="font-mono text-[10px] text-muted-foreground w-5">
+                      {String(i + 1).padStart(2, "0")}
+                    </span>
+                    <span className="font-display text-base md:text-lg">{s.label}</span>
+                    <span className="font-mono text-[10px] text-muted-foreground hidden md:inline">
+                      · {s.cost}
+                    </span>
+                  </div>
+                  <div className="col-span-9 md:col-span-7">
+                    <div
+                      className="bg-foreground text-background h-9 flex items-center px-3 transition-all"
+                      style={{ width: `${Math.max(width, 2)}%`, minWidth: "44px" }}
+                    >
+                      <span className="font-mono text-xs tabular-nums">{s.count}</span>
+                    </div>
+                  </div>
+                  <div className="col-span-3 md:col-span-2 font-mono text-xs tabular-nums text-muted-foreground text-right md:text-left">
+                    {s.conv ? `→ ${s.conv}` : "start"}
                   </div>
                 </div>
-                <div className="col-span-2 md:col-span-1 font-mono text-sm tabular-nums text-foreground">
-                  {s.conv ?? "—"}
-                </div>
-                <div className="col-span-12 md:col-span-3 text-sm text-muted-foreground">
-                  {s.leak ? (
-                    <span>
-                      <span className="font-serif-italic">leak:</span> {s.leak}
-                    </span>
-                  ) : (
-                    <span className="font-mono text-xs">START</span>
-                  )}
-                </div>
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
+
+          <div className="mt-8 pt-6 border-t border-border grid sm:grid-cols-2 gap-6 text-sm">
+            <div>
+              <div className="label-eyebrow">From a blind application</div>
+              <p className="mt-2 font-display text-xl">
+                <span className="font-serif-italic">&lt; 1%</span> chance of an offer.
+              </p>
+            </div>
+            <div>
+              <div className="label-eyebrow">From a hiring-manager intro</div>
+              <p className="mt-2 font-display text-xl">
+                <span className="font-serif-italic">~10%</span> chance of an offer.
+              </p>
+            </div>
+          </div>
         </div>
 
-        <div className="mt-12 pt-8 border-t border-border text-sm text-muted-foreground max-w-2xl">
-          <span className="font-serif-italic text-foreground">Most candidates obsess over the top of the funnel</span> —
-          sending more applications. But sending 200 instead of 100 won't help if your screen-to-interview
-          rate is the real leak. We find the real leak.
+        {/* The pivot */}
+        <div className="mt-20 max-w-2xl">
+          <div className="label-eyebrow">What Hindsight does</div>
+          <h3 className="font-display text-3xl md:text-4xl mt-4 leading-[1.1]">
+            We can't change the funnel.{" "}
+            <span className="font-serif-italic">We can change what you do at every stage.</span>
+          </h3>
+          <p className="mt-6 text-muted-foreground leading-relaxed">
+            For every job you apply to, Hindsight measures where you are in the funnel,
+            why you dropped out, and what to fix before the next application.
+          </p>
+        </div>
+
+        {/* Diagram 2: the same funnel, with reasons */}
+        <div className="mt-12 border border-foreground bg-foreground text-background p-6 md:p-10">
+          <div className="flex items-baseline justify-between gap-4 mb-8">
+            <div>
+              <div className="label-eyebrow !text-background/60">Diagram 02</div>
+              <h3 className="font-display text-2xl mt-1">Your funnel, with Hindsight</h3>
+            </div>
+            <div className="text-xs font-mono text-background/60 hidden sm:block">
+              same shape — now you can see the why
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            {HINDSIGHT_FUNNEL.map((s, i) => {
+              const width = (s.count / max) * 100;
+              return (
+                <div key={s.label} className="grid grid-cols-12 gap-3 md:gap-6 items-center">
+                  <div className="col-span-12 md:col-span-3 flex items-baseline gap-2">
+                    <span className="font-mono text-[10px] text-background/60 w-5">
+                      {String(i + 1).padStart(2, "0")}
+                    </span>
+                    <span className="font-display text-base md:text-lg">{s.label}</span>
+                  </div>
+                  <div className="col-span-4 md:col-span-3">
+                    <div
+                      className="bg-background text-foreground h-9 flex items-center px-3 transition-all"
+                      style={{ width: `${Math.max(width, 4)}%`, minWidth: "44px" }}
+                    >
+                      <span className="font-mono text-xs tabular-nums">{s.count}</span>
+                    </div>
+                  </div>
+                  <div className="col-span-8 md:col-span-6 text-sm text-background/80">
+                    {i === 0 ? (
+                      <span className="font-mono text-[10px] text-background/60">START</span>
+                    ) : (
+                      <>
+                        <span className="font-serif-italic text-background">where you lose people:</span>{" "}
+                        {s.reason}
+                      </>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        <div className="mt-10 text-sm text-muted-foreground max-w-2xl">
+          <span className="font-serif-italic text-foreground">Most candidates obsess over the top —</span>{" "}
+          sending more CVs. But sending 400 instead of 200 won't help if your CV-to-screen rate
+          is the real problem. We help you find it.
         </div>
       </div>
     </section>
@@ -225,8 +319,8 @@ function Screens() {
 
           <ScreenCard
             number="02"
-            title="The funnel"
-            blurb="Every application tracked. Conversion measured. Leaks visible."
+            title="Your funnel"
+            blurb="Every application tracked. See exactly where offers slip away."
           >
             <FunnelMock />
           </ScreenCard>
@@ -502,7 +596,7 @@ function Footer() {
   return (
     <footer>
       <div className="max-w-6xl mx-auto px-6 md:px-10 py-10 flex flex-col sm:flex-row items-baseline justify-between gap-4 text-xs font-mono text-muted-foreground">
-        <div>JobMatch · Beta · {new Date().getFullYear()}</div>
+        <div>Hindsight · Beta · {new Date().getFullYear()}</div>
         <div className="flex gap-6">
           <Link to="/auth" className="hover:text-foreground">Sign in</Link>
           <Link to="/onboarding" className="hover:text-foreground">Try free</Link>

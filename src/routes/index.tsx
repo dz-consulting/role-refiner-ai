@@ -163,100 +163,270 @@ function ConceptVisual() {
 
 /* ───────────────────────── Funnel teaching diagram ───────────────────────── */
 
-// Same candidate, same 200 applications. What changes is what they do at each stage.
-const STAGES = [
-  {
-    label: "CV → Screen",
-    solo: 10,
-    with: 25,
-    guess: "Ghosted. CV? JD fit? ATS? You'll never know.",
-    diagnosis: "Fit score on every JD before you apply. CV gaps flagged against the actual requirements.",
-  },
-  {
-    label: "Screen → Hiring manager",
-    solo: 50,
-    with: 70,
-    guess: "Recruiter passed. They didn't say why. You wing the next one the same way.",
-    diagnosis: "Recruiter-call brief per role: comp range, scope traps, 'why now' — locked before you dial in.",
-  },
-  {
-    label: "HM → Second round",
-    solo: 60,
-    with: 75,
-    guess: "'Not quite the right fit.' What does that mean? Move on.",
-    diagnosis: "Pattern across rejections — the exact signal you're missing for this kind of company.",
-  },
-  {
-    label: "Second → Final",
-    solo: 50,
-    with: 70,
-    guess: "Loop tanked on something. System design? Stakeholder demo? Unclear.",
-    diagnosis: "The exact competency gap, named — drilled before the next loop.",
-  },
-  {
-    label: "Final → Offer",
-    solo: 33,
-    with: 55,
-    guess: "One offer, no leverage. Take what they give you.",
-    diagnosis: "Comp comps and a real BATNA from parallel processes you ran on purpose.",
-  },
+const FUNNEL = [
+  { label: "CVs", time: "30 seconds", n: 200, conv: null as number | null },
+  { label: "Phone screens", time: "20 minutes", n: 20, conv: 10 },
+  { label: "Hiring manager", time: "45 minutes", n: 10, conv: 50 },
+  { label: "Second round", time: "45 minutes", n: 6, conv: 60 },
+  { label: "Final round", time: "60 minutes", n: 3, conv: 50 },
+  { label: "Offer", time: "—", n: 1, conv: 33 },
 ];
 
-const SOLO_OFFERS = 1;
-const WITH_OFFERS = 10;
-
 function Funnel() {
+  // Chart geometry (viewBox units)
+  const W = 1000;
+  const H = 560;
+  const xL = 80;
+  const xR = 960;
+  const yT = 80;
+  const yB = 440;
+  const maxV = 200;
+  const yScale = (v: number) => yB - (v / maxV) * (yB - yT);
+  const barW = 92;
+  const slot = (xR - xL) / FUNNEL.length;
+  const cx = (i: number) => xL + slot * (i + 0.5);
+
+  const yTicks = [0, 50, 100, 150, 200];
+
   return (
     <section id="funnel" className="border-b border-border">
       <div className="max-w-6xl mx-auto px-6 md:px-10 py-20 md:py-28">
         <div className="label-eyebrow-muted">Your job search is a funnel</div>
         <h2 className="font-display text-5xl md:text-7xl mt-5 max-w-3xl leading-[1.0]">
-          Stop guessing why you got <span className="font-serif-italic">rejected</span>.
+          200 applications in. <span className="font-serif-italic">1 offer out.</span>
         </h2>
         <p className="mt-6 max-w-2xl text-lg md:text-xl text-foreground/70 leading-snug font-light">
-          Every job search has five stages. Most people lose offers at every one
-          and never know which. Hindsight tracks the funnel and tells you, at each
-          stage, <span className="font-serif-italic text-foreground">exactly why you fell out</span> — and what to do
-          about it before the next application.
+          This is what a typical search looks like. You lose offers at every stage and never
+          know which. Hindsight tracks the funnel and tells you, at each stage,{" "}
+          <span className="font-serif-italic text-foreground">exactly why you fell out</span>.
         </p>
 
-        {/* Funnel diagram */}
-        <div className="mt-14 border border-border bg-card p-6 md:p-12">
-          <div className="space-y-3">
-            {STAGES.map((s, i) => {
-              // Funnel taper: each stage narrower than the last
-              const width = 100 - i * 13;
+        {/* The funnel chart */}
+        <div className="mt-14 border border-border bg-card p-4 md:p-10">
+          <div className="font-display text-2xl md:text-3xl mb-2">Typical PM hiring funnel</div>
+          <svg
+            viewBox={`0 0 ${W} ${H}`}
+            className="w-full h-auto"
+            role="img"
+            aria-label="Typical PM hiring funnel from 200 CVs to 1 offer"
+          >
+            {/* Gridlines + Y axis labels */}
+            {yTicks.map((v) => {
+              const y = yScale(v);
               return (
-                <div key={s.label} className="grid md:grid-cols-12 gap-4 md:gap-8 items-center">
-                  {/* Funnel bar */}
-                  <div className="md:col-span-5">
-                    <div className="flex justify-center">
-                      <div
-                        className="bg-foreground text-background py-4 px-5 flex items-center justify-between"
-                        style={{ width: `${width}%` }}
-                      >
-                        <span className="text-sm md:text-base font-medium truncate">{s.label}</span>
-                        <span className="font-display text-lg md:text-xl tabular-nums ml-3">{s.solo}%</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Diagnosis */}
-                  <div className="md:col-span-7 md:border-l border-border md:pl-8">
-                    <div className="label-eyebrow-muted">Stage {String(i + 1).padStart(2, "0")} · Hindsight tells you</div>
-                    <p className="mt-2 text-base md:text-lg text-foreground/80 leading-snug font-serif-italic">
-                      {s.diagnosis}
-                    </p>
-                  </div>
-                </div>
+                <g key={v}>
+                  <line x1={xL} x2={xR} y1={y} y2={y} stroke="hsl(0 0% 88%)" strokeWidth={1} />
+                  <text
+                    x={xL - 14}
+                    y={y + 5}
+                    textAnchor="end"
+                    fontSize={16}
+                    fill="hsl(0 0% 35%)"
+                    fontFamily="ui-sans-serif, system-ui, sans-serif"
+                  >
+                    {v}
+                  </text>
+                </g>
               );
             })}
-          </div>
+
+            {/* Bars */}
+            {FUNNEL.map((s, i) => {
+              const yTop = yScale(s.n);
+              const h = yB - yTop;
+              const x = cx(i) - barW / 2;
+              return (
+                <g key={s.label}>
+                  <rect x={x} y={yTop} width={barW} height={h} fill="#F4A23C" />
+                  {/* Count above bar */}
+                  <text
+                    x={cx(i)}
+                    y={yTop - 14}
+                    textAnchor="middle"
+                    fontSize={20}
+                    fontWeight={700}
+                    fill="hsl(0 0% 10%)"
+                    fontFamily="ui-sans-serif, system-ui, sans-serif"
+                  >
+                    {s.n}
+                  </text>
+                </g>
+              );
+            })}
+
+            {/* Conversion % chips between consecutive bars */}
+            {FUNNEL.map((s, i) => {
+              if (s.conv == null) return null;
+              const prev = FUNNEL[i - 1];
+              const x1 = cx(i - 1) + barW / 2;
+              const x2 = cx(i) - barW / 2;
+              const midX = (x1 + x2) / 2;
+              const yPrevTop = yScale(prev.n);
+              const yCurTop = yScale(s.n);
+              const chipY = Math.max(yPrevTop, yCurTop - 30);
+              const chipW = 54;
+              const chipH = 26;
+              return (
+                <g key={`conv-${i}`}>
+                  {/* connector: small step from prev top down to current top */}
+                  <path
+                    d={`M ${x1} ${yPrevTop} L ${midX - chipW / 2 - 4} ${yPrevTop} M ${midX + chipW / 2 + 4} ${yPrevTop} L ${x2} ${yPrevTop} L ${x2} ${yCurTop}`}
+                    fill="none"
+                    stroke="hsl(0 0% 35%)"
+                    strokeWidth={1.2}
+                    markerEnd="url(#arrow)"
+                  />
+                  <rect
+                    x={midX - chipW / 2}
+                    y={chipY - chipH / 2}
+                    width={chipW}
+                    height={chipH}
+                    rx={3}
+                    fill="hsl(0 0% 28%)"
+                  />
+                  <text
+                    x={midX}
+                    y={chipY + 5}
+                    textAnchor="middle"
+                    fontSize={14}
+                    fontWeight={600}
+                    fill="white"
+                    fontFamily="ui-sans-serif, system-ui, sans-serif"
+                  >
+                    {s.conv}%
+                  </text>
+                </g>
+              );
+            })}
+
+            {/* Arrow marker */}
+            <defs>
+              <marker
+                id="arrow"
+                viewBox="0 0 10 10"
+                refX="8"
+                refY="5"
+                markerWidth="6"
+                markerHeight="6"
+                orient="auto-start-reverse"
+              >
+                <path d="M 0 0 L 10 5 L 0 10 z" fill="hsl(0 0% 35%)" />
+              </marker>
+              <marker
+                id="arrowDashed"
+                viewBox="0 0 10 10"
+                refX="8"
+                refY="5"
+                markerWidth="6"
+                markerHeight="6"
+                orient="auto-start-reverse"
+              >
+                <path d="M 0 0 L 10 5 L 0 10 z" fill="hsl(0 0% 30%)" />
+              </marker>
+            </defs>
+
+            {/* Stage labels */}
+            {FUNNEL.map((s, i) => (
+              <g key={`lbl-${s.label}`}>
+                <text
+                  x={cx(i)}
+                  y={yB + 28}
+                  textAnchor="middle"
+                  fontSize={15}
+                  fontWeight={500}
+                  fill="hsl(0 0% 12%)"
+                  fontFamily="ui-sans-serif, system-ui, sans-serif"
+                >
+                  {s.label}
+                </text>
+                <text
+                  x={cx(i)}
+                  y={yB + 50}
+                  textAnchor="middle"
+                  fontSize={13}
+                  fontStyle="italic"
+                  fill="hsl(0 0% 40%)"
+                  fontFamily="ui-serif, Georgia, serif"
+                >
+                  {s.time}
+                </text>
+              </g>
+            ))}
+
+            {/* Dashed arc: CVs → Offer (<1%) */}
+            <path
+              d={`M ${cx(0)} ${yScale(200) - 4} C ${cx(0) + 280} ${yT - 30}, ${cx(5) - 60} ${yT + 40}, ${cx(5)} ${yScale(1) - 8}`}
+              fill="none"
+              stroke="hsl(0 0% 30%)"
+              strokeWidth={1.5}
+              strokeDasharray="6 5"
+              markerEnd="url(#arrowDashed)"
+            />
+            {/* Callout 1 */}
+            <g>
+              <rect x={560} y={120} width={340} height={56} rx={3} fill="#9FE3F2" />
+              <text
+                x={580}
+                y={144}
+                fontSize={15}
+                fontWeight={600}
+                fill="hsl(0 0% 10%)"
+                fontFamily="ui-sans-serif, system-ui, sans-serif"
+              >
+                &lt;1% success rate from
+              </text>
+              <text
+                x={580}
+                y={164}
+                fontSize={15}
+                fontWeight={600}
+                fill="hsl(0 0% 10%)"
+                fontFamily="ui-sans-serif, system-ui, sans-serif"
+              >
+                blind application
+              </text>
+            </g>
+
+            {/* Dashed arc: HM → Offer (~10%) */}
+            <path
+              d={`M ${cx(2)} ${yScale(10) - 4} C ${cx(2) + 200} ${yT + 180}, ${cx(5) - 80} ${yT + 220}, ${cx(5)} ${yScale(1) - 18}`}
+              fill="none"
+              stroke="hsl(0 0% 30%)"
+              strokeWidth={1.5}
+              strokeDasharray="6 5"
+              markerEnd="url(#arrowDashed)"
+            />
+            {/* Callout 2 */}
+            <g>
+              <rect x={420} y={250} width={360} height={56} rx={3} fill="#9FE3F2" />
+              <text
+                x={440}
+                y={274}
+                fontSize={15}
+                fontWeight={600}
+                fill="hsl(0 0% 10%)"
+                fontFamily="ui-sans-serif, system-ui, sans-serif"
+              >
+                ~10% success rate from
+              </text>
+              <text
+                x={440}
+                y={294}
+                fontSize={15}
+                fontWeight={600}
+                fill="hsl(0 0% 10%)"
+                fontFamily="ui-sans-serif, system-ui, sans-serif"
+              >
+                F2F with hiring manager
+              </text>
+            </g>
+          </svg>
         </div>
 
         <p className="mt-10 max-w-2xl text-lg text-foreground/70 leading-snug">
-          <span className="font-serif-italic text-foreground">Five stages, five diagnoses.</span>{" "}
-          Stop guessing. Close the gaps you can name and the outcome isn&apos;t better — it&apos;s different.
+          <span className="font-serif-italic text-foreground">Hindsight diagnoses every drop.</span>{" "}
+          Why your CV got skipped. Why the recruiter passed. Why the loop tanked. No more
+          guessing — every rejection becomes a data point you can act on.
         </p>
       </div>
     </section>

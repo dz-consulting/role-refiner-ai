@@ -490,17 +490,17 @@ function HowItWorks() {
   return (
     <section id="how" className="border-b border-border">
       <div className="max-w-6xl mx-auto px-6 md:px-10 py-24 md:py-32">
-        <div className="label-eyebrow">How it works</div>
-        <h2 className="font-display text-4xl md:text-6xl mt-4 max-w-3xl leading-[1.05]">
+        <div className="label-eyebrow-muted">How it works</div>
+        <h2 className="font-display text-5xl md:text-7xl mt-5 max-w-3xl leading-[1.0]">
           Three steps. <span className="font-serif-italic">No fluff.</span>
         </h2>
 
         <div className="mt-16 grid md:grid-cols-3 gap-12">
           {steps.map((s) => (
             <div key={s.n}>
-              <div className="font-mono text-xs text-muted-foreground">{s.n}</div>
-              <h3 className="font-display text-2xl mt-3">{s.title}</h3>
-              <p className="mt-4 text-muted-foreground leading-relaxed">{s.body}</p>
+              <div className="font-display text-2xl text-muted-foreground">{s.n}</div>
+              <h3 className="font-display text-3xl mt-3">{s.title}</h3>
+              <p className="mt-4 text-lg text-foreground/70 leading-snug">{s.body}</p>
             </div>
           ))}
         </div>

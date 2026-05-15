@@ -122,49 +122,59 @@
     background-color: var(--color-background);
     color: var(--color-foreground);
     font-family: var(--font-sans);
-    font-size: 16px;
+    font-size: 17px;
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
   }
   h1, h2, h3, h4 {
     font-family: var(--font-display);
-    letter-spacing: -0.02em;
+    letter-spacing: -0.015em;
     font-weight: 400;
-    line-height: 1.05;
+    line-height: 1.02;
   }
 }
 
 @layer utilities {
-  .font-display { font-family: var(--font-display); font-weight: 400; letter-spacing: -0.02em; }
+  .font-display { font-family: var(--font-display); font-weight: 400; letter-spacing: -0.015em; }
   .font-mono { font-family: var(--font-mono); }
   .font-serif-italic { font-family: var(--font-display); font-style: italic; font-weight: 400; }
   .editorial-rule {
     background-color: var(--color-foreground);
     height: 1px;
   }
+  /* Confident eyebrow — sans, not mono. Bigger, stronger. */
   .label-eyebrow {
-    font-family: var(--font-mono);
-    font-size: 11px;
-    letter-spacing: 0.16em;
+    font-family: var(--font-sans);
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-foreground);
+  }
+  .label-eyebrow-muted {
+    font-family: var(--font-sans);
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
     text-transform: uppercase;
     color: var(--color-muted-foreground);
   }
-  /* Small monospace tag/pill — used for ratings, priority, chips */
+  /* Pill / tag */
   .label-tag {
-    font-family: var(--font-mono);
-    font-size: 10px;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    padding: 2px 8px;
-    border: 1px solid var(--color-border);
-    color: var(--color-muted-foreground);
+    font-family: var(--font-sans);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    padding: 4px 10px;
+    border: 1px solid var(--color-foreground);
+    color: var(--color-foreground);
     display: inline-block;
     line-height: 1.4;
+    border-radius: 999px;
   }
-  /* Hint/caption — small muted descriptive text */
   .text-caption {
-    font-size: 13px;
+    font-size: 14px;
     line-height: 1.55;
     color: var(--color-muted-foreground);
   }

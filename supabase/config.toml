@@ -1,10 +1,10 @@
 project_id = "lhdivfukcinaokardces"
 
 [functions.extract-cv]
-verify_jwt = true
+verify_jwt = false
 
 [functions.assess-job]
-verify_jwt = true
+verify_jwt = false
 
 [functions.tailor-cv]
 verify_jwt = true

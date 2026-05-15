@@ -49,7 +49,7 @@ function Nav({ authed }: { authed: boolean }) {
   return (
     <header className="border-b border-border">
       <div className="max-w-6xl mx-auto px-6 md:px-10 py-5 flex items-center justify-between">
-        <Link to="/" className="font-display text-xl tracking-tight">
+        <Link to="/" className="font-display text-2xl tracking-tight">
           Hindsight
         </Link>
         <nav className="flex items-center gap-6 text-sm">

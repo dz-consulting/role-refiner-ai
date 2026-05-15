@@ -188,50 +188,47 @@ function Funnel() {
   return (
     <section id="funnel" className="border-b border-border">
       <div className="max-w-6xl mx-auto px-6 md:px-10 py-24 md:py-32">
-        <div className="label-eyebrow">Why most job searches feel impossible</div>
-        <h2 className="font-display text-4xl md:text-6xl mt-4 max-w-3xl leading-[1.05]">
+        <div className="label-eyebrow-muted">The funnel, explained</div>
+        <h2 className="font-display text-5xl md:text-7xl mt-5 max-w-3xl leading-[1.0]">
           200 CVs in. <span className="font-serif-italic">1 offer out.</span>
         </h2>
-        <p className="mt-6 text-lg text-muted-foreground max-w-2xl">
-          Hiring is a series of filters. Each round drops most candidates. The math is
-          brutal — and most job seekers can't see it, let alone fix it.
+        <p className="mt-6 text-xl text-foreground/70 max-w-2xl leading-snug font-light">
+          Hiring is a series of filters. Each round drops most candidates.
+          The math is brutal — and most job seekers can&apos;t see it, let alone fix it.
         </p>
 
         {/* Diagram 1: the typical funnel */}
         <div className="mt-16 border border-border bg-card p-6 md:p-10">
           <div className="flex items-baseline justify-between gap-4 mb-8">
             <div>
-              <div className="label-eyebrow">Diagram 01</div>
-              <h3 className="font-display text-2xl mt-1">The typical hiring funnel</h3>
+              <div className="label-eyebrow-muted">The typical hiring funnel</div>
+              <h3 className="font-display text-3xl mt-2">What happens to most candidates</h3>
             </div>
-            <div className="text-xs font-mono text-muted-foreground hidden sm:block">
-              candidates remaining at each stage
+            <div className="text-sm text-muted-foreground hidden sm:block">
+              Candidates remaining at each stage
             </div>
           </div>
 
-          <div className="space-y-2">
+          <div className="space-y-3">
             {TYPICAL_FUNNEL.map((s, i) => {
               const width = (s.count / max) * 100;
               return (
                 <div key={s.label} className="grid grid-cols-12 gap-3 md:gap-6 items-center">
-                  <div className="col-span-12 md:col-span-3 flex items-baseline gap-2">
-                    <span className="font-mono text-[10px] text-muted-foreground w-5">
+                  <div className="col-span-12 md:col-span-3 flex items-baseline gap-3">
+                    <span className="font-display text-sm text-muted-foreground w-6">
                       {String(i + 1).padStart(2, "0")}
                     </span>
-                    <span className="font-display text-base md:text-lg">{s.label}</span>
-                    <span className="font-mono text-[10px] text-muted-foreground hidden md:inline">
-                      · {s.cost}
-                    </span>
+                    <span className="font-display text-lg md:text-xl">{s.label}</span>
                   </div>
                   <div className="col-span-9 md:col-span-7">
                     <div
-                      className="bg-foreground text-background h-9 flex items-center px-3 transition-all"
-                      style={{ width: `${Math.max(width, 2)}%`, minWidth: "44px" }}
+                      className="bg-foreground text-background h-10 flex items-center px-4 transition-all"
+                      style={{ width: `${Math.max(width, 2)}%`, minWidth: "56px" }}
                     >
-                      <span className="font-mono text-xs tabular-nums">{s.count}</span>
+                      <span className="text-sm font-medium tabular-nums">{s.count}</span>
                     </div>
                   </div>
-                  <div className="col-span-3 md:col-span-2 font-mono text-xs tabular-nums text-muted-foreground text-right md:text-left">
+                  <div className="col-span-3 md:col-span-2 text-sm tabular-nums text-muted-foreground text-right md:text-left">
                     {s.conv ? `→ ${s.conv}` : "start"}
                   </div>
                 </div>
@@ -239,16 +236,16 @@ function Funnel() {
             })}
           </div>
 
-          <div className="mt-8 pt-6 border-t border-border grid sm:grid-cols-2 gap-6 text-sm">
+          <div className="mt-10 pt-6 border-t border-border grid sm:grid-cols-2 gap-8">
             <div>
-              <div className="label-eyebrow">From a blind application</div>
-              <p className="mt-2 font-display text-xl">
+              <div className="label-eyebrow-muted">From a blind application</div>
+              <p className="mt-3 font-display text-3xl">
                 <span className="font-serif-italic">&lt; 1%</span> chance of an offer.
               </p>
             </div>
             <div>
-              <div className="label-eyebrow">From a hiring-manager intro</div>
-              <p className="mt-2 font-display text-xl">
+              <div className="label-eyebrow-muted">From a hiring-manager intro</div>
+              <p className="mt-3 font-display text-3xl">
                 <span className="font-serif-italic">~10%</span> chance of an offer.
               </p>
             </div>
@@ -256,13 +253,13 @@ function Funnel() {
         </div>
 
         {/* The pivot */}
-        <div className="mt-20 max-w-2xl">
-          <div className="label-eyebrow">What Hindsight does</div>
-          <h3 className="font-display text-3xl md:text-4xl mt-4 leading-[1.1]">
-            We can't change the funnel.{" "}
+        <div className="mt-24 max-w-3xl">
+          <div className="label-eyebrow-muted">What Hindsight does</div>
+          <h3 className="font-display text-4xl md:text-5xl mt-4 leading-[1.05]">
+            We can&apos;t change the funnel.{" "}
             <span className="font-serif-italic">We can change what you do at every stage.</span>
           </h3>
-          <p className="mt-6 text-muted-foreground leading-relaxed">
+          <p className="mt-6 text-lg text-foreground/70 leading-snug">
             For every job you apply to, Hindsight measures where you are in the funnel,
             why you dropped out, and what to fix before the next application.
           </p>
@@ -272,36 +269,33 @@ function Funnel() {
         <div className="mt-12 border border-foreground bg-foreground text-background p-6 md:p-10">
           <div className="flex items-baseline justify-between gap-4 mb-8">
             <div>
-              <div className="label-eyebrow !text-background/60">Diagram 02</div>
-              <h3 className="font-display text-2xl mt-1">Your funnel, with Hindsight</h3>
-            </div>
-            <div className="text-xs font-mono text-background/60 hidden sm:block">
-              same shape — now you can see the why
+              <div className="label-eyebrow-muted !text-background/60">Your funnel, with Hindsight</div>
+              <h3 className="font-display text-3xl mt-2">The same shape — now you can see the why</h3>
             </div>
           </div>
 
-          <div className="space-y-2">
+          <div className="space-y-4">
             {HINDSIGHT_FUNNEL.map((s, i) => {
               const width = (s.count / max) * 100;
               return (
                 <div key={s.label} className="grid grid-cols-12 gap-3 md:gap-6 items-center">
-                  <div className="col-span-12 md:col-span-3 flex items-baseline gap-2">
-                    <span className="font-mono text-[10px] text-background/60 w-5">
+                  <div className="col-span-12 md:col-span-3 flex items-baseline gap-3">
+                    <span className="font-display text-sm text-background/60 w-6">
                       {String(i + 1).padStart(2, "0")}
                     </span>
-                    <span className="font-display text-base md:text-lg">{s.label}</span>
+                    <span className="font-display text-lg md:text-xl">{s.label}</span>
                   </div>
                   <div className="col-span-4 md:col-span-3">
                     <div
-                      className="bg-background text-foreground h-9 flex items-center px-3 transition-all"
-                      style={{ width: `${Math.max(width, 4)}%`, minWidth: "44px" }}
+                      className="bg-background text-foreground h-10 flex items-center px-4 transition-all"
+                      style={{ width: `${Math.max(width, 4)}%`, minWidth: "56px" }}
                     >
-                      <span className="font-mono text-xs tabular-nums">{s.count}</span>
+                      <span className="text-sm font-medium tabular-nums">{s.count}</span>
                     </div>
                   </div>
-                  <div className="col-span-8 md:col-span-6 text-sm text-background/80">
+                  <div className="col-span-8 md:col-span-6 text-base text-background/85 leading-snug">
                     {i === 0 ? (
-                      <span className="font-mono text-[10px] text-background/60">START</span>
+                      <span className="text-background/60">Start</span>
                     ) : (
                       <>
                         <span className="font-serif-italic text-background">where you lose people:</span>{" "}
@@ -315,10 +309,10 @@ function Funnel() {
           </div>
         </div>
 
-        <div className="mt-10 text-sm text-muted-foreground max-w-2xl">
+        <div className="mt-12 text-lg text-foreground/70 max-w-2xl leading-snug">
           <span className="font-serif-italic text-foreground">Most candidates obsess over the top —</span>{" "}
-          sending more CVs. But sending 400 instead of 200 won't help if your CV-to-screen rate
-          is the real problem. We help you find it.
+          sending more CVs. But sending 400 instead of 200 won&apos;t help if your CV-to-screen
+          rate is the real problem. We help you find it.
         </div>
       </div>
     </section>

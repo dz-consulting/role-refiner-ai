@@ -464,8 +464,9 @@ function Funnel() {
         </div>
 
         <p className="mt-10 max-w-2xl text-lg text-foreground/70 leading-snug">
-          <span className="font-serif-italic text-foreground">Every rejection becomes a data point.</span>{" "}
-          Hindsight names the drop, points to the fix, and updates the playbook for your next application.
+          <span className="font-serif-italic text-foreground">Hindsight is the coach across all of it.</span>{" "}
+          A fit score before you apply. A recording of every interview, analysed for what tanked it.
+          A prep plan for the next round — built from what actually went wrong in the last one.
         </p>
       </div>
     </section>

@@ -325,12 +325,12 @@ function Screens() {
   return (
     <section className="border-b border-border bg-surface/40">
       <div className="max-w-6xl mx-auto px-6 md:px-10 py-24 md:py-32">
-        <div className="label-eyebrow">Inside the product</div>
-        <h2 className="font-display text-4xl md:text-6xl mt-4 max-w-3xl leading-[1.05]">
+        <div className="label-eyebrow-muted">Inside the product</div>
+        <h2 className="font-display text-5xl md:text-7xl mt-5 max-w-3xl leading-[1.0]">
           Three views, <span className="font-serif-italic">one promise</span>.
         </h2>
 
-        <div className="mt-16 grid md:grid-cols-3 gap-8">
+        <div className="mt-16 grid md:grid-cols-3 gap-10">
           <ScreenCard
             number="01"
             title="The fit score"
@@ -373,14 +373,14 @@ function ScreenCard({
 }) {
   return (
     <div>
-      <div className="border border-border bg-card aspect-[4/3] p-5 overflow-hidden relative">
+      <div className="border border-border bg-card aspect-[4/3] p-6 overflow-hidden relative">
         {children}
       </div>
       <div className="mt-5 flex items-baseline gap-3">
-        <span className="font-mono text-xs text-muted-foreground">{number}</span>
-        <h3 className="font-display text-xl">{title}</h3>
+        <span className="font-display text-base text-muted-foreground">{number}</span>
+        <h3 className="font-display text-2xl">{title}</h3>
       </div>
-      <p className="mt-2 text-sm text-muted-foreground leading-relaxed">{blurb}</p>
+      <p className="mt-3 text-base text-foreground/70 leading-snug">{blurb}</p>
     </div>
   );
 }
@@ -388,19 +388,19 @@ function ScreenCard({
 function FitScoreMock() {
   return (
     <div className="h-full flex flex-col">
-      <div className="label-eyebrow">Fit score</div>
+      <div className="label-eyebrow-muted">Fit score</div>
       <div className="flex items-baseline gap-3 mt-2">
-        <span className="font-display text-6xl tabular-nums">42</span>
-        <span className="font-serif-italic text-base text-muted-foreground">weak fit</span>
+        <span className="font-display text-7xl tabular-nums leading-none">42</span>
+        <span className="font-serif-italic text-lg text-muted-foreground">weak fit</span>
       </div>
-      <div className="editorial-rule mt-3" />
-      <p className="mt-3 text-[11px] leading-snug text-muted-foreground">
-        Senior IC role, but the JD repeatedly emphasizes managing ICs. Your CV shows 6 yrs IC + 0 reports.
-        Don't apply blind — either find a hiring manager referral or skip.
+      <div className="editorial-rule mt-4" />
+      <p className="mt-4 text-sm leading-snug text-foreground/80">
+        Senior IC role, but the JD emphasizes managing ICs. Your CV shows 6 yrs IC + 0 reports.
+        Don&apos;t apply blind — find a referral or skip.
       </p>
-      <div className="mt-auto pt-3 flex gap-1.5">
-        <span className="label-tag !text-[9px]">Skip</span>
-        <span className="label-tag !text-[9px]">Refer first</span>
+      <div className="mt-auto pt-4 flex gap-2">
+        <span className="label-tag">Skip</span>
+        <span className="label-tag">Refer first</span>
       </div>
     </div>
   );
@@ -415,29 +415,29 @@ function FunnelMock() {
   ];
   return (
     <div className="h-full flex flex-col">
-      <div className="label-eyebrow">Last 90 days</div>
-      <div className="mt-2 space-y-1.5">
+      <div className="label-eyebrow-muted">Last 90 days</div>
+      <div className="mt-3 space-y-2">
         {stages.map((s, i) => (
-          <div key={s.label} className="flex items-center gap-2">
-            <span className="text-[10px] font-mono text-muted-foreground w-14">{s.label}</span>
+          <div key={s.label} className="flex items-center gap-3">
+            <span className="text-sm text-muted-foreground w-16">{s.label}</span>
             <div
-              className="bg-foreground h-5 flex items-center px-1.5"
-              style={{ width: `${s.w}%`, minWidth: "20px" }}
+              className="bg-foreground h-6 flex items-center px-2"
+              style={{ width: `${s.w}%`, minWidth: "28px" }}
             >
-              <span className="text-[10px] font-mono text-background tabular-nums">{s.n}</span>
+              <span className="text-xs font-medium text-background tabular-nums">{s.n}</span>
             </div>
             {i > 0 && (
-              <span className="text-[10px] font-mono text-muted-foreground tabular-nums">
+              <span className="text-xs text-muted-foreground tabular-nums">
                 {Math.round((s.n / stages[i - 1].n) * 100) || 0}%
               </span>
             )}
           </div>
         ))}
       </div>
-      <div className="editorial-rule mt-3" />
-      <p className="mt-3 text-[11px] leading-snug text-muted-foreground">
-        <span className="text-foreground font-serif-italic">Where you're losing offers:</span> Applied → Screen (17%).
-        Below the senior-IC benchmark of 22%.
+      <div className="editorial-rule mt-4" />
+      <p className="mt-3 text-sm leading-snug text-foreground/80">
+        <span className="text-foreground font-serif-italic">Where you&apos;re losing offers:</span>{" "}
+        Applied → Screen (17%). Below the senior-IC benchmark of 22%.
       </p>
     </div>
   );
@@ -446,24 +446,22 @@ function FunnelMock() {
 function DiagnosisMock() {
   return (
     <div className="h-full flex flex-col">
-      <div className="label-eyebrow">Why you got rejected</div>
-      <div className="font-display text-base mt-2 leading-tight">
-        Stripe · Senior PM
-      </div>
-      <div className="text-[10px] font-mono text-muted-foreground">After onsite · 11d ago</div>
-      <div className="editorial-rule mt-3" />
-      <ul className="mt-3 space-y-2 text-[11px] leading-snug">
-        <li className="flex gap-2">
-          <span className="font-mono text-muted-foreground">01</span>
-          <span>Recruiter cited <span className="font-serif-italic">"depth on payments"</span> — your CV led with growth.</span>
+      <div className="label-eyebrow-muted">Why you got rejected</div>
+      <div className="font-display text-xl mt-2 leading-tight">Stripe · Senior PM</div>
+      <div className="text-sm text-muted-foreground mt-1">After onsite · 11d ago</div>
+      <div className="editorial-rule mt-4" />
+      <ul className="mt-4 space-y-3 text-sm leading-snug">
+        <li className="flex gap-3">
+          <span className="text-muted-foreground">01</span>
+          <span>Recruiter cited <span className="font-serif-italic">&ldquo;depth on payments&rdquo;</span> — your CV led with growth.</span>
         </li>
-        <li className="flex gap-2">
-          <span className="font-mono text-muted-foreground">02</span>
-          <span>3rd "why Stripe?" answer was generic. Pattern across 4 onsites.</span>
+        <li className="flex gap-3">
+          <span className="text-muted-foreground">02</span>
+          <span>3rd &ldquo;why Stripe?&rdquo; answer was generic. Pattern across 4 onsites.</span>
         </li>
       </ul>
-      <div className="mt-auto pt-3">
-        <span className="label-tag !text-[9px]">Fix next</span>
+      <div className="mt-auto pt-4">
+        <span className="label-tag">Fix next</span>
       </div>
     </div>
   );

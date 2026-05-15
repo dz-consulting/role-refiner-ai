@@ -203,88 +203,67 @@ function Funnel() {
 
   return (
     <section id="funnel" className="border-b border-border">
-      <div className="max-w-6xl mx-auto px-6 md:px-10 py-24 md:py-32">
-        <div className="label-eyebrow-muted">The same candidate, two paths</div>
+      <div className="max-w-6xl mx-auto px-6 md:px-10 py-20 md:py-28">
+        <div className="label-eyebrow-muted">Same 200 applications</div>
         <h2 className="font-display text-5xl md:text-7xl mt-5 max-w-3xl leading-[1.0]">
-          1 offer alone. <span className="font-serif-italic">{withOffers} offers with Hindsight.</span>
+          1 offer alone. <span className="font-serif-italic">{withOffers} with Hindsight.</span>
         </h2>
-        <p className="mt-6 text-xl text-foreground/70 max-w-2xl leading-snug font-light">
-          Same person, same 200 applications. What changes is what you do at every stage —
-          and the compounding gets loud, fast.
-        </p>
 
-        {/* Headline outcome bar */}
-        <div className="mt-12 grid sm:grid-cols-2 gap-px bg-border border border-border">
-          <div className="bg-card p-8">
-            <div className="label-eyebrow-muted">Applying alone</div>
-            <p className="font-display text-6xl mt-3 tabular-nums">{soloOffers}</p>
-            <p className="text-base text-foreground/70 mt-2">offer from 200 applications</p>
+        {/* Split-screen comparison */}
+        <div className="mt-12 grid grid-cols-2 gap-px bg-border border border-border">
+          {/* WITHOUT */}
+          <div className="bg-card p-6 md:p-10">
+            <div className="label-eyebrow-muted">Without Hindsight</div>
+            <p className="font-display text-7xl md:text-8xl mt-3 tabular-nums leading-none">{soloOffers}</p>
+            <p className="text-base text-foreground/70 mt-2">offer</p>
+
+            <div className="mt-8 space-y-3">
+              {STAGES.map((s) => (
+                <div key={s.label}>
+                  <div className="flex justify-between items-baseline text-sm">
+                    <span className="text-foreground/70">{s.label}</span>
+                    <span className="tabular-nums font-medium">{s.solo.conv}%</span>
+                  </div>
+                  <div className="mt-1 h-2 bg-foreground/10">
+                    <div className="h-full bg-foreground/40" style={{ width: `${s.solo.conv}%` }} />
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
-          <div className="bg-foreground text-background p-8">
+
+          {/* WITH */}
+          <div className="bg-foreground text-background p-6 md:p-10">
             <div className="label-eyebrow-muted !text-background/60">With Hindsight</div>
-            <p className="font-display text-6xl mt-3 tabular-nums">
-              {withOffers}<span className="font-serif-italic text-3xl text-background/70 ml-3">×{withOffers}</span>
-            </p>
-            <p className="text-base text-background/80 mt-2">offers from the same 200 applications</p>
+            <p className="font-display text-7xl md:text-8xl mt-3 tabular-nums leading-none">{withOffers}</p>
+            <p className="text-base text-background/80 mt-2">offers</p>
+
+            <div className="mt-8 space-y-3">
+              {STAGES.map((s) => {
+                const delta = s.with.conv - s.solo.conv;
+                return (
+                  <div key={s.label}>
+                    <div className="flex justify-between items-baseline text-sm">
+                      <span className="text-background/80">{s.label}</span>
+                      <span className="tabular-nums font-medium">
+                        {s.with.conv}%
+                        <span className="font-serif-italic text-background/60 ml-2">+{delta}</span>
+                      </span>
+                    </div>
+                    <div className="mt-1 h-2 bg-background/15">
+                      <div className="h-full bg-background" style={{ width: `${s.with.conv}%` }} />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           </div>
         </div>
 
-        {/* Stage-by-stage improvement */}
-        <div className="mt-16 space-y-10">
-          {STAGES.map((s, i) => {
-            const delta = s.with.conv - s.solo.conv;
-            return (
-              <div key={s.label} className="grid grid-cols-12 gap-6 md:gap-10 pb-10 border-b border-border last:border-b-0">
-                <div className="col-span-12 md:col-span-3">
-                  <div className="font-display text-sm text-muted-foreground">
-                    Stage {String(i + 1).padStart(2, "0")}
-                  </div>
-                  <h3 className="font-display text-2xl md:text-3xl mt-2 leading-tight">{s.label}</h3>
-                  <div className="mt-4 inline-flex items-baseline gap-2">
-                    <span className="font-serif-italic text-2xl text-foreground">+{delta} pts</span>
-                    <span className="text-sm text-muted-foreground">conversion</span>
-                  </div>
-                </div>
-
-                <div className="col-span-12 md:col-span-9 space-y-3">
-                  {/* Solo bar */}
-                  <div className="flex items-center gap-4">
-                    <span className="w-20 text-sm text-muted-foreground shrink-0">Alone</span>
-                    <div
-                      className="bg-foreground/15 h-9 flex items-center px-3"
-                      style={{ width: `${s.solo.conv}%`, minWidth: "60px" }}
-                    >
-                      <span className="text-sm font-medium tabular-nums">{s.solo.conv}%</span>
-                    </div>
-                    <span className="text-sm text-muted-foreground tabular-nums">→ {s.solo.n}</span>
-                  </div>
-                  {/* Hindsight bar */}
-                  <div className="flex items-center gap-4">
-                    <span className="w-20 text-sm font-medium shrink-0">Hindsight</span>
-                    <div
-                      className="bg-foreground text-background h-9 flex items-center px-3"
-                      style={{ width: `${s.with.conv}%`, minWidth: "60px" }}
-                    >
-                      <span className="text-sm font-medium tabular-nums">{s.with.conv}%</span>
-                    </div>
-                    <span className="text-sm text-foreground tabular-nums font-medium">→ {s.with.n}</span>
-                  </div>
-
-                  <p className="mt-4 text-base text-foreground/75 leading-snug max-w-xl">
-                    <span className="font-serif-italic text-foreground">The lever — </span>
-                    {s.lever}
-                  </p>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-
-        <div className="mt-16 max-w-2xl text-lg text-foreground/70 leading-snug">
-          <span className="font-serif-italic text-foreground">Small gains at every stage compound.</span>{" "}
-          A 15-point lift on three rounds isn&apos;t a 15% better job search — it&apos;s
-          a different outcome entirely.
-        </div>
+        <p className="mt-10 max-w-2xl text-lg text-foreground/70 leading-snug">
+          <span className="font-serif-italic text-foreground">Small gains compound.</span>{" "}
+          Lift every stage by a few points and the outcome isn&apos;t better — it&apos;s different.
+        </p>
       </div>
     </section>
   );

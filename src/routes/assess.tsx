@@ -186,6 +186,12 @@ function AssessNew() {
           Full JD, copied from anywhere. We'll do the rest.
         </p>
 
+        {isAnon && (
+          <div className="mt-6 text-sm text-muted-foreground border-l-2 border-border pl-3 py-1">
+            Guest mode · {anonRemaining} of {ANON_DAILY_LIMIT} assessments left today.
+          </div>
+        )}
+
         <textarea
           value={jd}
           onChange={(e) => setJd(e.target.value)}

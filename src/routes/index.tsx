@@ -1,16 +1,513 @@
-import { createFileRoute, redirect } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { getAnonProfile } from "@/lib/anon-store";
 
 export const Route = createFileRoute("/")({
-  beforeLoad: async () => {
-    const { data } = await supabase.auth.getSession();
-    if (data.session) throw redirect({ to: "/dashboard" });
-    // Anon users: skip straight to onboarding if no profile, else dashboard.
-    if (typeof window !== "undefined") {
-      throw redirect({ to: getAnonProfile() ? "/dashboard" : "/auth" });
-    }
-    throw redirect({ to: "/auth" });
-  },
-  component: () => null,
+  head: () => ({
+    meta: [
+      { title: "JobMatch — Find out why you keep getting rejected" },
+      {
+        name: "description",
+        content:
+          "Most job searches are a black box. JobMatch turns yours into a funnel — track every application, measure conversion at each stage, and fix the leak that's costing you offers.",
+      },
+      { property: "og:title", content: "JobMatch — Your job search, measured" },
+      {
+        property: "og:description",
+        content:
+          "Stop guessing why applications go nowhere. Diagnose your funnel, fix the leak, get the offer.",
+      },
+    ],
+  }),
+  component: Landing,
 });
+
+function Landing() {
+  const nav = useNavigate();
+  const [authed, setAuthed] = useState(false);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => setAuthed(!!data.session));
+  }, []);
+
+  return (
+    <div className="min-h-screen">
+      <Nav authed={authed} />
+      <Hero authed={authed} onCta={() => nav({ to: authed ? "/dashboard" : "/onboarding" })} />
+      <Funnel />
+      <Screens />
+      <HowItWorks />
+      <Waitlist />
+      <Footer />
+    </div>
+  );
+}
+
+/* ───────────────────────── Nav ───────────────────────── */
+
+function Nav({ authed }: { authed: boolean }) {
+  return (
+    <header className="border-b border-border">
+      <div className="max-w-6xl mx-auto px-6 md:px-10 py-5 flex items-center justify-between">
+        <Link to="/" className="font-display text-xl tracking-tight">
+          JobMatch
+        </Link>
+        <nav className="flex items-center gap-6 text-sm">
+          <a href="#funnel" className="hidden sm:inline text-muted-foreground hover:text-foreground">
+            The funnel
+          </a>
+          <a href="#how" className="hidden sm:inline text-muted-foreground hover:text-foreground">
+            How it works
+          </a>
+          <a href="#waitlist" className="hidden sm:inline text-muted-foreground hover:text-foreground">
+            Waitlist
+          </a>
+          {authed ? (
+            <Link to="/dashboard" className="bg-foreground text-background px-4 py-2 hover:opacity-90">
+              Dashboard →
+            </Link>
+          ) : (
+            <Link to="/auth" className="text-foreground hover:underline underline-offset-4">
+              Sign in
+            </Link>
+          )}
+        </nav>
+      </div>
+    </header>
+  );
+}
+
+/* ───────────────────────── Hero ───────────────────────── */
+
+function Hero({ authed, onCta }: { authed: boolean; onCta: () => void }) {
+  return (
+    <section className="border-b border-border">
+      <div className="max-w-6xl mx-auto px-6 md:px-10 py-24 md:py-32 grid md:grid-cols-12 gap-12 items-center">
+        <div className="md:col-span-7">
+          <div className="label-eyebrow">Beta · Free during launch</div>
+          <h1 className="font-display text-5xl md:text-7xl mt-6 leading-[1.02]">
+            Find out why you keep getting{" "}
+            <span className="font-serif-italic">rejected</span>.
+          </h1>
+          <p className="mt-8 text-lg md:text-xl text-muted-foreground leading-relaxed max-w-xl">
+            Most job searches are a black box. JobMatch turns yours into a funnel —
+            track every application, measure conversion at each stage, and fix the leak
+            that's costing you offers.
+          </p>
+          <div className="mt-12 flex flex-col sm:flex-row gap-4">
+            <button
+              onClick={onCta}
+              className="bg-foreground text-background px-8 py-4 text-base hover:opacity-90 transition"
+            >
+              {authed ? "Open dashboard →" : "Try free — no signup →"}
+            </button>
+            <a
+              href="#waitlist"
+              className="border border-foreground text-foreground px-8 py-4 text-base text-center hover:bg-foreground hover:text-background transition"
+            >
+              Join the waitlist
+            </a>
+          </div>
+          <div className="mt-6 text-xs font-mono text-muted-foreground">
+            3 free assessments per day · No card required · Data stays in your browser
+          </div>
+        </div>
+
+        {/* Hero visual: stat callout */}
+        <div className="md:col-span-5">
+          <div className="border border-border bg-card p-8 md:p-10">
+            <div className="label-eyebrow">The hard truth</div>
+            <p className="font-display text-3xl md:text-4xl mt-4 leading-[1.1]">
+              The average job seeker sends{" "}
+              <span className="font-serif-italic">100+ applications</span> and lands{" "}
+              <span className="font-serif-italic">1 offer</span>.
+            </p>
+            <div className="mt-8 pt-6 border-t border-border text-sm text-muted-foreground">
+              That's a <span className="text-foreground font-medium">1% conversion rate</span> —
+              and most candidates have no idea where they're losing the other 99.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ───────────────────────── Funnel ───────────────────────── */
+
+const FUNNEL_STAGES = [
+  { label: "Applications", count: 100, conv: null, leak: null },
+  { label: "Recruiter screen", count: 25, conv: "25%", leak: "Wrong-fit targeting · weak CV match" },
+  { label: "1st interview", count: 10, conv: "40%", leak: "Recruiter pitch · salary mismatch" },
+  { label: "Onsite / final", count: 4, conv: "40%", leak: "Story doesn't land · weak 'why us'" },
+  { label: "Offer", count: 1, conv: "25%", leak: "Competency gaps · negotiation" },
+];
+
+function Funnel() {
+  const max = FUNNEL_STAGES[0].count;
+  return (
+    <section id="funnel" className="border-b border-border">
+      <div className="max-w-6xl mx-auto px-6 md:px-10 py-24 md:py-32">
+        <div className="label-eyebrow">The product</div>
+        <h2 className="font-display text-4xl md:text-6xl mt-4 max-w-3xl leading-[1.05]">
+          Your job search, as a <span className="font-serif-italic">funnel</span>.
+        </h2>
+        <p className="mt-6 text-lg text-muted-foreground max-w-2xl">
+          Every stage has a conversion rate. Every drop-off has a reason. We measure both —
+          then tell you which one is worth fixing first.
+        </p>
+
+        <div className="mt-16 space-y-1">
+          {FUNNEL_STAGES.map((s, i) => {
+            const width = (s.count / max) * 100;
+            return (
+              <div key={s.label} className="grid grid-cols-12 gap-4 md:gap-8 items-center py-3">
+                <div className="col-span-12 md:col-span-3 flex items-baseline gap-3">
+                  <span className="font-mono text-xs text-muted-foreground w-6">
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                  <span className="font-display text-xl">{s.label}</span>
+                </div>
+                <div className="col-span-8 md:col-span-5">
+                  <div
+                    className="bg-foreground text-background h-12 flex items-center px-4 transition-all"
+                    style={{ width: `${width}%`, minWidth: "60px" }}
+                  >
+                    <span className="font-mono text-sm tabular-nums">{s.count}</span>
+                  </div>
+                </div>
+                <div className="col-span-2 md:col-span-1 font-mono text-sm tabular-nums text-foreground">
+                  {s.conv ?? "—"}
+                </div>
+                <div className="col-span-12 md:col-span-3 text-sm text-muted-foreground">
+                  {s.leak ? (
+                    <span>
+                      <span className="font-serif-italic">leak:</span> {s.leak}
+                    </span>
+                  ) : (
+                    <span className="font-mono text-xs">START</span>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        <div className="mt-12 pt-8 border-t border-border text-sm text-muted-foreground max-w-2xl">
+          <span className="font-serif-italic text-foreground">Most candidates obsess over the top of the funnel</span> —
+          sending more applications. But sending 200 instead of 100 won't help if your screen-to-interview
+          rate is the real leak. We find the real leak.
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ───────────────────────── Mock product screens ───────────────────────── */
+
+function Screens() {
+  return (
+    <section className="border-b border-border bg-surface/40">
+      <div className="max-w-6xl mx-auto px-6 md:px-10 py-24 md:py-32">
+        <div className="label-eyebrow">Inside the product</div>
+        <h2 className="font-display text-4xl md:text-6xl mt-4 max-w-3xl leading-[1.05]">
+          Three views, <span className="font-serif-italic">one promise</span>.
+        </h2>
+
+        <div className="mt-16 grid md:grid-cols-3 gap-8">
+          <ScreenCard
+            number="01"
+            title="The fit score"
+            blurb="Paste a JD, get an honest score in 60 seconds. No false hope."
+          >
+            <FitScoreMock />
+          </ScreenCard>
+
+          <ScreenCard
+            number="02"
+            title="The funnel"
+            blurb="Every application tracked. Conversion measured. Leaks visible."
+          >
+            <FunnelMock />
+          </ScreenCard>
+
+          <ScreenCard
+            number="03"
+            title="The diagnosis"
+            blurb="When you get rejected, we tell you why — and what to do next."
+          >
+            <DiagnosisMock />
+          </ScreenCard>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function ScreenCard({
+  number,
+  title,
+  blurb,
+  children,
+}: {
+  number: string;
+  title: string;
+  blurb: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div>
+      <div className="border border-border bg-card aspect-[4/3] p-5 overflow-hidden relative">
+        {children}
+      </div>
+      <div className="mt-5 flex items-baseline gap-3">
+        <span className="font-mono text-xs text-muted-foreground">{number}</span>
+        <h3 className="font-display text-xl">{title}</h3>
+      </div>
+      <p className="mt-2 text-sm text-muted-foreground leading-relaxed">{blurb}</p>
+    </div>
+  );
+}
+
+function FitScoreMock() {
+  return (
+    <div className="h-full flex flex-col">
+      <div className="label-eyebrow">Fit score</div>
+      <div className="flex items-baseline gap-3 mt-2">
+        <span className="font-display text-6xl tabular-nums">42</span>
+        <span className="font-serif-italic text-base text-muted-foreground">weak fit</span>
+      </div>
+      <div className="editorial-rule mt-3" />
+      <p className="mt-3 text-[11px] leading-snug text-muted-foreground">
+        Senior IC role, but the JD repeatedly emphasizes managing ICs. Your CV shows 6 yrs IC + 0 reports.
+        Don't apply blind — either find a hiring manager referral or skip.
+      </p>
+      <div className="mt-auto pt-3 flex gap-1.5">
+        <span className="label-tag !text-[9px]">Skip</span>
+        <span className="label-tag !text-[9px]">Refer first</span>
+      </div>
+    </div>
+  );
+}
+
+function FunnelMock() {
+  const stages = [
+    { label: "Applied", n: 47, w: 100 },
+    { label: "Screen", n: 8, w: 32 },
+    { label: "Interview", n: 3, w: 18 },
+    { label: "Offer", n: 0, w: 4 },
+  ];
+  return (
+    <div className="h-full flex flex-col">
+      <div className="label-eyebrow">Last 90 days</div>
+      <div className="mt-2 space-y-1.5">
+        {stages.map((s, i) => (
+          <div key={s.label} className="flex items-center gap-2">
+            <span className="text-[10px] font-mono text-muted-foreground w-14">{s.label}</span>
+            <div
+              className="bg-foreground h-5 flex items-center px-1.5"
+              style={{ width: `${s.w}%`, minWidth: "20px" }}
+            >
+              <span className="text-[10px] font-mono text-background tabular-nums">{s.n}</span>
+            </div>
+            {i > 0 && (
+              <span className="text-[10px] font-mono text-muted-foreground tabular-nums">
+                {Math.round((s.n / stages[i - 1].n) * 100) || 0}%
+              </span>
+            )}
+          </div>
+        ))}
+      </div>
+      <div className="editorial-rule mt-3" />
+      <p className="mt-3 text-[11px] leading-snug text-muted-foreground">
+        <span className="text-foreground font-serif-italic">Biggest leak:</span> Applied → Screen (17%).
+        Below the senior-IC benchmark of 22%.
+      </p>
+    </div>
+  );
+}
+
+function DiagnosisMock() {
+  return (
+    <div className="h-full flex flex-col">
+      <div className="label-eyebrow">Why you got rejected</div>
+      <div className="font-display text-base mt-2 leading-tight">
+        Stripe · Senior PM
+      </div>
+      <div className="text-[10px] font-mono text-muted-foreground">After onsite · 11d ago</div>
+      <div className="editorial-rule mt-3" />
+      <ul className="mt-3 space-y-2 text-[11px] leading-snug">
+        <li className="flex gap-2">
+          <span className="font-mono text-muted-foreground">01</span>
+          <span>Recruiter cited <span className="font-serif-italic">"depth on payments"</span> — your CV led with growth.</span>
+        </li>
+        <li className="flex gap-2">
+          <span className="font-mono text-muted-foreground">02</span>
+          <span>3rd "why Stripe?" answer was generic. Pattern across 4 onsites.</span>
+        </li>
+      </ul>
+      <div className="mt-auto pt-3">
+        <span className="label-tag !text-[9px]">Fix next</span>
+      </div>
+    </div>
+  );
+}
+
+/* ───────────────────────── How it works ───────────────────────── */
+
+function HowItWorks() {
+  const steps = [
+    {
+      n: "01",
+      title: "Upload your CV.",
+      body: "One PDF. We extract roles, skills, outcomes — no forms to fill.",
+    },
+    {
+      n: "02",
+      title: "Assess every job.",
+      body: "Paste a JD, get a fit score, decoded requirements, and screening risks before you apply.",
+    },
+    {
+      n: "03",
+      title: "Track the funnel.",
+      body: "Mark each application's outcome. We surface the leak — and tell you what to do about it.",
+    },
+  ];
+  return (
+    <section id="how" className="border-b border-border">
+      <div className="max-w-6xl mx-auto px-6 md:px-10 py-24 md:py-32">
+        <div className="label-eyebrow">How it works</div>
+        <h2 className="font-display text-4xl md:text-6xl mt-4 max-w-3xl leading-[1.05]">
+          Three steps. <span className="font-serif-italic">No fluff.</span>
+        </h2>
+
+        <div className="mt-16 grid md:grid-cols-3 gap-12">
+          {steps.map((s) => (
+            <div key={s.n}>
+              <div className="font-mono text-xs text-muted-foreground">{s.n}</div>
+              <h3 className="font-display text-2xl mt-3">{s.title}</h3>
+              <p className="mt-4 text-muted-foreground leading-relaxed">{s.body}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ───────────────────────── Waitlist ───────────────────────── */
+
+function Waitlist() {
+  const [email, setEmail] = useState("");
+  const [note, setNote] = useState("");
+  const [state, setState] = useState<"idle" | "loading" | "ok" | "error">("idle");
+  const [err, setErr] = useState<string | null>(null);
+
+  const submit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setErr(null);
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setErr("That doesn't look like a valid email.");
+      return;
+    }
+    setState("loading");
+    const { error } = await supabase
+      .from("waitlist")
+      .insert({ email: email.trim().toLowerCase(), note: note.trim() || null, source: "landing" });
+    if (error) {
+      // 23505 = unique violation — already on the list. Treat as success.
+      if (error.code === "23505") {
+        setState("ok");
+        return;
+      }
+      setState("error");
+      setErr(error.message);
+      return;
+    }
+    setState("ok");
+  };
+
+  return (
+    <section id="waitlist" className="border-b border-border bg-foreground text-background">
+      <div className="max-w-3xl mx-auto px-6 md:px-10 py-24 md:py-32">
+        <div className="label-eyebrow !text-background/60">Stay in the loop</div>
+        <h2 className="font-display text-4xl md:text-6xl mt-4 leading-[1.05]">
+          Get early access to the <span className="font-serif-italic">funnel</span>.
+        </h2>
+        <p className="mt-6 text-lg text-background/70 max-w-xl leading-relaxed">
+          The fit score is live. Funnel tracking and rejection diagnosis ship next.
+          Drop your email — we'll let you know when it's ready.
+        </p>
+
+        {state === "ok" ? (
+          <div className="mt-12 border border-background/30 p-8">
+            <div className="label-eyebrow !text-background/60">You're in</div>
+            <p className="font-display text-2xl mt-2">Thanks. We'll be in touch.</p>
+            <p className="text-background/70 mt-3 text-sm">
+              Want to try the fit score now?{" "}
+              <Link to="/onboarding" className="underline underline-offset-4">
+                Start free →
+              </Link>
+            </p>
+          </div>
+        ) : (
+          <form onSubmit={submit} className="mt-12 space-y-6">
+            <div>
+              <div className="label-eyebrow !text-background/60 mb-2">Email</div>
+              <input
+                type="email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="you@example.com"
+                disabled={state === "loading"}
+                className="w-full bg-transparent border-b border-background/40 focus:border-background py-3 text-lg focus:outline-none transition-colors text-background placeholder:text-background/40"
+              />
+            </div>
+            <div>
+              <div className="label-eyebrow !text-background/60 mb-2">
+                What stage are you at? (optional)
+              </div>
+              <input
+                type="text"
+                value={note}
+                onChange={(e) => setNote(e.target.value)}
+                placeholder="e.g. Senior PM, ~80 apps in, 5 offers, lots of ghosting"
+                disabled={state === "loading"}
+                className="w-full bg-transparent border-b border-background/40 focus:border-background py-3 text-base focus:outline-none transition-colors text-background placeholder:text-background/40"
+              />
+            </div>
+            {err && (
+              <div className="text-sm text-background/90 border-l-2 border-background pl-3 py-1">
+                {err}
+              </div>
+            )}
+            <button
+              type="submit"
+              disabled={state === "loading"}
+              className="bg-background text-foreground px-8 py-4 text-base hover:opacity-90 transition disabled:opacity-50"
+            >
+              {state === "loading" ? "..." : "Join the waitlist →"}
+            </button>
+          </form>
+        )}
+      </div>
+    </section>
+  );
+}
+
+/* ───────────────────────── Footer ───────────────────────── */
+
+function Footer() {
+  return (
+    <footer>
+      <div className="max-w-6xl mx-auto px-6 md:px-10 py-10 flex flex-col sm:flex-row items-baseline justify-between gap-4 text-xs font-mono text-muted-foreground">
+        <div>JobMatch · Beta · {new Date().getFullYear()}</div>
+        <div className="flex gap-6">
+          <Link to="/auth" className="hover:text-foreground">Sign in</Link>
+          <Link to="/onboarding" className="hover:text-foreground">Try free</Link>
+        </div>
+      </div>
+    </footer>
+  );
+}

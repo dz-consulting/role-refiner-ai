@@ -627,18 +627,18 @@ function HowItWorks() {
   const steps = [
     {
       n: "01",
-      title: "Upload your CV.",
-      body: "One PDF. We extract roles, skills, outcomes — no forms to fill.",
+      title: "Score before you apply.",
+      body: "Upload your CV, paste a JD. Hindsight scores fit, names the requirements that'll cut you, and tells you whether to apply, refer, or skip.",
     },
     {
       n: "02",
-      title: "Assess every job.",
-      body: "Paste a JD, get a fit score, decoded requirements, and screening risks before you apply.",
+      title: "Record every interview.",
+      body: "Use Granola to capture the call. Hindsight reads the transcript and pinpoints the exact moments you lost the room — across every round.",
     },
     {
       n: "03",
-      title: "Track the funnel.",
-      body: "Mark each application's outcome. We surface where you're losing offers — and tell you what to do about it.",
+      title: "Walk in prepared next time.",
+      body: "A drill plan built from your last interview's gaps: the stories to rewrite, the questions you'll get asked, the answers worth rehearsing.",
     },
   ];
   return (

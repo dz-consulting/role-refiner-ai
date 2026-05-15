@@ -220,76 +220,43 @@ function Funnel() {
           about it before the next application.
         </p>
 
-        {/* Split-screen comparison */}
-        <div className="mt-14 grid md:grid-cols-2 gap-px bg-border border border-border">
-          {/* WITHOUT */}
-          <div className="bg-card p-6 md:p-10">
-            <div className="label-eyebrow-muted">Without Hindsight</div>
-            <p className="font-display text-6xl md:text-7xl mt-3 tabular-nums leading-none">
-              {SOLO_OFFERS} <span className="text-2xl md:text-3xl text-foreground/60 font-light">offer</span>
-            </p>
-            <p className="text-base text-foreground/70 mt-3 font-serif-italic">
-              You guess. You apply. You get ghosted. You guess again.
-            </p>
-
-            <div className="mt-8 space-y-5">
-              {STAGES.map((s) => (
-                <div key={s.label}>
-                  <div className="flex justify-between items-baseline text-sm">
-                    <span className="text-foreground/70">{s.label}</span>
-                    <span className="tabular-nums font-medium text-foreground/70">{s.solo}%</span>
-                  </div>
-                  <div className="mt-1.5 h-1.5 bg-foreground/10">
-                    <div className="h-full bg-foreground/40" style={{ width: `${s.solo}%` }} />
-                  </div>
-                  <p className="mt-2 text-xs text-foreground/55 leading-snug">
-                    <span className="text-foreground/70 font-medium">Why you failed: </span>
-                    <span className="font-serif-italic">{s.guess}</span>
-                  </p>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* WITH */}
-          <div className="bg-foreground text-background p-6 md:p-10">
-            <div className="label-eyebrow-muted !text-background/60">With Hindsight</div>
-            <p className="font-display text-6xl md:text-7xl mt-3 tabular-nums leading-none">
-              {WITH_OFFERS} <span className="text-2xl md:text-3xl text-background/70 font-light">offers</span>
-            </p>
-            <p className="text-base text-background/80 mt-3 font-serif-italic">
-              Every rejection becomes a data point. Every stage gets diagnosed.
-            </p>
-
-            <div className="mt-8 space-y-5">
-              {STAGES.map((s) => {
-                const delta = s.with - s.solo;
-                return (
-                  <div key={s.label}>
-                    <div className="flex justify-between items-baseline text-sm">
-                      <span className="text-background/80">{s.label}</span>
-                      <span className="tabular-nums font-medium">
-                        {s.with}%
-                        <span className="font-serif-italic text-background/60 ml-2">+{delta}</span>
-                      </span>
+        {/* Funnel diagram */}
+        <div className="mt-14 border border-border bg-card p-6 md:p-12">
+          <div className="space-y-3">
+            {STAGES.map((s, i) => {
+              // Funnel taper: each stage narrower than the last
+              const width = 100 - i * 13;
+              return (
+                <div key={s.label} className="grid md:grid-cols-12 gap-4 md:gap-8 items-center">
+                  {/* Funnel bar */}
+                  <div className="md:col-span-5">
+                    <div className="flex justify-center">
+                      <div
+                        className="bg-foreground text-background py-4 px-5 flex items-center justify-between"
+                        style={{ width: `${width}%` }}
+                      >
+                        <span className="text-sm md:text-base font-medium truncate">{s.label}</span>
+                        <span className="font-display text-lg md:text-xl tabular-nums ml-3">{s.solo}%</span>
+                      </div>
                     </div>
-                    <div className="mt-1.5 h-1.5 bg-background/15">
-                      <div className="h-full bg-background" style={{ width: `${s.with}%` }} />
-                    </div>
-                    <p className="mt-2 text-xs text-background/75 leading-snug">
-                      <span className="text-background font-medium">Hindsight tells you: </span>
+                  </div>
+
+                  {/* Diagnosis */}
+                  <div className="md:col-span-7 md:border-l border-border md:pl-8">
+                    <div className="label-eyebrow-muted">Stage {String(i + 1).padStart(2, "0")} · Hindsight tells you</div>
+                    <p className="mt-2 text-base md:text-lg text-foreground/80 leading-snug font-serif-italic">
                       {s.diagnosis}
                     </p>
                   </div>
-                );
-              })}
-            </div>
+                </div>
+              );
+            })}
           </div>
         </div>
 
         <p className="mt-10 max-w-2xl text-lg text-foreground/70 leading-snug">
           <span className="font-serif-italic text-foreground">Five stages, five diagnoses.</span>{" "}
-          Close the gaps you can name and the outcome isn&apos;t better — it&apos;s different.
+          Stop guessing. Close the gaps you can name and the outcome isn&apos;t better — it&apos;s different.
         </p>
       </div>
     </section>

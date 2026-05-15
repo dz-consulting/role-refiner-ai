@@ -414,7 +414,7 @@ function FunnelMock() {
       </div>
       <div className="editorial-rule mt-3" />
       <p className="mt-3 text-[11px] leading-snug text-muted-foreground">
-        <span className="text-foreground font-serif-italic">Biggest leak:</span> Applied → Screen (17%).
+        <span className="text-foreground font-serif-italic">Where you're losing offers:</span> Applied → Screen (17%).
         Below the senior-IC benchmark of 22%.
       </p>
     </div>
@@ -464,7 +464,7 @@ function HowItWorks() {
     {
       n: "03",
       title: "Track the funnel.",
-      body: "Mark each application's outcome. We surface the leak — and tell you what to do about it.",
+      body: "Mark each application's outcome. We surface where you're losing offers — and tell you what to do about it.",
     },
   ];
   return (

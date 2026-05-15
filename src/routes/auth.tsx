@@ -55,23 +55,31 @@ function AuthPage() {
     <div className="min-h-screen flex items-center justify-center px-6">
       <div className="w-full max-w-sm py-24">
         <div className="font-display text-3xl tracking-tight">JobMatch</div>
-        <div className="label-eyebrow mt-1">Honest job fit assessment</div>
+        <div className="label-eyebrow mt-1">Your job search, measured</div>
+
+        <h1 className="font-display text-4xl mt-10 leading-[1.05]">
+          Find out why you keep getting <span className="font-serif-italic">rejected</span>.
+        </h1>
+        <p className="text-muted-foreground mt-5 text-base leading-relaxed">
+          Most job searches are a black box. We turn yours into a funnel — track every application,
+          measure conversion at each stage, and fix the leak that's costing you offers.
+        </p>
 
         {/* Primary CTA — beta guest mode */}
-        <div className="mt-12 border border-foreground p-6 bg-surface">
+        <div className="mt-8 border border-foreground p-6 bg-surface">
           <div className="label-eyebrow">Beta · No account needed</div>
           <h2 className="font-display text-2xl mt-2 leading-tight">
-            Try it now — <span className="font-serif-italic">free</span>.
+            Diagnose your first job — <span className="font-serif-italic">free</span>.
           </h2>
           <p className="text-caption mt-2">
-            Run up to 3 assessments per day without signing in. Your data stays in your browser.
+            Up to 3 assessments per day. No signup. Your data stays in your browser.
           </p>
           <button
             type="button"
             onClick={() => nav({ to: "/onboarding" })}
             className="w-full mt-5 bg-foreground text-background font-medium py-3 hover:opacity-90 transition"
           >
-            Try without signing in →
+            Start free →
           </button>
         </div>
 

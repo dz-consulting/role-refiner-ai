@@ -82,54 +82,82 @@ function Nav({ authed }: { authed: boolean }) {
 function Hero({ authed, onCta }: { authed: boolean; onCta: () => void }) {
   return (
     <section className="border-b border-border">
-      <div className="max-w-6xl mx-auto px-6 md:px-10 py-24 md:py-32 grid md:grid-cols-12 gap-12 items-center">
+      <div className="max-w-6xl mx-auto px-6 md:px-10 py-20 md:py-28 grid md:grid-cols-12 gap-12 items-center">
         <div className="md:col-span-7">
-          <div className="label-eyebrow">Beta · Free during launch</div>
-          <h1 className="font-display text-5xl md:text-7xl mt-6 leading-[1.02]">
+          <div className="label-eyebrow-muted">Beta · Free during launch</div>
+          <h1 className="font-display text-6xl md:text-8xl mt-5 leading-[0.95]">
             From <span className="font-serif-italic">applied</span> to{" "}
             <span className="font-serif-italic">offer</span>, with a plan.
           </h1>
-          <p className="mt-8 text-lg md:text-xl text-muted-foreground leading-relaxed max-w-xl">
-            Most job searches are pure luck and persistence. Yours doesn't have to be.
-            Track every application, learn from every rejection, and close the gaps that
-            stand between you and the offer.
+          <p className="mt-8 text-xl md:text-2xl text-foreground/80 leading-snug max-w-xl font-light">
+            Most job searches are pure luck. Yours doesn&apos;t have to be.
+            Track every application, learn from every rejection, close the gaps
+            standing between you and the offer.
           </p>
-          <div className="mt-12 flex flex-col sm:flex-row gap-4">
+          <div className="mt-10 flex flex-col sm:flex-row gap-4">
             <button
               onClick={onCta}
-              className="bg-foreground text-background px-8 py-4 text-base hover:opacity-90 transition"
+              className="bg-foreground text-background px-8 py-4 text-base font-medium hover:opacity-90 transition rounded-full"
             >
               {authed ? "Open dashboard →" : "Try free — no signup →"}
             </button>
             <a
               href="#waitlist"
-              className="border border-foreground text-foreground px-8 py-4 text-base text-center hover:bg-foreground hover:text-background transition"
+              className="border border-foreground text-foreground px-8 py-4 text-base font-medium text-center hover:bg-foreground hover:text-background transition rounded-full"
             >
               Join the waitlist
             </a>
           </div>
-          <div className="mt-6 text-xs font-mono text-muted-foreground">
-            3 free assessments per day · No card required · Data stays in your browser
-          </div>
+          <p className="mt-5 text-sm text-muted-foreground">
+            3 free assessments per day. No card required.
+          </p>
         </div>
 
-        {/* Hero visual: stat callout */}
+        {/* Hero visual: concept diagram — 200 CVs collapse into 1 offer */}
         <div className="md:col-span-5">
-          <div className="border border-border bg-card p-8 md:p-10">
-            <div className="label-eyebrow">The hard truth</div>
-            <p className="font-display text-3xl md:text-4xl mt-4 leading-[1.1]">
-              The average job seeker sends{" "}
-              <span className="font-serif-italic">200 CVs</span> and lands{" "}
-              <span className="font-serif-italic">1 offer</span>.
-            </p>
-            <div className="mt-8 pt-6 border-t border-border text-sm text-muted-foreground">
-              That's a <span className="text-foreground font-medium">0.5% success rate</span> —
-              and most candidates have no idea where they're losing the other 199.
-            </div>
-          </div>
+          <ConceptVisual />
         </div>
       </div>
     </section>
+  );
+}
+
+/* ───────────────── Concept visual: 200 → 1 ───────────────── */
+
+function ConceptVisual() {
+  // 10x20 grid of dots = 200 CVs, with a single highlighted "offer"
+  const dots = Array.from({ length: 200 });
+  return (
+    <div className="border border-foreground bg-card p-8 md:p-10">
+      <div className="label-eyebrow-muted">The hard truth</div>
+      <p className="font-display text-2xl md:text-3xl mt-3 leading-[1.1]">
+        200 applications. <span className="font-serif-italic">1 offer.</span>
+      </p>
+
+      <div className="mt-7 grid grid-cols-[repeat(20,minmax(0,1fr))] gap-[3px]">
+        {dots.map((_, i) => {
+          const isOffer = i === 137; // arbitrary highlighted dot
+          return (
+            <div
+              key={i}
+              className={
+                isOffer
+                  ? "aspect-square bg-foreground"
+                  : "aspect-square bg-foreground/15"
+              }
+            />
+          );
+        })}
+      </div>
+
+      <div className="mt-6 flex items-center gap-3 text-sm text-foreground/70">
+        <span className="inline-block w-3 h-3 bg-foreground" />
+        <span>
+          The 1 offer you can&apos;t see coming —{" "}
+          <span className="text-foreground font-medium">until you do</span>.
+        </span>
+      </div>
+    </div>
   );
 }
 

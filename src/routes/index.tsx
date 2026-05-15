@@ -163,156 +163,127 @@ function ConceptVisual() {
 
 /* ───────────────────────── Funnel teaching diagram ───────────────────────── */
 
-// Modeled on a typical PM hiring funnel: 200 CVs → 1 offer.
-const TYPICAL_FUNNEL = [
-  { label: "CVs sent", count: 200, conv: null,  cost: "30 sec each" },
-  { label: "Phone screen", count: 20, conv: "10%", cost: "20 min" },
-  { label: "Hiring manager", count: 10, conv: "50%", cost: "45 min" },
-  { label: "Second round", count: 6, conv: "60%", cost: "45 min" },
-  { label: "Final round", count: 3, conv: "50%", cost: "60 min" },
-  { label: "Offer", count: 1, conv: "33%", cost: "—" },
-];
-
-// Same shape, but with the reasons surfaced — what Hindsight gives you.
-const HINDSIGHT_FUNNEL = [
-  { label: "CVs sent", count: 200, conv: null,  reason: "Start" },
-  { label: "Phone screen", count: 20, conv: "10%", reason: "CV doesn't match the JD's actual priorities" },
-  { label: "Hiring manager", count: 10, conv: "50%", reason: "Recruiter pitch is generic · salary mismatch" },
-  { label: "Second round", count: 6, conv: "60%", reason: "Story doesn't land · weak 'why this company'" },
-  { label: "Final round", count: 3, conv: "50%", reason: "Specific competency gap (system design, case)" },
-  { label: "Offer", count: 1, conv: "33%", reason: "Negotiation, competing offers, scope concerns" },
+// Same candidate, same 200 applications. What changes is what they do at each stage.
+const STAGES = [
+  {
+    label: "CV → Screen",
+    solo: { conv: 10, n: 20 },
+    with: { conv: 25, n: 50 },
+    lever: "Skip the JDs you can't win. Tailor the ones you can to the priorities that actually matter.",
+  },
+  {
+    label: "Screen → Hiring manager",
+    solo: { conv: 50, n: 10 },
+    with: { conv: 70, n: 35 },
+    lever: "Recruiter pitch rewritten around their pain — comp range, scope, and 'why now' nailed before the call.",
+  },
+  {
+    label: "HM → Second round",
+    solo: { conv: 60, n: 6 },
+    with: { conv: 75, n: 26 },
+    lever: "A clear story for this company, not a generic narrative. Their problems, your receipts.",
+  },
+  {
+    label: "Second → Final",
+    solo: { conv: 50, n: 3 },
+    with: { conv: 70, n: 18 },
+    lever: "Specific competency gap diagnosed and drilled — system design, case, or stakeholder demo.",
+  },
+  {
+    label: "Final → Offer",
+    solo: { conv: 33, n: 1 },
+    with: { conv: 55, n: 10 },
+    lever: "Negotiation prep with comparable comp data and a real BATNA from parallel processes.",
+  },
 ];
 
 function Funnel() {
-  const max = TYPICAL_FUNNEL[0].count;
+  const soloOffers = STAGES[STAGES.length - 1].solo.n;
+  const withOffers = STAGES[STAGES.length - 1].with.n;
+
   return (
     <section id="funnel" className="border-b border-border">
       <div className="max-w-6xl mx-auto px-6 md:px-10 py-24 md:py-32">
-        <div className="label-eyebrow-muted">The funnel, explained</div>
+        <div className="label-eyebrow-muted">The same candidate, two paths</div>
         <h2 className="font-display text-5xl md:text-7xl mt-5 max-w-3xl leading-[1.0]">
-          200 CVs in. <span className="font-serif-italic">1 offer out.</span>
+          1 offer alone. <span className="font-serif-italic">{withOffers} offers with Hindsight.</span>
         </h2>
         <p className="mt-6 text-xl text-foreground/70 max-w-2xl leading-snug font-light">
-          Hiring is a series of filters. Each round drops most candidates.
-          The math is brutal — and most job seekers can&apos;t see it, let alone fix it.
+          Same person, same 200 applications. What changes is what you do at every stage —
+          and the compounding gets loud, fast.
         </p>
 
-        {/* Diagram 1: the typical funnel */}
-        <div className="mt-16 border border-border bg-card p-6 md:p-10">
-          <div className="flex items-baseline justify-between gap-4 mb-8">
-            <div>
-              <div className="label-eyebrow-muted">The typical hiring funnel</div>
-              <h3 className="font-display text-3xl mt-2">What happens to most candidates</h3>
-            </div>
-            <div className="text-sm text-muted-foreground hidden sm:block">
-              Candidates remaining at each stage
-            </div>
+        {/* Headline outcome bar */}
+        <div className="mt-12 grid sm:grid-cols-2 gap-px bg-border border border-border">
+          <div className="bg-card p-8">
+            <div className="label-eyebrow-muted">Applying alone</div>
+            <p className="font-display text-6xl mt-3 tabular-nums">{soloOffers}</p>
+            <p className="text-base text-foreground/70 mt-2">offer from 200 applications</p>
           </div>
+          <div className="bg-foreground text-background p-8">
+            <div className="label-eyebrow-muted !text-background/60">With Hindsight</div>
+            <p className="font-display text-6xl mt-3 tabular-nums">
+              {withOffers}<span className="font-serif-italic text-3xl text-background/70 ml-3">×{withOffers}</span>
+            </p>
+            <p className="text-base text-background/80 mt-2">offers from the same 200 applications</p>
+          </div>
+        </div>
 
-          <div className="space-y-3">
-            {TYPICAL_FUNNEL.map((s, i) => {
-              const width = (s.count / max) * 100;
-              return (
-                <div key={s.label} className="grid grid-cols-12 gap-3 md:gap-6 items-center">
-                  <div className="col-span-12 md:col-span-3 flex items-baseline gap-3">
-                    <span className="font-display text-sm text-muted-foreground w-6">
-                      {String(i + 1).padStart(2, "0")}
-                    </span>
-                    <span className="font-display text-lg md:text-xl">{s.label}</span>
+        {/* Stage-by-stage improvement */}
+        <div className="mt-16 space-y-10">
+          {STAGES.map((s, i) => {
+            const delta = s.with.conv - s.solo.conv;
+            return (
+              <div key={s.label} className="grid grid-cols-12 gap-6 md:gap-10 pb-10 border-b border-border last:border-b-0">
+                <div className="col-span-12 md:col-span-3">
+                  <div className="font-display text-sm text-muted-foreground">
+                    Stage {String(i + 1).padStart(2, "0")}
                   </div>
-                  <div className="col-span-9 md:col-span-7">
-                    <div
-                      className="bg-foreground text-background h-10 flex items-center px-4 transition-all"
-                      style={{ width: `${Math.max(width, 2)}%`, minWidth: "56px" }}
-                    >
-                      <span className="text-sm font-medium tabular-nums">{s.count}</span>
-                    </div>
-                  </div>
-                  <div className="col-span-3 md:col-span-2 text-sm tabular-nums text-muted-foreground text-right md:text-left">
-                    {s.conv ? `→ ${s.conv}` : "start"}
+                  <h3 className="font-display text-2xl md:text-3xl mt-2 leading-tight">{s.label}</h3>
+                  <div className="mt-4 inline-flex items-baseline gap-2">
+                    <span className="font-serif-italic text-2xl text-foreground">+{delta} pts</span>
+                    <span className="text-sm text-muted-foreground">conversion</span>
                   </div>
                 </div>
-              );
-            })}
-          </div>
 
-          <div className="mt-10 pt-6 border-t border-border grid sm:grid-cols-2 gap-8">
-            <div>
-              <div className="label-eyebrow-muted">From a blind application</div>
-              <p className="mt-3 font-display text-3xl">
-                <span className="font-serif-italic">&lt; 1%</span> chance of an offer.
-              </p>
-            </div>
-            <div>
-              <div className="label-eyebrow-muted">From a hiring-manager intro</div>
-              <p className="mt-3 font-display text-3xl">
-                <span className="font-serif-italic">~10%</span> chance of an offer.
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* The pivot */}
-        <div className="mt-24 max-w-3xl">
-          <div className="label-eyebrow-muted">What Hindsight does</div>
-          <h3 className="font-display text-4xl md:text-5xl mt-4 leading-[1.05]">
-            We can&apos;t change the funnel.{" "}
-            <span className="font-serif-italic">We can change what you do at every stage.</span>
-          </h3>
-          <p className="mt-6 text-lg text-foreground/70 leading-snug">
-            For every job you apply to, Hindsight measures where you are in the funnel,
-            why you dropped out, and what to fix before the next application.
-          </p>
-        </div>
-
-        {/* Diagram 2: the same funnel, with reasons */}
-        <div className="mt-12 border border-foreground bg-foreground text-background p-6 md:p-10">
-          <div className="flex items-baseline justify-between gap-4 mb-8">
-            <div>
-              <div className="label-eyebrow-muted !text-background/60">Your funnel, with Hindsight</div>
-              <h3 className="font-display text-3xl mt-2">The same shape — now you can see the why</h3>
-            </div>
-          </div>
-
-          <div className="space-y-4">
-            {HINDSIGHT_FUNNEL.map((s, i) => {
-              const width = (s.count / max) * 100;
-              return (
-                <div key={s.label} className="grid grid-cols-12 gap-3 md:gap-6 items-center">
-                  <div className="col-span-12 md:col-span-3 flex items-baseline gap-3">
-                    <span className="font-display text-sm text-background/60 w-6">
-                      {String(i + 1).padStart(2, "0")}
-                    </span>
-                    <span className="font-display text-lg md:text-xl">{s.label}</span>
-                  </div>
-                  <div className="col-span-4 md:col-span-3">
+                <div className="col-span-12 md:col-span-9 space-y-3">
+                  {/* Solo bar */}
+                  <div className="flex items-center gap-4">
+                    <span className="w-20 text-sm text-muted-foreground shrink-0">Alone</span>
                     <div
-                      className="bg-background text-foreground h-10 flex items-center px-4 transition-all"
-                      style={{ width: `${Math.max(width, 4)}%`, minWidth: "56px" }}
+                      className="bg-foreground/15 h-9 flex items-center px-3"
+                      style={{ width: `${s.solo.conv}%`, minWidth: "60px" }}
                     >
-                      <span className="text-sm font-medium tabular-nums">{s.count}</span>
+                      <span className="text-sm font-medium tabular-nums">{s.solo.conv}%</span>
                     </div>
+                    <span className="text-sm text-muted-foreground tabular-nums">→ {s.solo.n}</span>
                   </div>
-                  <div className="col-span-8 md:col-span-6 text-base text-background/85 leading-snug">
-                    {i === 0 ? (
-                      <span className="text-background/60">Start</span>
-                    ) : (
-                      <>
-                        <span className="font-serif-italic text-background">where you lose people:</span>{" "}
-                        {s.reason}
-                      </>
-                    )}
+                  {/* Hindsight bar */}
+                  <div className="flex items-center gap-4">
+                    <span className="w-20 text-sm font-medium shrink-0">Hindsight</span>
+                    <div
+                      className="bg-foreground text-background h-9 flex items-center px-3"
+                      style={{ width: `${s.with.conv}%`, minWidth: "60px" }}
+                    >
+                      <span className="text-sm font-medium tabular-nums">{s.with.conv}%</span>
+                    </div>
+                    <span className="text-sm text-foreground tabular-nums font-medium">→ {s.with.n}</span>
                   </div>
+
+                  <p className="mt-4 text-base text-foreground/75 leading-snug max-w-xl">
+                    <span className="font-serif-italic text-foreground">The lever — </span>
+                    {s.lever}
+                  </p>
                 </div>
-              );
-            })}
-          </div>
+              </div>
+            );
+          })}
         </div>
 
-        <div className="mt-12 text-lg text-foreground/70 max-w-2xl leading-snug">
-          <span className="font-serif-italic text-foreground">Most candidates obsess over the top —</span>{" "}
-          sending more CVs. But sending 400 instead of 200 won&apos;t help if your CV-to-screen
-          rate is the real problem. We help you find it.
+        <div className="mt-16 max-w-2xl text-lg text-foreground/70 leading-snug">
+          <span className="font-serif-italic text-foreground">Small gains at every stage compound.</span>{" "}
+          A 15-point lift on three rounds isn&apos;t a 15% better job search — it&apos;s
+          a different outcome entirely.
         </div>
       </div>
     </section>

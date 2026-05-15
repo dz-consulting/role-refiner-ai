@@ -18,9 +18,11 @@ export function AppHeader({ email: _email }: { email?: string | null }) {
           JobMatch
         </Link>
         <nav className="flex items-center gap-8 text-sm">
-          <Link to="/profile" className="text-muted-foreground hover:text-foreground transition-colors">
-            Profile
-          </Link>
+          {signedIn && (
+            <Link to="/profile" className="text-muted-foreground hover:text-foreground transition-colors">
+              Profile
+            </Link>
+          )}
           {signedIn ? (
             <button
               onClick={async () => {

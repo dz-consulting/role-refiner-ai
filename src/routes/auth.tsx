@@ -53,81 +53,77 @@ function AuthPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center px-6">
-      <div className="w-full max-w-sm py-24">
+      <div className="w-full max-w-4xl py-24">
         <div className="font-display text-3xl tracking-tight">JobMatch</div>
         <div className="label-eyebrow mt-1">Honest job fit assessment</div>
 
-        {/* Primary CTA — beta guest mode */}
-        <div className="mt-12 border border-foreground p-6 bg-surface">
-          <div className="label-eyebrow">Beta · No account needed</div>
-          <h2 className="font-display text-2xl mt-2 leading-tight">
-            Try it now — <span className="font-serif-italic">free</span>.
-          </h2>
-          <p className="text-caption mt-2">
-            Run up to 3 assessments per day without signing in. Your data stays in your browser.
-          </p>
-          <button
-            type="button"
-            onClick={() => nav({ to: "/onboarding" })}
-            className="w-full mt-5 bg-foreground text-background font-medium py-3 hover:opacity-90 transition"
-          >
-            Try without signing in →
-          </button>
-        </div>
-
-        <div className="flex items-center gap-4 mt-10">
-          <div className="flex-1 h-px bg-border" />
-          <div className="label-eyebrow">Or</div>
-          <div className="flex-1 h-px bg-border" />
-        </div>
-
-        <form onSubmit={submit} className="mt-10 space-y-8">
-          <h1 className="font-display text-4xl">
-            {mode === "signin" ? "Sign in." : "Create account."}
-          </h1>
-
-          <div className="space-y-6">
-            <Input
-              label="Username or email"
-              type="text"
-              required
-              autoComplete="username"
-              value={identifier}
-              onChange={(e) => setIdentifier(e.target.value)}
-              placeholder="alex@example.com"
-            />
-            <Input
-              label="Password"
-              type="password"
-              required
-              minLength={8}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
+        <div className="mt-12 grid md:grid-cols-2 gap-10 md:gap-12 items-start">
+          {/* Primary CTA — beta guest mode */}
+          <div className="border border-foreground p-6 bg-surface md:order-1">
+            <div className="label-eyebrow">Beta · No account needed</div>
+            <h2 className="font-display text-2xl mt-2 leading-tight">
+              Try it now — <span className="font-serif-italic">free</span>.
+            </h2>
+            <p className="text-caption mt-2">
+              Run up to 3 assessments per day without signing in. Your data stays in your browser.
+            </p>
+            <button
+              type="button"
+              onClick={() => nav({ to: "/onboarding" })}
+              className="w-full mt-5 bg-foreground text-background font-medium py-3 hover:opacity-90 transition"
+            >
+              Try without signing in →
+            </button>
           </div>
 
-          {err && (
-            <div className="text-sm text-destructive border-l-2 border-destructive pl-3 py-1">
-              {err}
+          <form onSubmit={submit} className="space-y-8 md:order-2">
+            <h1 className="font-display text-4xl">
+              {mode === "signin" ? "Sign in." : "Create account."}
+            </h1>
+
+            <div className="space-y-6">
+              <Input
+                label="Username or email"
+                type="text"
+                required
+                autoComplete="username"
+                value={identifier}
+                onChange={(e) => setIdentifier(e.target.value)}
+                placeholder="alex@example.com"
+              />
+              <Input
+                label="Password"
+                type="password"
+                required
+                minLength={8}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
             </div>
-          )}
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full border border-foreground text-foreground font-medium py-3 hover:bg-foreground hover:text-background transition disabled:opacity-50"
-          >
-            {loading ? "..." : mode === "signin" ? "Sign in" : "Create account"}
-          </button>
+            {err && (
+              <div className="text-sm text-destructive border-l-2 border-destructive pl-3 py-1">
+                {err}
+              </div>
+            )}
 
-          <button
-            type="button"
-            onClick={() => setMode(mode === "signin" ? "signup" : "signin")}
-            className="w-full text-sm text-muted-foreground hover:text-foreground"
-          >
-            {mode === "signin" ? "Don't have an account? Sign up." : "Already have an account? Sign in."}
-          </button>
-        </form>
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full border border-foreground text-foreground font-medium py-3 hover:bg-foreground hover:text-background transition disabled:opacity-50"
+            >
+              {loading ? "..." : mode === "signin" ? "Sign in" : "Create account"}
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setMode(mode === "signin" ? "signup" : "signin")}
+              className="w-full text-sm text-muted-foreground hover:text-foreground"
+            >
+              {mode === "signin" ? "Don't have an account? Sign up." : "Already have an account? Sign in."}
+            </button>
+          </form>
+        </div>
       </div>
     </div>
   );

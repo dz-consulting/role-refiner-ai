@@ -465,10 +465,39 @@ function Funnel() {
           </svg>
         </div>
 
-        <p className="mt-10 max-w-2xl text-lg text-foreground/70 leading-snug">
-          <span className="font-serif-italic text-foreground">Hindsight diagnoses every drop.</span>{" "}
-          Why your CV got skipped. Why the recruiter passed. Why the loop tanked. No more
-          guessing — every rejection becomes a data point you can act on.
+        {/* Stage-by-stage breakdown */}
+        <div className="mt-16">
+          <div className="label-eyebrow-muted">What happens at each stage</div>
+          <h3 className="font-display text-3xl md:text-5xl mt-4 max-w-3xl leading-[1.05]">
+            And the rejection reason{" "}
+            <span className="font-serif-italic">Hindsight surfaces</span> when you fall out.
+          </h3>
+
+          <div className="mt-10 grid md:grid-cols-2 gap-px bg-border border border-border">
+            {FUNNEL.map((s, i) => (
+              <div key={s.label} className="bg-card p-6 md:p-8">
+                <div className="flex items-baseline gap-4">
+                  <span className="font-display text-base text-muted-foreground tabular-nums">
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                  <h4 className="font-display text-2xl md:text-3xl">{s.label}</h4>
+                </div>
+                <p className="mt-4 text-base text-foreground/80 leading-snug">{s.happens}</p>
+                <div className="editorial-rule mt-5" />
+                <div className="mt-4">
+                  <div className="label-eyebrow-muted">Hindsight flags</div>
+                  <p className="mt-2 text-base text-foreground leading-snug font-serif-italic">
+                    {s.flag}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <p className="mt-12 max-w-2xl text-lg text-foreground/70 leading-snug">
+          <span className="font-serif-italic text-foreground">Every rejection becomes a data point.</span>{" "}
+          Hindsight names the drop, points to the fix, and updates the playbook for your next application.
         </p>
       </div>
     </section>

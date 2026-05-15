@@ -76,53 +76,54 @@ function AuthPage() {
             </button>
           </div>
 
-        <form onSubmit={submit} className="mt-10 space-y-8">
-          <h1 className="font-display text-4xl">
-            {mode === "signin" ? "Sign in." : "Create account."}
-          </h1>
+          <form onSubmit={submit} className="space-y-8 md:order-2">
+            <h1 className="font-display text-4xl">
+              {mode === "signin" ? "Sign in." : "Create account."}
+            </h1>
 
-          <div className="space-y-6">
-            <Input
-              label="Username or email"
-              type="text"
-              required
-              autoComplete="username"
-              value={identifier}
-              onChange={(e) => setIdentifier(e.target.value)}
-              placeholder="alex@example.com"
-            />
-            <Input
-              label="Password"
-              type="password"
-              required
-              minLength={8}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-          </div>
-
-          {err && (
-            <div className="text-sm text-destructive border-l-2 border-destructive pl-3 py-1">
-              {err}
+            <div className="space-y-6">
+              <Input
+                label="Username or email"
+                type="text"
+                required
+                autoComplete="username"
+                value={identifier}
+                onChange={(e) => setIdentifier(e.target.value)}
+                placeholder="alex@example.com"
+              />
+              <Input
+                label="Password"
+                type="password"
+                required
+                minLength={8}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
             </div>
-          )}
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full border border-foreground text-foreground font-medium py-3 hover:bg-foreground hover:text-background transition disabled:opacity-50"
-          >
-            {loading ? "..." : mode === "signin" ? "Sign in" : "Create account"}
-          </button>
+            {err && (
+              <div className="text-sm text-destructive border-l-2 border-destructive pl-3 py-1">
+                {err}
+              </div>
+            )}
 
-          <button
-            type="button"
-            onClick={() => setMode(mode === "signin" ? "signup" : "signin")}
-            className="w-full text-sm text-muted-foreground hover:text-foreground"
-          >
-            {mode === "signin" ? "Don't have an account? Sign up." : "Already have an account? Sign in."}
-          </button>
-        </form>
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full border border-foreground text-foreground font-medium py-3 hover:bg-foreground hover:text-background transition disabled:opacity-50"
+            >
+              {loading ? "..." : mode === "signin" ? "Sign in" : "Create account"}
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setMode(mode === "signin" ? "signup" : "signin")}
+              className="w-full text-sm text-muted-foreground hover:text-foreground"
+            >
+              {mode === "signin" ? "Don't have an account? Sign up." : "Already have an account? Sign in."}
+            </button>
+          </form>
+        </div>
       </div>
     </div>
   );

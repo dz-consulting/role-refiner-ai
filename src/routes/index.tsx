@@ -395,107 +395,75 @@ function Funnel() {
               </g>
             ))}
 
-            {/* Dashed arc: CVs → Offer (<1%) */}
-            <path
-              d={`M ${cx(0)} ${yScale(200) - 4} C ${cx(0) + 280} ${yT - 30}, ${cx(5) - 60} ${yT + 40}, ${cx(5)} ${yScale(1) - 8}`}
-              fill="none"
-              stroke="hsl(0 0% 30%)"
-              strokeWidth={1.5}
-              strokeDasharray="6 5"
-              markerEnd="url(#arrowDashed)"
-            />
-            {/* Callout 1 */}
-            <g>
-              <rect x={560} y={120} width={340} height={56} rx={3} fill="#9FE3F2" />
-              <text
-                x={580}
-                y={144}
-                fontSize={15}
-                fontWeight={600}
-                fill="hsl(0 0% 10%)"
-                fontFamily="ui-sans-serif, system-ui, sans-serif"
-              >
-                &lt;1% success rate from
-              </text>
-              <text
-                x={580}
-                y={164}
-                fontSize={15}
-                fontWeight={600}
-                fill="hsl(0 0% 10%)"
-                fontFamily="ui-sans-serif, system-ui, sans-serif"
-              >
-                blind application
-              </text>
-            </g>
+            {/* Per-stage rejection annotations */}
+            {[
+              { i: 1, reason: "CV ↔ JD mismatch", boxX: 280 },
+              { i: 2, reason: "Unclear motivation", boxX: 410 },
+              { i: 3, reason: "Culture mismatch", boxX: 545 },
+              { i: 4, reason: "Competency gap", boxX: 680 },
+              { i: 5, reason: "Team-fit mismatch", boxX: 815 },
+            ].map(({ i, reason, boxX }) => {
+              const prev = FUNNEL[i - 1];
+              const cur = FUNNEL[i];
+              const chipX = (cx(i - 1) + barW / 2 + cx(i) - barW / 2) / 2;
+              const yPrevTop = yScale(prev.n);
+              const yCurTop = yScale(cur.n);
+              const chipY = Math.max(yPrevTop, yCurTop - 30);
+              const boxW = 132;
+              const boxH = 26;
+              const boxY = 18;
+              return (
+                <g key={`ann-${i}`}>
+                  {/* connector */}
+                  <path
+                    d={`M ${boxX} ${boxY + boxH} L ${boxX} ${chipY - 18} L ${chipX} ${chipY - 18} L ${chipX} ${chipY - 13}`}
+                    fill="none"
+                    stroke="hsl(0 0% 30%)"
+                    strokeWidth={1.2}
+                    strokeDasharray="4 4"
+                  />
+                  {/* tag */}
+                  <rect
+                    x={boxX - boxW / 2}
+                    y={boxY}
+                    width={boxW}
+                    height={boxH}
+                    rx={2}
+                    fill="#9FE3F2"
+                  />
+                  <text
+                    x={boxX}
+                    y={boxY + 17}
+                    textAnchor="middle"
+                    fontSize={13}
+                    fontWeight={600}
+                    fill="hsl(0 0% 10%)"
+                    fontFamily="ui-sans-serif, system-ui, sans-serif"
+                  >
+                    {reason}
+                  </text>
+                </g>
+              );
+            })}
 
-            {/* Dashed arc: HM → Offer (~10%) */}
-            <path
-              d={`M ${cx(2)} ${yScale(10) - 4} C ${cx(2) + 200} ${yT + 180}, ${cx(5) - 80} ${yT + 220}, ${cx(5)} ${yScale(1) - 18}`}
-              fill="none"
-              stroke="hsl(0 0% 30%)"
-              strokeWidth={1.5}
-              strokeDasharray="6 5"
-              markerEnd="url(#arrowDashed)"
-            />
-            {/* Callout 2 */}
+            {/* Hindsight legend */}
             <g>
-              <rect x={420} y={250} width={360} height={56} rx={3} fill="#9FE3F2" />
+              <rect x={xL} y={yB + 70} width={14} height={14} fill="#9FE3F2" />
               <text
-                x={440}
-                y={274}
-                fontSize={15}
+                x={xL + 22}
+                y={yB + 82}
+                fontSize={13}
                 fontWeight={600}
-                fill="hsl(0 0% 10%)"
+                fill="hsl(0 0% 25%)"
                 fontFamily="ui-sans-serif, system-ui, sans-serif"
               >
-                ~10% success rate from
-              </text>
-              <text
-                x={440}
-                y={294}
-                fontSize={15}
-                fontWeight={600}
-                fill="hsl(0 0% 10%)"
-                fontFamily="ui-sans-serif, system-ui, sans-serif"
-              >
-                F2F with hiring manager
+                Typical rejection reason Hindsight surfaces at each stage
               </text>
             </g>
           </svg>
         </div>
 
-        {/* Stage-by-stage breakdown */}
-        <div className="mt-16">
-          <div className="label-eyebrow-muted">What happens at each stage</div>
-          <h3 className="font-display text-3xl md:text-5xl mt-4 max-w-3xl leading-[1.05]">
-            And the rejection reason{" "}
-            <span className="font-serif-italic">Hindsight surfaces</span> when you fall out.
-          </h3>
-
-          <div className="mt-10 grid md:grid-cols-2 gap-px bg-border border border-border">
-            {FUNNEL.map((s, i) => (
-              <div key={s.label} className="bg-card p-6 md:p-8">
-                <div className="flex items-baseline gap-4">
-                  <span className="font-display text-base text-muted-foreground tabular-nums">
-                    {String(i + 1).padStart(2, "0")}
-                  </span>
-                  <h4 className="font-display text-2xl md:text-3xl">{s.label}</h4>
-                </div>
-                <p className="mt-4 text-base text-foreground/80 leading-snug">{s.happens}</p>
-                <div className="editorial-rule mt-5" />
-                <div className="mt-4">
-                  <div className="label-eyebrow-muted">Hindsight flags</div>
-                  <p className="mt-2 text-base text-foreground leading-snug font-serif-italic">
-                    {s.flag}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <p className="mt-12 max-w-2xl text-lg text-foreground/70 leading-snug">
+        <p className="mt-10 max-w-2xl text-lg text-foreground/70 leading-snug">
           <span className="font-serif-italic text-foreground">Every rejection becomes a data point.</span>{" "}
           Hindsight names the drop, points to the fix, and updates the playbook for your next application.
         </p>

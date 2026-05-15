@@ -80,6 +80,17 @@ function Dashboard() {
           <Link to="/profile" className="underline underline-offset-4 hover:text-foreground">edit</Link>
         </p>
 
+        {isAnon && (
+          <div className="mt-10 border border-border bg-card p-5 text-sm">
+            <div className="label-eyebrow">Beta · guest mode</div>
+            <p className="mt-2 text-muted-foreground">
+              You're not signed in. Data lives in this browser only.{" "}
+              <span className="text-foreground">{remaining} of {ANON_DAILY_LIMIT}</span> assessments left today.{" "}
+              <Link to="/auth" className="underline underline-offset-4 text-foreground">Create an account</Link> to save across devices.
+            </p>
+          </div>
+        )}
+
         {/* Primary CTA */}
         <div className="mt-16">
           <Link

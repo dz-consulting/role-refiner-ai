@@ -115,7 +115,7 @@ function AuthPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-foreground text-background font-medium py-3 hover:opacity-90 transition disabled:opacity-50"
+            className="w-full border border-foreground text-foreground font-medium py-3 hover:bg-foreground hover:text-background transition disabled:opacity-50"
           >
             {loading ? "..." : mode === "signin" ? "Sign in" : "Create account"}
           </button>
@@ -127,16 +127,6 @@ function AuthPage() {
           >
             {mode === "signin" ? "Don't have an account? Sign up." : "Already have an account? Sign in."}
           </button>
-
-          <div className="pt-6 border-t border-border">
-            <button
-              type="button"
-              onClick={() => nav({ to: "/onboarding" })}
-              className="w-full text-sm text-muted-foreground hover:text-foreground"
-            >
-              Try without signing in <span className="font-mono text-xs">(beta · 3 assessments/day)</span> →
-            </button>
-          </div>
         </form>
       </div>
     </div>

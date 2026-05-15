@@ -564,62 +564,58 @@ function FitScoreMock() {
   );
 }
 
-function FunnelMock() {
-  const stages = [
-    { label: "Applied", n: 47, w: 100 },
-    { label: "Screen", n: 8, w: 32 },
-    { label: "Interview", n: 3, w: 18 },
-    { label: "Offer", n: 0, w: 4 },
-  ];
+function RecordingMock() {
   return (
     <div className="h-full flex flex-col">
-      <div className="label-eyebrow-muted">Last 90 days</div>
-      <div className="mt-3 space-y-2">
-        {stages.map((s, i) => (
-          <div key={s.label} className="flex items-center gap-3">
-            <span className="text-sm text-muted-foreground w-16">{s.label}</span>
-            <div
-              className="bg-foreground h-6 flex items-center px-2"
-              style={{ width: `${s.w}%`, minWidth: "28px" }}
-            >
-              <span className="text-xs font-medium text-background tabular-nums">{s.n}</span>
-            </div>
-            {i > 0 && (
-              <span className="text-xs text-muted-foreground tabular-nums">
-                {Math.round((s.n / stages[i - 1].n) * 100) || 0}%
-              </span>
-            )}
-          </div>
-        ))}
+      <div className="flex items-center justify-between">
+        <div className="label-eyebrow-muted">Interview recording</div>
+        <span className="text-xs text-muted-foreground tabular-nums">via Granola · 47:12</span>
       </div>
+      <div className="font-display text-xl mt-2 leading-tight">Stripe · HM round</div>
       <div className="editorial-rule mt-4" />
-      <p className="mt-3 text-sm leading-snug text-foreground/80">
-        <span className="text-foreground font-serif-italic">Where you&apos;re losing offers:</span>{" "}
-        Applied → Screen (17%). Below the senior-IC benchmark of 22%.
-      </p>
+      <div className="mt-4 space-y-3 text-sm leading-snug">
+        <div className="flex gap-3">
+          <span className="text-muted-foreground tabular-nums shrink-0">12:04</span>
+          <span>
+            <span className="font-serif-italic">&ldquo;Why Stripe?&rdquo;</span> answer ran 90s, never named their API-first thesis. HM disengaged at 12:38.
+          </span>
+        </div>
+        <div className="flex gap-3">
+          <span className="text-muted-foreground tabular-nums shrink-0">28:51</span>
+          <span>
+            Scoping question: you proposed without clarifying constraints. Pattern across 3 onsites.
+          </span>
+        </div>
+      </div>
+      <div className="mt-auto pt-4 flex gap-2">
+        <span className="label-tag">Drill these</span>
+      </div>
     </div>
   );
 }
 
-function DiagnosisMock() {
+function PrepMock() {
   return (
     <div className="h-full flex flex-col">
-      <div className="label-eyebrow-muted">Why you got rejected</div>
-      <div className="font-display text-xl mt-2 leading-tight">Stripe · Senior PM</div>
-      <div className="text-sm text-muted-foreground mt-1">After onsite · 11d ago</div>
+      <div className="label-eyebrow-muted">Prep · Stripe second round</div>
+      <div className="font-display text-xl mt-2 leading-tight">3 things to nail</div>
       <div className="editorial-rule mt-4" />
       <ul className="mt-4 space-y-3 text-sm leading-snug">
         <li className="flex gap-3">
           <span className="text-muted-foreground">01</span>
-          <span>Recruiter cited <span className="font-serif-italic">&ldquo;depth on payments&rdquo;</span> — your CV led with growth.</span>
+          <span>Rewrite <span className="font-serif-italic">&ldquo;why Stripe&rdquo;</span> in 45s — anchor on payments depth.</span>
         </li>
         <li className="flex gap-3">
           <span className="text-muted-foreground">02</span>
-          <span>3rd &ldquo;why Stripe?&rdquo; answer was generic. Pattern across 4 onsites.</span>
+          <span>Scoping drill: 3 reps. Always clarify constraints before proposing.</span>
+        </li>
+        <li className="flex gap-3">
+          <span className="text-muted-foreground">03</span>
+          <span>Likely panel question: <span className="font-serif-italic">&ldquo;Walk me through a tough trade-off.&rdquo;</span></span>
         </li>
       </ul>
       <div className="mt-auto pt-4">
-        <span className="label-tag">Fix next</span>
+        <span className="label-tag">Start drill →</span>
       </div>
     </div>
   );

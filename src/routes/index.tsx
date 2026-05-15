@@ -49,21 +49,21 @@ function Nav({ authed }: { authed: boolean }) {
   return (
     <header className="border-b border-border">
       <div className="max-w-6xl mx-auto px-6 md:px-10 py-5 flex items-center justify-between">
-        <Link to="/" className="font-display text-xl tracking-tight">
+        <Link to="/" className="font-display text-2xl tracking-tight">
           Hindsight
         </Link>
-        <nav className="flex items-center gap-6 text-sm">
-          <a href="#funnel" className="hidden sm:inline text-muted-foreground hover:text-foreground">
+        <nav className="flex items-center gap-7 text-base">
+          <a href="#funnel" className="hidden sm:inline text-foreground/70 hover:text-foreground">
             The funnel
           </a>
-          <a href="#how" className="hidden sm:inline text-muted-foreground hover:text-foreground">
+          <a href="#how" className="hidden sm:inline text-foreground/70 hover:text-foreground">
             How it works
           </a>
-          <a href="#waitlist" className="hidden sm:inline text-muted-foreground hover:text-foreground">
+          <a href="#waitlist" className="hidden sm:inline text-foreground/70 hover:text-foreground">
             Waitlist
           </a>
           {authed ? (
-            <Link to="/dashboard" className="bg-foreground text-background px-4 py-2 hover:opacity-90">
+            <Link to="/dashboard" className="bg-foreground text-background px-5 py-2.5 hover:opacity-90 rounded-full text-sm font-medium">
               Dashboard →
             </Link>
           ) : (
@@ -82,54 +82,82 @@ function Nav({ authed }: { authed: boolean }) {
 function Hero({ authed, onCta }: { authed: boolean; onCta: () => void }) {
   return (
     <section className="border-b border-border">
-      <div className="max-w-6xl mx-auto px-6 md:px-10 py-24 md:py-32 grid md:grid-cols-12 gap-12 items-center">
+      <div className="max-w-6xl mx-auto px-6 md:px-10 py-20 md:py-28 grid md:grid-cols-12 gap-12 items-center">
         <div className="md:col-span-7">
-          <div className="label-eyebrow">Beta · Free during launch</div>
-          <h1 className="font-display text-5xl md:text-7xl mt-6 leading-[1.02]">
+          <div className="label-eyebrow-muted">Beta · Free during launch</div>
+          <h1 className="font-display text-6xl md:text-8xl mt-5 leading-[0.95]">
             From <span className="font-serif-italic">applied</span> to{" "}
             <span className="font-serif-italic">offer</span>, with a plan.
           </h1>
-          <p className="mt-8 text-lg md:text-xl text-muted-foreground leading-relaxed max-w-xl">
-            Most job searches are pure luck and persistence. Yours doesn't have to be.
-            Track every application, learn from every rejection, and close the gaps that
-            stand between you and the offer.
+          <p className="mt-8 text-xl md:text-2xl text-foreground/80 leading-snug max-w-xl font-light">
+            Most job searches are pure luck. Yours doesn&apos;t have to be.
+            Track every application, learn from every rejection, close the gaps
+            standing between you and the offer.
           </p>
-          <div className="mt-12 flex flex-col sm:flex-row gap-4">
+          <div className="mt-10 flex flex-col sm:flex-row gap-4">
             <button
               onClick={onCta}
-              className="bg-foreground text-background px-8 py-4 text-base hover:opacity-90 transition"
+              className="bg-foreground text-background px-8 py-4 text-base font-medium hover:opacity-90 transition rounded-full"
             >
               {authed ? "Open dashboard →" : "Try free — no signup →"}
             </button>
             <a
               href="#waitlist"
-              className="border border-foreground text-foreground px-8 py-4 text-base text-center hover:bg-foreground hover:text-background transition"
+              className="border border-foreground text-foreground px-8 py-4 text-base font-medium text-center hover:bg-foreground hover:text-background transition rounded-full"
             >
               Join the waitlist
             </a>
           </div>
-          <div className="mt-6 text-xs font-mono text-muted-foreground">
-            3 free assessments per day · No card required · Data stays in your browser
-          </div>
+          <p className="mt-5 text-sm text-muted-foreground">
+            3 free assessments per day. No card required.
+          </p>
         </div>
 
-        {/* Hero visual: stat callout */}
+        {/* Hero visual: concept diagram — 200 CVs collapse into 1 offer */}
         <div className="md:col-span-5">
-          <div className="border border-border bg-card p-8 md:p-10">
-            <div className="label-eyebrow">The hard truth</div>
-            <p className="font-display text-3xl md:text-4xl mt-4 leading-[1.1]">
-              The average job seeker sends{" "}
-              <span className="font-serif-italic">200 CVs</span> and lands{" "}
-              <span className="font-serif-italic">1 offer</span>.
-            </p>
-            <div className="mt-8 pt-6 border-t border-border text-sm text-muted-foreground">
-              That's a <span className="text-foreground font-medium">0.5% success rate</span> —
-              and most candidates have no idea where they're losing the other 199.
-            </div>
-          </div>
+          <ConceptVisual />
         </div>
       </div>
     </section>
+  );
+}
+
+/* ───────────────── Concept visual: 200 → 1 ───────────────── */
+
+function ConceptVisual() {
+  // 10x20 grid of dots = 200 CVs, with a single highlighted "offer"
+  const dots = Array.from({ length: 200 });
+  return (
+    <div className="border border-foreground bg-card p-8 md:p-10">
+      <div className="label-eyebrow-muted">The hard truth</div>
+      <p className="font-display text-2xl md:text-3xl mt-3 leading-[1.1]">
+        200 applications. <span className="font-serif-italic">1 offer.</span>
+      </p>
+
+      <div className="mt-7 grid grid-cols-[repeat(20,minmax(0,1fr))] gap-[3px]">
+        {dots.map((_, i) => {
+          const isOffer = i === 137; // arbitrary highlighted dot
+          return (
+            <div
+              key={i}
+              className={
+                isOffer
+                  ? "aspect-square bg-foreground"
+                  : "aspect-square bg-foreground/15"
+              }
+            />
+          );
+        })}
+      </div>
+
+      <div className="mt-6 flex items-center gap-3 text-sm text-foreground/70">
+        <span className="inline-block w-3 h-3 bg-foreground" />
+        <span>
+          The 1 offer you can&apos;t see coming —{" "}
+          <span className="text-foreground font-medium">until you do</span>.
+        </span>
+      </div>
+    </div>
   );
 }
 
@@ -160,50 +188,47 @@ function Funnel() {
   return (
     <section id="funnel" className="border-b border-border">
       <div className="max-w-6xl mx-auto px-6 md:px-10 py-24 md:py-32">
-        <div className="label-eyebrow">Why most job searches feel impossible</div>
-        <h2 className="font-display text-4xl md:text-6xl mt-4 max-w-3xl leading-[1.05]">
+        <div className="label-eyebrow-muted">The funnel, explained</div>
+        <h2 className="font-display text-5xl md:text-7xl mt-5 max-w-3xl leading-[1.0]">
           200 CVs in. <span className="font-serif-italic">1 offer out.</span>
         </h2>
-        <p className="mt-6 text-lg text-muted-foreground max-w-2xl">
-          Hiring is a series of filters. Each round drops most candidates. The math is
-          brutal — and most job seekers can't see it, let alone fix it.
+        <p className="mt-6 text-xl text-foreground/70 max-w-2xl leading-snug font-light">
+          Hiring is a series of filters. Each round drops most candidates.
+          The math is brutal — and most job seekers can&apos;t see it, let alone fix it.
         </p>
 
         {/* Diagram 1: the typical funnel */}
         <div className="mt-16 border border-border bg-card p-6 md:p-10">
           <div className="flex items-baseline justify-between gap-4 mb-8">
             <div>
-              <div className="label-eyebrow">Diagram 01</div>
-              <h3 className="font-display text-2xl mt-1">The typical hiring funnel</h3>
+              <div className="label-eyebrow-muted">The typical hiring funnel</div>
+              <h3 className="font-display text-3xl mt-2">What happens to most candidates</h3>
             </div>
-            <div className="text-xs font-mono text-muted-foreground hidden sm:block">
-              candidates remaining at each stage
+            <div className="text-sm text-muted-foreground hidden sm:block">
+              Candidates remaining at each stage
             </div>
           </div>
 
-          <div className="space-y-2">
+          <div className="space-y-3">
             {TYPICAL_FUNNEL.map((s, i) => {
               const width = (s.count / max) * 100;
               return (
                 <div key={s.label} className="grid grid-cols-12 gap-3 md:gap-6 items-center">
-                  <div className="col-span-12 md:col-span-3 flex items-baseline gap-2">
-                    <span className="font-mono text-[10px] text-muted-foreground w-5">
+                  <div className="col-span-12 md:col-span-3 flex items-baseline gap-3">
+                    <span className="font-display text-sm text-muted-foreground w-6">
                       {String(i + 1).padStart(2, "0")}
                     </span>
-                    <span className="font-display text-base md:text-lg">{s.label}</span>
-                    <span className="font-mono text-[10px] text-muted-foreground hidden md:inline">
-                      · {s.cost}
-                    </span>
+                    <span className="font-display text-lg md:text-xl">{s.label}</span>
                   </div>
                   <div className="col-span-9 md:col-span-7">
                     <div
-                      className="bg-foreground text-background h-9 flex items-center px-3 transition-all"
-                      style={{ width: `${Math.max(width, 2)}%`, minWidth: "44px" }}
+                      className="bg-foreground text-background h-10 flex items-center px-4 transition-all"
+                      style={{ width: `${Math.max(width, 2)}%`, minWidth: "56px" }}
                     >
-                      <span className="font-mono text-xs tabular-nums">{s.count}</span>
+                      <span className="text-sm font-medium tabular-nums">{s.count}</span>
                     </div>
                   </div>
-                  <div className="col-span-3 md:col-span-2 font-mono text-xs tabular-nums text-muted-foreground text-right md:text-left">
+                  <div className="col-span-3 md:col-span-2 text-sm tabular-nums text-muted-foreground text-right md:text-left">
                     {s.conv ? `→ ${s.conv}` : "start"}
                   </div>
                 </div>
@@ -211,16 +236,16 @@ function Funnel() {
             })}
           </div>
 
-          <div className="mt-8 pt-6 border-t border-border grid sm:grid-cols-2 gap-6 text-sm">
+          <div className="mt-10 pt-6 border-t border-border grid sm:grid-cols-2 gap-8">
             <div>
-              <div className="label-eyebrow">From a blind application</div>
-              <p className="mt-2 font-display text-xl">
+              <div className="label-eyebrow-muted">From a blind application</div>
+              <p className="mt-3 font-display text-3xl">
                 <span className="font-serif-italic">&lt; 1%</span> chance of an offer.
               </p>
             </div>
             <div>
-              <div className="label-eyebrow">From a hiring-manager intro</div>
-              <p className="mt-2 font-display text-xl">
+              <div className="label-eyebrow-muted">From a hiring-manager intro</div>
+              <p className="mt-3 font-display text-3xl">
                 <span className="font-serif-italic">~10%</span> chance of an offer.
               </p>
             </div>
@@ -228,13 +253,13 @@ function Funnel() {
         </div>
 
         {/* The pivot */}
-        <div className="mt-20 max-w-2xl">
-          <div className="label-eyebrow">What Hindsight does</div>
-          <h3 className="font-display text-3xl md:text-4xl mt-4 leading-[1.1]">
-            We can't change the funnel.{" "}
+        <div className="mt-24 max-w-3xl">
+          <div className="label-eyebrow-muted">What Hindsight does</div>
+          <h3 className="font-display text-4xl md:text-5xl mt-4 leading-[1.05]">
+            We can&apos;t change the funnel.{" "}
             <span className="font-serif-italic">We can change what you do at every stage.</span>
           </h3>
-          <p className="mt-6 text-muted-foreground leading-relaxed">
+          <p className="mt-6 text-lg text-foreground/70 leading-snug">
             For every job you apply to, Hindsight measures where you are in the funnel,
             why you dropped out, and what to fix before the next application.
           </p>
@@ -244,36 +269,33 @@ function Funnel() {
         <div className="mt-12 border border-foreground bg-foreground text-background p-6 md:p-10">
           <div className="flex items-baseline justify-between gap-4 mb-8">
             <div>
-              <div className="label-eyebrow !text-background/60">Diagram 02</div>
-              <h3 className="font-display text-2xl mt-1">Your funnel, with Hindsight</h3>
-            </div>
-            <div className="text-xs font-mono text-background/60 hidden sm:block">
-              same shape — now you can see the why
+              <div className="label-eyebrow-muted !text-background/60">Your funnel, with Hindsight</div>
+              <h3 className="font-display text-3xl mt-2">The same shape — now you can see the why</h3>
             </div>
           </div>
 
-          <div className="space-y-2">
+          <div className="space-y-4">
             {HINDSIGHT_FUNNEL.map((s, i) => {
               const width = (s.count / max) * 100;
               return (
                 <div key={s.label} className="grid grid-cols-12 gap-3 md:gap-6 items-center">
-                  <div className="col-span-12 md:col-span-3 flex items-baseline gap-2">
-                    <span className="font-mono text-[10px] text-background/60 w-5">
+                  <div className="col-span-12 md:col-span-3 flex items-baseline gap-3">
+                    <span className="font-display text-sm text-background/60 w-6">
                       {String(i + 1).padStart(2, "0")}
                     </span>
-                    <span className="font-display text-base md:text-lg">{s.label}</span>
+                    <span className="font-display text-lg md:text-xl">{s.label}</span>
                   </div>
                   <div className="col-span-4 md:col-span-3">
                     <div
-                      className="bg-background text-foreground h-9 flex items-center px-3 transition-all"
-                      style={{ width: `${Math.max(width, 4)}%`, minWidth: "44px" }}
+                      className="bg-background text-foreground h-10 flex items-center px-4 transition-all"
+                      style={{ width: `${Math.max(width, 4)}%`, minWidth: "56px" }}
                     >
-                      <span className="font-mono text-xs tabular-nums">{s.count}</span>
+                      <span className="text-sm font-medium tabular-nums">{s.count}</span>
                     </div>
                   </div>
-                  <div className="col-span-8 md:col-span-6 text-sm text-background/80">
+                  <div className="col-span-8 md:col-span-6 text-base text-background/85 leading-snug">
                     {i === 0 ? (
-                      <span className="font-mono text-[10px] text-background/60">START</span>
+                      <span className="text-background/60">Start</span>
                     ) : (
                       <>
                         <span className="font-serif-italic text-background">where you lose people:</span>{" "}
@@ -287,10 +309,10 @@ function Funnel() {
           </div>
         </div>
 
-        <div className="mt-10 text-sm text-muted-foreground max-w-2xl">
+        <div className="mt-12 text-lg text-foreground/70 max-w-2xl leading-snug">
           <span className="font-serif-italic text-foreground">Most candidates obsess over the top —</span>{" "}
-          sending more CVs. But sending 400 instead of 200 won't help if your CV-to-screen rate
-          is the real problem. We help you find it.
+          sending more CVs. But sending 400 instead of 200 won&apos;t help if your CV-to-screen
+          rate is the real problem. We help you find it.
         </div>
       </div>
     </section>
@@ -303,12 +325,12 @@ function Screens() {
   return (
     <section className="border-b border-border bg-surface/40">
       <div className="max-w-6xl mx-auto px-6 md:px-10 py-24 md:py-32">
-        <div className="label-eyebrow">Inside the product</div>
-        <h2 className="font-display text-4xl md:text-6xl mt-4 max-w-3xl leading-[1.05]">
+        <div className="label-eyebrow-muted">Inside the product</div>
+        <h2 className="font-display text-5xl md:text-7xl mt-5 max-w-3xl leading-[1.0]">
           Three views, <span className="font-serif-italic">one promise</span>.
         </h2>
 
-        <div className="mt-16 grid md:grid-cols-3 gap-8">
+        <div className="mt-16 grid md:grid-cols-3 gap-10">
           <ScreenCard
             number="01"
             title="The fit score"
@@ -351,14 +373,14 @@ function ScreenCard({
 }) {
   return (
     <div>
-      <div className="border border-border bg-card aspect-[4/3] p-5 overflow-hidden relative">
+      <div className="border border-border bg-card aspect-[4/3] p-6 overflow-hidden relative">
         {children}
       </div>
       <div className="mt-5 flex items-baseline gap-3">
-        <span className="font-mono text-xs text-muted-foreground">{number}</span>
-        <h3 className="font-display text-xl">{title}</h3>
+        <span className="font-display text-base text-muted-foreground">{number}</span>
+        <h3 className="font-display text-2xl">{title}</h3>
       </div>
-      <p className="mt-2 text-sm text-muted-foreground leading-relaxed">{blurb}</p>
+      <p className="mt-3 text-base text-foreground/70 leading-snug">{blurb}</p>
     </div>
   );
 }
@@ -366,19 +388,19 @@ function ScreenCard({
 function FitScoreMock() {
   return (
     <div className="h-full flex flex-col">
-      <div className="label-eyebrow">Fit score</div>
+      <div className="label-eyebrow-muted">Fit score</div>
       <div className="flex items-baseline gap-3 mt-2">
-        <span className="font-display text-6xl tabular-nums">42</span>
-        <span className="font-serif-italic text-base text-muted-foreground">weak fit</span>
+        <span className="font-display text-7xl tabular-nums leading-none">42</span>
+        <span className="font-serif-italic text-lg text-muted-foreground">weak fit</span>
       </div>
-      <div className="editorial-rule mt-3" />
-      <p className="mt-3 text-[11px] leading-snug text-muted-foreground">
-        Senior IC role, but the JD repeatedly emphasizes managing ICs. Your CV shows 6 yrs IC + 0 reports.
-        Don't apply blind — either find a hiring manager referral or skip.
+      <div className="editorial-rule mt-4" />
+      <p className="mt-4 text-sm leading-snug text-foreground/80">
+        Senior IC role, but the JD emphasizes managing ICs. Your CV shows 6 yrs IC + 0 reports.
+        Don&apos;t apply blind — find a referral or skip.
       </p>
-      <div className="mt-auto pt-3 flex gap-1.5">
-        <span className="label-tag !text-[9px]">Skip</span>
-        <span className="label-tag !text-[9px]">Refer first</span>
+      <div className="mt-auto pt-4 flex gap-2">
+        <span className="label-tag">Skip</span>
+        <span className="label-tag">Refer first</span>
       </div>
     </div>
   );
@@ -393,29 +415,29 @@ function FunnelMock() {
   ];
   return (
     <div className="h-full flex flex-col">
-      <div className="label-eyebrow">Last 90 days</div>
-      <div className="mt-2 space-y-1.5">
+      <div className="label-eyebrow-muted">Last 90 days</div>
+      <div className="mt-3 space-y-2">
         {stages.map((s, i) => (
-          <div key={s.label} className="flex items-center gap-2">
-            <span className="text-[10px] font-mono text-muted-foreground w-14">{s.label}</span>
+          <div key={s.label} className="flex items-center gap-3">
+            <span className="text-sm text-muted-foreground w-16">{s.label}</span>
             <div
-              className="bg-foreground h-5 flex items-center px-1.5"
-              style={{ width: `${s.w}%`, minWidth: "20px" }}
+              className="bg-foreground h-6 flex items-center px-2"
+              style={{ width: `${s.w}%`, minWidth: "28px" }}
             >
-              <span className="text-[10px] font-mono text-background tabular-nums">{s.n}</span>
+              <span className="text-xs font-medium text-background tabular-nums">{s.n}</span>
             </div>
             {i > 0 && (
-              <span className="text-[10px] font-mono text-muted-foreground tabular-nums">
+              <span className="text-xs text-muted-foreground tabular-nums">
                 {Math.round((s.n / stages[i - 1].n) * 100) || 0}%
               </span>
             )}
           </div>
         ))}
       </div>
-      <div className="editorial-rule mt-3" />
-      <p className="mt-3 text-[11px] leading-snug text-muted-foreground">
-        <span className="text-foreground font-serif-italic">Where you're losing offers:</span> Applied → Screen (17%).
-        Below the senior-IC benchmark of 22%.
+      <div className="editorial-rule mt-4" />
+      <p className="mt-3 text-sm leading-snug text-foreground/80">
+        <span className="text-foreground font-serif-italic">Where you&apos;re losing offers:</span>{" "}
+        Applied → Screen (17%). Below the senior-IC benchmark of 22%.
       </p>
     </div>
   );
@@ -424,24 +446,22 @@ function FunnelMock() {
 function DiagnosisMock() {
   return (
     <div className="h-full flex flex-col">
-      <div className="label-eyebrow">Why you got rejected</div>
-      <div className="font-display text-base mt-2 leading-tight">
-        Stripe · Senior PM
-      </div>
-      <div className="text-[10px] font-mono text-muted-foreground">After onsite · 11d ago</div>
-      <div className="editorial-rule mt-3" />
-      <ul className="mt-3 space-y-2 text-[11px] leading-snug">
-        <li className="flex gap-2">
-          <span className="font-mono text-muted-foreground">01</span>
-          <span>Recruiter cited <span className="font-serif-italic">"depth on payments"</span> — your CV led with growth.</span>
+      <div className="label-eyebrow-muted">Why you got rejected</div>
+      <div className="font-display text-xl mt-2 leading-tight">Stripe · Senior PM</div>
+      <div className="text-sm text-muted-foreground mt-1">After onsite · 11d ago</div>
+      <div className="editorial-rule mt-4" />
+      <ul className="mt-4 space-y-3 text-sm leading-snug">
+        <li className="flex gap-3">
+          <span className="text-muted-foreground">01</span>
+          <span>Recruiter cited <span className="font-serif-italic">&ldquo;depth on payments&rdquo;</span> — your CV led with growth.</span>
         </li>
-        <li className="flex gap-2">
-          <span className="font-mono text-muted-foreground">02</span>
-          <span>3rd "why Stripe?" answer was generic. Pattern across 4 onsites.</span>
+        <li className="flex gap-3">
+          <span className="text-muted-foreground">02</span>
+          <span>3rd &ldquo;why Stripe?&rdquo; answer was generic. Pattern across 4 onsites.</span>
         </li>
       </ul>
-      <div className="mt-auto pt-3">
-        <span className="label-tag !text-[9px]">Fix next</span>
+      <div className="mt-auto pt-4">
+        <span className="label-tag">Fix next</span>
       </div>
     </div>
   );
@@ -470,17 +490,17 @@ function HowItWorks() {
   return (
     <section id="how" className="border-b border-border">
       <div className="max-w-6xl mx-auto px-6 md:px-10 py-24 md:py-32">
-        <div className="label-eyebrow">How it works</div>
-        <h2 className="font-display text-4xl md:text-6xl mt-4 max-w-3xl leading-[1.05]">
+        <div className="label-eyebrow-muted">How it works</div>
+        <h2 className="font-display text-5xl md:text-7xl mt-5 max-w-3xl leading-[1.0]">
           Three steps. <span className="font-serif-italic">No fluff.</span>
         </h2>
 
         <div className="mt-16 grid md:grid-cols-3 gap-12">
           {steps.map((s) => (
             <div key={s.n}>
-              <div className="font-mono text-xs text-muted-foreground">{s.n}</div>
-              <h3 className="font-display text-2xl mt-3">{s.title}</h3>
-              <p className="mt-4 text-muted-foreground leading-relaxed">{s.body}</p>
+              <div className="font-display text-2xl text-muted-foreground">{s.n}</div>
+              <h3 className="font-display text-3xl mt-3">{s.title}</h3>
+              <p className="mt-4 text-lg text-foreground/70 leading-snug">{s.body}</p>
             </div>
           ))}
         </div>
@@ -524,20 +544,20 @@ function Waitlist() {
   return (
     <section id="waitlist" className="border-b border-border bg-foreground text-background">
       <div className="max-w-3xl mx-auto px-6 md:px-10 py-24 md:py-32">
-        <div className="label-eyebrow !text-background/60">Stay in the loop</div>
-        <h2 className="font-display text-4xl md:text-6xl mt-4 leading-[1.05]">
-          Get early access to the <span className="font-serif-italic">funnel</span>.
+        <div className="label-eyebrow-muted !text-background/60">Stay in the loop</div>
+        <h2 className="font-display text-5xl md:text-7xl mt-5 leading-[1.0]">
+          Get early access to <span className="font-serif-italic">Hindsight</span>.
         </h2>
-        <p className="mt-6 text-lg text-background/70 max-w-xl leading-relaxed">
+        <p className="mt-6 text-xl text-background/70 max-w-xl leading-snug font-light">
           The fit score is live. Funnel tracking and rejection diagnosis ship next.
-          Drop your email — we'll let you know when it's ready.
+          Drop your email — we&apos;ll let you know when it&apos;s ready.
         </p>
 
         {state === "ok" ? (
           <div className="mt-12 border border-background/30 p-8">
-            <div className="label-eyebrow !text-background/60">You're in</div>
-            <p className="font-display text-2xl mt-2">Thanks. We'll be in touch.</p>
-            <p className="text-background/70 mt-3 text-sm">
+            <div className="label-eyebrow-muted !text-background/60">You&apos;re in</div>
+            <p className="font-display text-3xl mt-3">Thanks. We&apos;ll be in touch.</p>
+            <p className="text-background/70 mt-4 text-base">
               Want to try the fit score now?{" "}
               <Link to="/onboarding" className="underline underline-offset-4">
                 Start free →
@@ -545,9 +565,9 @@ function Waitlist() {
             </p>
           </div>
         ) : (
-          <form onSubmit={submit} className="mt-12 space-y-6">
+          <form onSubmit={submit} className="mt-12 space-y-8">
             <div>
-              <div className="label-eyebrow !text-background/60 mb-2">Email</div>
+              <div className="label-eyebrow-muted !text-background/60 mb-3">Email</div>
               <input
                 type="email"
                 required
@@ -559,27 +579,27 @@ function Waitlist() {
               />
             </div>
             <div>
-              <div className="label-eyebrow !text-background/60 mb-2">
+              <div className="label-eyebrow-muted !text-background/60 mb-3">
                 What stage are you at? (optional)
               </div>
               <input
                 type="text"
                 value={note}
                 onChange={(e) => setNote(e.target.value)}
-                placeholder="e.g. Senior PM, ~80 apps in, 5 offers, lots of ghosting"
+                placeholder="e.g. Senior PM, ~80 apps in, lots of ghosting"
                 disabled={state === "loading"}
                 className="w-full bg-transparent border-b border-background/40 focus:border-background py-3 text-base focus:outline-none transition-colors text-background placeholder:text-background/40"
               />
             </div>
             {err && (
-              <div className="text-sm text-background/90 border-l-2 border-background pl-3 py-1">
+              <div className="text-base text-background/90 border-l-2 border-background pl-3 py-1">
                 {err}
               </div>
             )}
             <button
               type="submit"
               disabled={state === "loading"}
-              className="bg-background text-foreground px-8 py-4 text-base hover:opacity-90 transition disabled:opacity-50"
+              className="bg-background text-foreground px-8 py-4 text-base font-medium hover:opacity-90 transition disabled:opacity-50 rounded-full"
             >
               {state === "loading" ? "..." : "Join the waitlist →"}
             </button>
@@ -595,7 +615,7 @@ function Waitlist() {
 function Footer() {
   return (
     <footer>
-      <div className="max-w-6xl mx-auto px-6 md:px-10 py-10 flex flex-col sm:flex-row items-baseline justify-between gap-4 text-xs font-mono text-muted-foreground">
+      <div className="max-w-6xl mx-auto px-6 md:px-10 py-10 flex flex-col sm:flex-row items-baseline justify-between gap-4 text-sm text-muted-foreground">
         <div>Hindsight · Beta · {new Date().getFullYear()}</div>
         <div className="flex gap-6">
           <Link to="/auth" className="hover:text-foreground">Sign in</Link>

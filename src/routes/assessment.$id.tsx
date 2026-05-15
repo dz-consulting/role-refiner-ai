@@ -36,21 +36,52 @@ function AssessmentView() {
 
   const submitCorrection = async (req: any, corrected: string) => {
     const original = req.match_strength;
-    setFeedback((prev) => ({ ...prev, [req.requirement]: corrected }));
+    const nextFeedback = { ...feedback, [req.requirement]: corrected };
+    setFeedback(nextFeedback);
+
+    // Recompute fit score from corrected ratings
+    const reqsList: any[] = Array.isArray(a?.requirements) ? a.requirements : [];
+    const newScore = recomputeFitScore(reqsList, nextFeedback);
+    const newLabel = labelForScore(newScore);
+    setA((prev: any) => prev ? { ...prev, fit_score: newScore, fit_label: newLabel } : prev);
+
     try {
-      await supabase.functions.invoke("submit-feedback", {
-        body: {
-          assessment_id: id,
-          target_type: "requirement",
-          target_key: req.requirement,
-          original_value: original,
-          corrected_value: corrected,
-        },
-      });
+      await Promise.all([
+        supabase.functions.invoke("submit-feedback", {
+          body: {
+            assessment_id: id,
+            target_type: "requirement",
+            target_key: req.requirement,
+            original_value: original,
+            corrected_value: corrected,
+          },
+        }),
+        supabase
+          .from("assessments")
+          .update({ fit_score: newScore, fit_label: newLabel })
+          .eq("id", id),
+      ]);
     } catch (e) {
       console.error("feedback submit failed", e);
     }
   };
+
+  function recomputeFitScore(reqsList: any[], fb: Record<string, string>): number {
+    if (!reqsList.length) return 0;
+    const weights: Record<string, number> = { Strong: 1, Partial: 0.5, Gap: 0 };
+    const total = reqsList.reduce((sum, r) => {
+      const v = fb[r.requirement] ?? r.match_strength;
+      return sum + (weights[v] ?? 0);
+    }, 0);
+    return Math.round((total / reqsList.length) * 10 * 10) / 10;
+  }
+
+  function labelForScore(score: number): string {
+    if (score >= 8) return "Strong fit";
+    if (score >= 6) return "Good fit";
+    if (score >= 4) return "Partial fit";
+    return "Weak fit";
+  }
 
   if (loading) {
     return (

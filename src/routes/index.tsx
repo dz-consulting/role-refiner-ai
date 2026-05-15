@@ -214,19 +214,20 @@ function Funnel() {
           {/* WITHOUT */}
           <div className="bg-card p-6 md:p-10">
             <div className="label-eyebrow-muted">Without Hindsight</div>
-            <p className="font-display text-7xl md:text-8xl mt-3 tabular-nums leading-none">{soloOffers}</p>
-            <p className="text-base text-foreground/70 mt-2">offer</p>
+            <p className="font-display text-6xl md:text-7xl mt-3 tabular-nums leading-none">{soloOffers} <span className="text-2xl md:text-3xl text-foreground/60 font-light">offer</span></p>
+            <p className="text-sm text-foreground/60 mt-3 font-serif-italic">You guess. You apply. You wait.</p>
 
-            <div className="mt-8 space-y-3">
+            <div className="mt-8 space-y-5">
               {STAGES.map((s) => (
                 <div key={s.label}>
                   <div className="flex justify-between items-baseline text-sm">
                     <span className="text-foreground/70">{s.label}</span>
-                    <span className="tabular-nums font-medium">{s.solo.conv}%</span>
+                    <span className="tabular-nums font-medium text-foreground/70">{s.solo.conv}%</span>
                   </div>
-                  <div className="mt-1 h-2 bg-foreground/10">
+                  <div className="mt-1.5 h-1.5 bg-foreground/10">
                     <div className="h-full bg-foreground/40" style={{ width: `${s.solo.conv}%` }} />
                   </div>
+                  <p className="mt-2 text-xs text-foreground/50 leading-snug">{s.soloWhy}</p>
                 </div>
               ))}
             </div>
@@ -235,10 +236,10 @@ function Funnel() {
           {/* WITH */}
           <div className="bg-foreground text-background p-6 md:p-10">
             <div className="label-eyebrow-muted !text-background/60">With Hindsight</div>
-            <p className="font-display text-7xl md:text-8xl mt-3 tabular-nums leading-none">{withOffers}</p>
-            <p className="text-base text-background/80 mt-2">offers</p>
+            <p className="font-display text-6xl md:text-7xl mt-3 tabular-nums leading-none">{withOffers} <span className="text-2xl md:text-3xl text-background/70 font-light">offers</span></p>
+            <p className="text-sm text-background/70 mt-3 font-serif-italic">Hindsight tells you what to do at every stage.</p>
 
-            <div className="mt-8 space-y-3">
+            <div className="mt-8 space-y-5">
               {STAGES.map((s) => {
                 const delta = s.with.conv - s.solo.conv;
                 return (
@@ -250,9 +251,12 @@ function Funnel() {
                         <span className="font-serif-italic text-background/60 ml-2">+{delta}</span>
                       </span>
                     </div>
-                    <div className="mt-1 h-2 bg-background/15">
+                    <div className="mt-1.5 h-1.5 bg-background/15">
                       <div className="h-full bg-background" style={{ width: `${s.with.conv}%` }} />
                     </div>
+                    <p className="mt-2 text-xs text-background/70 leading-snug">
+                      <span className="text-background font-medium">Hindsight: </span>{s.lever}
+                    </p>
                   </div>
                 );
               })}

@@ -164,12 +164,54 @@ function ConceptVisual() {
 /* ───────────────────────── Funnel teaching diagram ───────────────────────── */
 
 const FUNNEL = [
-  { label: "CVs", time: "30 seconds", n: 200, conv: null as number | null },
-  { label: "Phone screens", time: "20 minutes", n: 20, conv: 10 },
-  { label: "Hiring manager", time: "45 minutes", n: 10, conv: 50 },
-  { label: "Second round", time: "45 minutes", n: 6, conv: 60 },
-  { label: "Final round", time: "60 minutes", n: 3, conv: 50 },
-  { label: "Offer", time: "—", n: 1, conv: 33 },
+  {
+    label: "CVs",
+    time: "30 seconds",
+    n: 200,
+    conv: null as number | null,
+    happens: "Recruiter or ATS scans your CV against the JD. 30 seconds, often less. Most never get read by a human.",
+    flag: "CV ↔ JD mismatch — your headline experience doesn't map to the role's top requirements.",
+  },
+  {
+    label: "Phone screens",
+    time: "20 minutes",
+    n: 20,
+    conv: 10,
+    happens: "Recruiter qualifies fit, comp, motivation, and timeline. It's a filter — they're looking for reasons to cut.",
+    flag: "Unclear motivation — you sound like you'd take any job, not this one.",
+  },
+  {
+    label: "Hiring manager",
+    time: "45 minutes",
+    n: 10,
+    conv: 50,
+    happens: "First real conversation about the role. The HM probes scope, ownership, and whether you'd be a peer they want to work with.",
+    flag: "Culture mismatch — your examples land in the wrong register for how this team operates.",
+  },
+  {
+    label: "Second round",
+    time: "45 minutes",
+    n: 6,
+    conv: 60,
+    happens: "Craft round — case study, system design, deep-dive, or stakeholder demo with cross-functional partners.",
+    flag: "Competency gap — one specific skill (system design, prioritisation, exec comms) doesn't meet the bar.",
+  },
+  {
+    label: "Final round",
+    time: "60 minutes",
+    n: 3,
+    conv: 50,
+    happens: "Onsite or final loop. Multiple interviewers debrief together. Consensus call, often with a skeptic in the room.",
+    flag: "Team-fit mismatch — one panelist isn't convinced you'd raise the bar for their team.",
+  },
+  {
+    label: "Offer",
+    time: "—",
+    n: 1,
+    conv: 33,
+    happens: "Comp negotiation, references, start date. Whatever leverage you have now is the only leverage you'll get.",
+    flag: "No leverage — no comp comps, no parallel offers, no real BATNA. You take what's offered.",
+  },
 ];
 
 function Funnel() {

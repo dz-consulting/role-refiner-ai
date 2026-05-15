@@ -84,15 +84,15 @@ function Hero({ authed, onCta }: { authed: boolean; onCta: () => void }) {
     <section className="border-b border-border">
       <div className="max-w-6xl mx-auto px-6 md:px-10 py-20 md:py-28 grid md:grid-cols-12 gap-12 items-center">
         <div className="md:col-span-7">
-          <div className="label-eyebrow-muted">Beta · Free during launch</div>
+          <div className="label-eyebrow-muted">AI job-search coach · Beta · Free during launch</div>
           <h1 className="font-display text-6xl md:text-8xl mt-5 leading-[0.95]">
             From <span className="font-serif-italic">applied</span> to{" "}
-            <span className="font-serif-italic">offer</span>, with a plan.
+            <span className="font-serif-italic">offer</span>, with a coach.
           </h1>
           <p className="mt-8 text-xl md:text-2xl text-foreground/80 leading-snug max-w-xl font-light">
-            Most job searches are pure luck. Yours doesn&apos;t have to be.
-            Track every application, learn from every rejection, close the gaps
-            standing between you and the offer.
+            Hindsight is an AI coach that scores roles before you apply,
+            records and analyses your interviews, and preps you for the
+            next round — so you stop guessing what went wrong.
           </p>
           <div className="mt-10 flex flex-col sm:flex-row gap-4">
             <button
@@ -464,8 +464,9 @@ function Funnel() {
         </div>
 
         <p className="mt-10 max-w-2xl text-lg text-foreground/70 leading-snug">
-          <span className="font-serif-italic text-foreground">Every rejection becomes a data point.</span>{" "}
-          Hindsight names the drop, points to the fix, and updates the playbook for your next application.
+          <span className="font-serif-italic text-foreground">Hindsight is the coach across all of it.</span>{" "}
+          A fit score before you apply. A recording of every interview, analysed for what tanked it.
+          A prep plan for the next round — built from what actually went wrong in the last one.
         </p>
       </div>
     </section>
@@ -478,34 +479,38 @@ function Screens() {
   return (
     <section className="border-b border-border bg-surface/40">
       <div className="max-w-6xl mx-auto px-6 md:px-10 py-24 md:py-32">
-        <div className="label-eyebrow-muted">Inside the product</div>
+        <div className="label-eyebrow-muted">Three tools, one coach</div>
         <h2 className="font-display text-5xl md:text-7xl mt-5 max-w-3xl leading-[1.0]">
-          Three views, <span className="font-serif-italic">one promise</span>.
+          What Hindsight <span className="font-serif-italic">actually does</span>.
         </h2>
+        <p className="mt-6 max-w-2xl text-lg md:text-xl text-foreground/70 leading-snug font-light">
+          Three things, end-to-end. Score the role before you waste a week on it.
+          Record the interview and learn what tanked it. Walk into the next one prepared.
+        </p>
 
         <div className="mt-16 grid md:grid-cols-3 gap-10">
           <ScreenCard
             number="01"
-            title="The fit score"
-            blurb="Paste a JD, get an honest score in 60 seconds. No false hope."
+            title="Fit score, before you apply"
+            blurb="Paste a JD. Get an honest score in 60 seconds, the requirements that'll cut you, and a tailored angle if it's worth pursuing."
           >
             <FitScoreMock />
           </ScreenCard>
 
           <ScreenCard
             number="02"
-            title="Your funnel"
-            blurb="Every application tracked. See exactly where offers slip away."
+            title="Interview recording, analysed"
+            blurb="Record interviews with Granola. Hindsight reads the transcript and tells you exactly which answer lost the room — and why."
           >
-            <FunnelMock />
+            <RecordingMock />
           </ScreenCard>
 
           <ScreenCard
             number="03"
-            title="The diagnosis"
-            blurb="When you get rejected, we tell you why — and what to do next."
+            title="Prep for the next round"
+            blurb="A drill plan built from your last interview's gaps. The exact stories, frameworks, and questions to rehearse before you go again."
           >
-            <DiagnosisMock />
+            <PrepMock />
           </ScreenCard>
         </div>
       </div>
@@ -559,62 +564,58 @@ function FitScoreMock() {
   );
 }
 
-function FunnelMock() {
-  const stages = [
-    { label: "Applied", n: 47, w: 100 },
-    { label: "Screen", n: 8, w: 32 },
-    { label: "Interview", n: 3, w: 18 },
-    { label: "Offer", n: 0, w: 4 },
-  ];
+function RecordingMock() {
   return (
     <div className="h-full flex flex-col">
-      <div className="label-eyebrow-muted">Last 90 days</div>
-      <div className="mt-3 space-y-2">
-        {stages.map((s, i) => (
-          <div key={s.label} className="flex items-center gap-3">
-            <span className="text-sm text-muted-foreground w-16">{s.label}</span>
-            <div
-              className="bg-foreground h-6 flex items-center px-2"
-              style={{ width: `${s.w}%`, minWidth: "28px" }}
-            >
-              <span className="text-xs font-medium text-background tabular-nums">{s.n}</span>
-            </div>
-            {i > 0 && (
-              <span className="text-xs text-muted-foreground tabular-nums">
-                {Math.round((s.n / stages[i - 1].n) * 100) || 0}%
-              </span>
-            )}
-          </div>
-        ))}
+      <div className="flex items-center justify-between">
+        <div className="label-eyebrow-muted">Interview recording</div>
+        <span className="text-xs text-muted-foreground tabular-nums">via Granola · 47:12</span>
       </div>
+      <div className="font-display text-xl mt-2 leading-tight">Stripe · HM round</div>
       <div className="editorial-rule mt-4" />
-      <p className="mt-3 text-sm leading-snug text-foreground/80">
-        <span className="text-foreground font-serif-italic">Where you&apos;re losing offers:</span>{" "}
-        Applied → Screen (17%). Below the senior-IC benchmark of 22%.
-      </p>
+      <div className="mt-4 space-y-3 text-sm leading-snug">
+        <div className="flex gap-3">
+          <span className="text-muted-foreground tabular-nums shrink-0">12:04</span>
+          <span>
+            <span className="font-serif-italic">&ldquo;Why Stripe?&rdquo;</span> answer ran 90s, never named their API-first thesis. HM disengaged at 12:38.
+          </span>
+        </div>
+        <div className="flex gap-3">
+          <span className="text-muted-foreground tabular-nums shrink-0">28:51</span>
+          <span>
+            Scoping question: you proposed without clarifying constraints. Pattern across 3 onsites.
+          </span>
+        </div>
+      </div>
+      <div className="mt-auto pt-4 flex gap-2">
+        <span className="label-tag">Drill these</span>
+      </div>
     </div>
   );
 }
 
-function DiagnosisMock() {
+function PrepMock() {
   return (
     <div className="h-full flex flex-col">
-      <div className="label-eyebrow-muted">Why you got rejected</div>
-      <div className="font-display text-xl mt-2 leading-tight">Stripe · Senior PM</div>
-      <div className="text-sm text-muted-foreground mt-1">After onsite · 11d ago</div>
+      <div className="label-eyebrow-muted">Prep · Stripe second round</div>
+      <div className="font-display text-xl mt-2 leading-tight">3 things to nail</div>
       <div className="editorial-rule mt-4" />
       <ul className="mt-4 space-y-3 text-sm leading-snug">
         <li className="flex gap-3">
           <span className="text-muted-foreground">01</span>
-          <span>Recruiter cited <span className="font-serif-italic">&ldquo;depth on payments&rdquo;</span> — your CV led with growth.</span>
+          <span>Rewrite <span className="font-serif-italic">&ldquo;why Stripe&rdquo;</span> in 45s — anchor on payments depth.</span>
         </li>
         <li className="flex gap-3">
           <span className="text-muted-foreground">02</span>
-          <span>3rd &ldquo;why Stripe?&rdquo; answer was generic. Pattern across 4 onsites.</span>
+          <span>Scoping drill: 3 reps. Always clarify constraints before proposing.</span>
+        </li>
+        <li className="flex gap-3">
+          <span className="text-muted-foreground">03</span>
+          <span>Likely panel question: <span className="font-serif-italic">&ldquo;Walk me through a tough trade-off.&rdquo;</span></span>
         </li>
       </ul>
       <div className="mt-auto pt-4">
-        <span className="label-tag">Fix next</span>
+        <span className="label-tag">Start drill →</span>
       </div>
     </div>
   );
@@ -626,18 +627,18 @@ function HowItWorks() {
   const steps = [
     {
       n: "01",
-      title: "Upload your CV.",
-      body: "One PDF. We extract roles, skills, outcomes — no forms to fill.",
+      title: "Score before you apply.",
+      body: "Upload your CV, paste a JD. Hindsight scores fit, names the requirements that'll cut you, and tells you whether to apply, refer, or skip.",
     },
     {
       n: "02",
-      title: "Assess every job.",
-      body: "Paste a JD, get a fit score, decoded requirements, and screening risks before you apply.",
+      title: "Record every interview.",
+      body: "Use Granola to capture the call. Hindsight reads the transcript and pinpoints the exact moments you lost the room — across every round.",
     },
     {
       n: "03",
-      title: "Track the funnel.",
-      body: "Mark each application's outcome. We surface where you're losing offers — and tell you what to do about it.",
+      title: "Walk in prepared next time.",
+      body: "A drill plan built from your last interview's gaps: the stories to rewrite, the questions you'll get asked, the answers worth rehearsing.",
     },
   ];
   return (

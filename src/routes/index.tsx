@@ -52,18 +52,18 @@ function Nav({ authed }: { authed: boolean }) {
         <Link to="/" className="font-display text-2xl tracking-tight">
           Hindsight
         </Link>
-        <nav className="flex items-center gap-6 text-sm">
-          <a href="#funnel" className="hidden sm:inline text-muted-foreground hover:text-foreground">
+        <nav className="flex items-center gap-7 text-base">
+          <a href="#funnel" className="hidden sm:inline text-foreground/70 hover:text-foreground">
             The funnel
           </a>
-          <a href="#how" className="hidden sm:inline text-muted-foreground hover:text-foreground">
+          <a href="#how" className="hidden sm:inline text-foreground/70 hover:text-foreground">
             How it works
           </a>
-          <a href="#waitlist" className="hidden sm:inline text-muted-foreground hover:text-foreground">
+          <a href="#waitlist" className="hidden sm:inline text-foreground/70 hover:text-foreground">
             Waitlist
           </a>
           {authed ? (
-            <Link to="/dashboard" className="bg-foreground text-background px-4 py-2 hover:opacity-90">
+            <Link to="/dashboard" className="bg-foreground text-background px-5 py-2.5 hover:opacity-90 rounded-full text-sm font-medium">
               Dashboard →
             </Link>
           ) : (

@@ -3,6 +3,14 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { requireAuth } from "@/lib/feature-flags";
 import { AppHeader } from "@/components/AppHeader";
+import {
+  getAnonProfile,
+  getAnonDailyRemaining,
+  incrementAnonDaily,
+  saveAnonAssessment,
+  newAnonId,
+  ANON_DAILY_LIMIT,
+} from "@/lib/anon-store";
 
 export const Route = createFileRoute("/assess")({
   beforeLoad: requireAuth,
@@ -22,11 +30,18 @@ function AssessNew() {
   const [stepIdx, setStepIdx] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [profileMissing, setProfileMissing] = useState(false);
+  const [isAnon, setIsAnon] = useState(false);
+  const [anonRemaining, setAnonRemaining] = useState(ANON_DAILY_LIMIT);
 
   useEffect(() => {
     (async () => {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+      if (!user) {
+        setIsAnon(true);
+        setAnonRemaining(getAnonDailyRemaining());
+        if (!getAnonProfile()) setProfileMissing(true);
+        return;
+      }
       const { data } = await supabase.from("profiles").select("id").eq("user_id", user.id).maybeSingle();
       if (!data) setProfileMissing(true);
     })();
@@ -69,24 +84,43 @@ function AssessNew() {
       setError("This doesn't look like a complete job description. Please paste the full JD.");
       return;
     }
+    if (isAnon && getAnonDailyRemaining() <= 0) {
+      setError(`Beta limit reached: ${ANON_DAILY_LIMIT} assessments per day for guest users. Sign in to keep going.`);
+      return;
+    }
     setBusy(true);
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Not authenticated");
-      const { data: prof } = await supabase
-        .from("profiles").select("*").eq("user_id", user.id).maybeSingle();
-      if (!prof) throw new Error("Profile not found");
 
-      const profileForAi = {
-        name: prof.name,
-        title: prof.title,
-        years_experience: prof.years_experience,
-        skills: prof.skills,
-        roles: prof.roles,
-        outcomes: prof.outcomes,
-        seniority_signals: prof.seniority_signals,
-        preferences: (prof as any).preferences ?? {},
-      };
+      let profileForAi: any;
+      if (user) {
+        const { data: prof } = await supabase
+          .from("profiles").select("*").eq("user_id", user.id).maybeSingle();
+        if (!prof) throw new Error("Profile not found");
+        profileForAi = {
+          name: prof.name,
+          title: prof.title,
+          years_experience: prof.years_experience,
+          skills: prof.skills,
+          roles: prof.roles,
+          outcomes: prof.outcomes,
+          seniority_signals: prof.seniority_signals,
+          preferences: (prof as any).preferences ?? {},
+        };
+      } else {
+        const prof = getAnonProfile();
+        if (!prof) throw new Error("Profile not found");
+        profileForAi = {
+          name: prof.name,
+          title: prof.title,
+          years_experience: prof.years_experience,
+          skills: prof.skills,
+          roles: prof.roles,
+          outcomes: prof.outcomes,
+          seniority_signals: prof.seniority_signals,
+          preferences: prof.preferences ?? {},
+        };
+      }
 
       const { data, error: fnErr } = await supabase.functions.invoke("assess-job", {
         body: { profile: profileForAi, jobDescription: jd },
@@ -94,24 +128,48 @@ function AssessNew() {
       if (fnErr) throw fnErr;
       if (data?.error) throw new Error(data.error);
 
-      const { data: inserted, error: insErr } = await supabase
-        .from("assessments").insert({
-          user_id: user.id,
+      if (user) {
+        const { data: inserted, error: insErr } = await supabase
+          .from("assessments").insert({
+            user_id: user.id,
+            job_description: jd,
+            company: data.company,
+            role_title: data.role_title,
+            fit_score: data.fit_score,
+            fit_label: data.fit_label,
+            fit_summary: data.fit_summary,
+            job_decoder: data.job_decoder,
+            requirements: data.requirements,
+            screening_risks: data.screening_risks,
+            action_items: data.action_items,
+            company_intel: data.company_intel,
+            langfuse_assess_trace_id: data.langfuse_assess_trace_id,
+          }).select("id").single();
+        if (insErr) throw insErr;
+        nav({ to: "/assessment/$id", params: { id: inserted.id } });
+      } else {
+        const id = newAnonId();
+        saveAnonAssessment({
+          id,
+          created_at: new Date().toISOString(),
           job_description: jd,
-          company: data.company,
-          role_title: data.role_title,
-          fit_score: data.fit_score,
-          fit_label: data.fit_label,
-          fit_summary: data.fit_summary,
-          job_decoder: data.job_decoder,
-          requirements: data.requirements,
-          screening_risks: data.screening_risks,
-          action_items: data.action_items,
-          company_intel: data.company_intel,
-          langfuse_assess_trace_id: data.langfuse_assess_trace_id,
-        }).select("id").single();
-      if (insErr) throw insErr;
-      nav({ to: "/assessment/$id", params: { id: inserted.id } });
+          company: data.company ?? null,
+          role_title: data.role_title ?? null,
+          fit_score: data.fit_score ?? null,
+          fit_label: data.fit_label ?? null,
+          fit_summary: data.fit_summary ?? null,
+          job_decoder: data.job_decoder ?? null,
+          requirements: data.requirements ?? [],
+          screening_risks: data.screening_risks ?? [],
+          action_items: data.action_items ?? [],
+          company_intel: data.company_intel ?? null,
+          intent_to_apply: false,
+          status: "assessed",
+          feedback: {},
+        });
+        incrementAnonDaily();
+        nav({ to: "/assessment/$id", params: { id } });
+      }
     } catch (e: any) {
       setError(e.message ?? "Assessment failed. Please try again.");
       setBusy(false);

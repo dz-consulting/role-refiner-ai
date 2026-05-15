@@ -245,12 +245,12 @@ function Funnel() {
 
         {/* The funnel chart */}
         <div className="mt-14 border border-border bg-card p-4 md:p-10">
-          <div className="font-display text-2xl md:text-3xl mb-2">Typical PM hiring funnel</div>
+          <div className="font-display text-2xl md:text-3xl mb-2">Typical tech hiring funnel</div>
           <svg
             viewBox={`0 0 ${W} ${H}`}
             className="w-full h-auto"
             role="img"
-            aria-label="Typical PM hiring funnel from 200 CVs to 1 offer"
+            aria-label="Typical tech hiring funnel from 200 CVs to 1 offer"
           >
             {/* Gridlines + Y axis labels */}
             {yTicks.map((v) => {

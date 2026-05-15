@@ -169,31 +169,36 @@ const STAGES = [
     label: "CV → Screen",
     solo: { conv: 10, n: 20 },
     with: { conv: 25, n: 50 },
-    lever: "Skip the JDs you can't win. Tailor the ones you can to the priorities that actually matter.",
+    soloWhy: "Spray-and-pray on every JD that looks close enough.",
+    lever: "Score every JD in 60s. Skip the unwinnable ones, tailor the rest to the priorities that actually matter.",
   },
   {
     label: "Screen → Hiring manager",
     solo: { conv: 50, n: 10 },
     with: { conv: 70, n: 35 },
-    lever: "Recruiter pitch rewritten around their pain — comp range, scope, and 'why now' nailed before the call.",
+    soloWhy: "Same recruiter pitch every call. Comp and 'why now' winged.",
+    lever: "Recruiter-call brief per role: comp range, scope traps, 'why now' nailed before you dial in.",
   },
   {
     label: "HM → Second round",
     solo: { conv: 60, n: 6 },
     with: { conv: 75, n: 26 },
-    lever: "A clear story for this company, not a generic narrative. Their problems, your receipts.",
+    soloWhy: "Generic narrative. Same stories regardless of company.",
+    lever: "Company-specific story built from their roadmap and your receipts — not a recycled deck.",
   },
   {
     label: "Second → Final",
     solo: { conv: 50, n: 3 },
     with: { conv: 70, n: 18 },
-    lever: "Specific competency gap diagnosed and drilled — system design, case, or stakeholder demo.",
+    soloWhy: "You don't know which competency tanked the loop.",
+    lever: "Diagnose the exact gap from interviewer feedback patterns. Drill it before the next loop.",
   },
   {
     label: "Final → Offer",
     solo: { conv: 33, n: 1 },
     with: { conv: 55, n: 10 },
-    lever: "Negotiation prep with comparable comp data and a real BATNA from parallel processes.",
+    soloWhy: "One offer, no leverage. Take what they give you.",
+    lever: "Negotiate with comp comps and a real BATNA from parallel processes you ran on purpose.",
   },
 ];
 
@@ -214,19 +219,20 @@ function Funnel() {
           {/* WITHOUT */}
           <div className="bg-card p-6 md:p-10">
             <div className="label-eyebrow-muted">Without Hindsight</div>
-            <p className="font-display text-7xl md:text-8xl mt-3 tabular-nums leading-none">{soloOffers}</p>
-            <p className="text-base text-foreground/70 mt-2">offer</p>
+            <p className="font-display text-6xl md:text-7xl mt-3 tabular-nums leading-none">{soloOffers} <span className="text-2xl md:text-3xl text-foreground/60 font-light">offer</span></p>
+            <p className="text-sm text-foreground/60 mt-3 font-serif-italic">You guess. You apply. You wait.</p>
 
-            <div className="mt-8 space-y-3">
+            <div className="mt-8 space-y-5">
               {STAGES.map((s) => (
                 <div key={s.label}>
                   <div className="flex justify-between items-baseline text-sm">
                     <span className="text-foreground/70">{s.label}</span>
-                    <span className="tabular-nums font-medium">{s.solo.conv}%</span>
+                    <span className="tabular-nums font-medium text-foreground/70">{s.solo.conv}%</span>
                   </div>
-                  <div className="mt-1 h-2 bg-foreground/10">
+                  <div className="mt-1.5 h-1.5 bg-foreground/10">
                     <div className="h-full bg-foreground/40" style={{ width: `${s.solo.conv}%` }} />
                   </div>
+                  <p className="mt-2 text-xs text-foreground/50 leading-snug">{s.soloWhy}</p>
                 </div>
               ))}
             </div>
@@ -235,10 +241,10 @@ function Funnel() {
           {/* WITH */}
           <div className="bg-foreground text-background p-6 md:p-10">
             <div className="label-eyebrow-muted !text-background/60">With Hindsight</div>
-            <p className="font-display text-7xl md:text-8xl mt-3 tabular-nums leading-none">{withOffers}</p>
-            <p className="text-base text-background/80 mt-2">offers</p>
+            <p className="font-display text-6xl md:text-7xl mt-3 tabular-nums leading-none">{withOffers} <span className="text-2xl md:text-3xl text-background/70 font-light">offers</span></p>
+            <p className="text-sm text-background/70 mt-3 font-serif-italic">Hindsight tells you what to do at every stage.</p>
 
-            <div className="mt-8 space-y-3">
+            <div className="mt-8 space-y-5">
               {STAGES.map((s) => {
                 const delta = s.with.conv - s.solo.conv;
                 return (
@@ -250,9 +256,12 @@ function Funnel() {
                         <span className="font-serif-italic text-background/60 ml-2">+{delta}</span>
                       </span>
                     </div>
-                    <div className="mt-1 h-2 bg-background/15">
+                    <div className="mt-1.5 h-1.5 bg-background/15">
                       <div className="h-full bg-background" style={{ width: `${s.with.conv}%` }} />
                     </div>
+                    <p className="mt-2 text-xs text-background/70 leading-snug">
+                      <span className="text-background font-medium">Hindsight: </span>{s.lever}
+                    </p>
                   </div>
                 );
               })}

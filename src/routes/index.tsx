@@ -167,40 +167,43 @@ function ConceptVisual() {
 const STAGES = [
   {
     label: "CV → Screen",
-    solo: { conv: 10, n: 20 },
-    with: { conv: 25, n: 50 },
-    soloWhy: "Spray-and-pray on every JD that looks close enough.",
-    lever: "Score every JD in 60s. Skip the unwinnable ones, tailor the rest to the priorities that actually matter.",
+    solo: 10,
+    with: 25,
+    guess: "Ghosted. CV? JD fit? ATS? You'll never know.",
+    diagnosis: "Fit score on every JD before you apply. CV gaps flagged against the actual requirements.",
   },
   {
     label: "Screen → Hiring manager",
-    solo: { conv: 50, n: 10 },
-    with: { conv: 70, n: 35 },
-    soloWhy: "Same recruiter pitch every call. Comp and 'why now' winged.",
-    lever: "Recruiter-call brief per role: comp range, scope traps, 'why now' nailed before you dial in.",
+    solo: 50,
+    with: 70,
+    guess: "Recruiter passed. They didn't say why. You wing the next one the same way.",
+    diagnosis: "Recruiter-call brief per role: comp range, scope traps, 'why now' — locked before you dial in.",
   },
   {
     label: "HM → Second round",
-    solo: { conv: 60, n: 6 },
-    with: { conv: 75, n: 26 },
-    soloWhy: "Generic narrative. Same stories regardless of company.",
-    lever: "Company-specific story built from their roadmap and your receipts — not a recycled deck.",
+    solo: 60,
+    with: 75,
+    guess: "'Not quite the right fit.' What does that mean? Move on.",
+    diagnosis: "Pattern across rejections — the exact signal you're missing for this kind of company.",
   },
   {
     label: "Second → Final",
-    solo: { conv: 50, n: 3 },
-    with: { conv: 70, n: 18 },
-    soloWhy: "You don't know which competency tanked the loop.",
-    lever: "Diagnose the exact gap from interviewer feedback patterns. Drill it before the next loop.",
+    solo: 50,
+    with: 70,
+    guess: "Loop tanked on something. System design? Stakeholder demo? Unclear.",
+    diagnosis: "The exact competency gap, named — drilled before the next loop.",
   },
   {
     label: "Final → Offer",
-    solo: { conv: 33, n: 1 },
-    with: { conv: 55, n: 10 },
-    soloWhy: "One offer, no leverage. Take what they give you.",
-    lever: "Negotiate with comp comps and a real BATNA from parallel processes you ran on purpose.",
+    solo: 33,
+    with: 55,
+    guess: "One offer, no leverage. Take what they give you.",
+    diagnosis: "Comp comps and a real BATNA from parallel processes you ran on purpose.",
   },
 ];
+
+const SOLO_OFFERS = 1;
+const WITH_OFFERS = 10;
 
 function Funnel() {
   const soloOffers = STAGES[STAGES.length - 1].solo.n;

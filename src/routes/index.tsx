@@ -164,12 +164,54 @@ function ConceptVisual() {
 /* ───────────────────────── Funnel teaching diagram ───────────────────────── */
 
 const FUNNEL = [
-  { label: "CVs", time: "30 seconds", n: 200, conv: null as number | null },
-  { label: "Phone screens", time: "20 minutes", n: 20, conv: 10 },
-  { label: "Hiring manager", time: "45 minutes", n: 10, conv: 50 },
-  { label: "Second round", time: "45 minutes", n: 6, conv: 60 },
-  { label: "Final round", time: "60 minutes", n: 3, conv: 50 },
-  { label: "Offer", time: "—", n: 1, conv: 33 },
+  {
+    label: "CVs",
+    time: "30 seconds",
+    n: 200,
+    conv: null as number | null,
+    happens: "Recruiter or ATS scans your CV against the JD. 30 seconds, often less. Most never get read by a human.",
+    flag: "CV ↔ JD mismatch — your headline experience doesn't map to the role's top requirements.",
+  },
+  {
+    label: "Phone screens",
+    time: "20 minutes",
+    n: 20,
+    conv: 10,
+    happens: "Recruiter qualifies fit, comp, motivation, and timeline. It's a filter — they're looking for reasons to cut.",
+    flag: "Unclear motivation — you sound like you'd take any job, not this one.",
+  },
+  {
+    label: "Hiring manager",
+    time: "45 minutes",
+    n: 10,
+    conv: 50,
+    happens: "First real conversation about the role. The HM probes scope, ownership, and whether you'd be a peer they want to work with.",
+    flag: "Culture mismatch — your examples land in the wrong register for how this team operates.",
+  },
+  {
+    label: "Second round",
+    time: "45 minutes",
+    n: 6,
+    conv: 60,
+    happens: "Craft round — case study, system design, deep-dive, or stakeholder demo with cross-functional partners.",
+    flag: "Competency gap — one specific skill (system design, prioritisation, exec comms) doesn't meet the bar.",
+  },
+  {
+    label: "Final round",
+    time: "60 minutes",
+    n: 3,
+    conv: 50,
+    happens: "Onsite or final loop. Multiple interviewers debrief together. Consensus call, often with a skeptic in the room.",
+    flag: "Team-fit mismatch — one panelist isn't convinced you'd raise the bar for their team.",
+  },
+  {
+    label: "Offer",
+    time: "—",
+    n: 1,
+    conv: 33,
+    happens: "Comp negotiation, references, start date. Whatever leverage you have now is the only leverage you'll get.",
+    flag: "No leverage — no comp comps, no parallel offers, no real BATNA. You take what's offered.",
+  },
 ];
 
 function Funnel() {
@@ -203,12 +245,12 @@ function Funnel() {
 
         {/* The funnel chart */}
         <div className="mt-14 border border-border bg-card p-4 md:p-10">
-          <div className="font-display text-2xl md:text-3xl mb-2">Typical PM hiring funnel</div>
+          <div className="font-display text-2xl md:text-3xl mb-2">Typical tech hiring funnel</div>
           <svg
             viewBox={`0 0 ${W} ${H}`}
             className="w-full h-auto"
             role="img"
-            aria-label="Typical PM hiring funnel from 200 CVs to 1 offer"
+            aria-label="Typical tech hiring funnel from 200 CVs to 1 offer"
           >
             {/* Gridlines + Y axis labels */}
             {yTicks.map((v) => {
@@ -423,10 +465,39 @@ function Funnel() {
           </svg>
         </div>
 
-        <p className="mt-10 max-w-2xl text-lg text-foreground/70 leading-snug">
-          <span className="font-serif-italic text-foreground">Hindsight diagnoses every drop.</span>{" "}
-          Why your CV got skipped. Why the recruiter passed. Why the loop tanked. No more
-          guessing — every rejection becomes a data point you can act on.
+        {/* Stage-by-stage breakdown */}
+        <div className="mt-16">
+          <div className="label-eyebrow-muted">What happens at each stage</div>
+          <h3 className="font-display text-3xl md:text-5xl mt-4 max-w-3xl leading-[1.05]">
+            And the rejection reason{" "}
+            <span className="font-serif-italic">Hindsight surfaces</span> when you fall out.
+          </h3>
+
+          <div className="mt-10 grid md:grid-cols-2 gap-px bg-border border border-border">
+            {FUNNEL.map((s, i) => (
+              <div key={s.label} className="bg-card p-6 md:p-8">
+                <div className="flex items-baseline gap-4">
+                  <span className="font-display text-base text-muted-foreground tabular-nums">
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                  <h4 className="font-display text-2xl md:text-3xl">{s.label}</h4>
+                </div>
+                <p className="mt-4 text-base text-foreground/80 leading-snug">{s.happens}</p>
+                <div className="editorial-rule mt-5" />
+                <div className="mt-4">
+                  <div className="label-eyebrow-muted">Hindsight flags</div>
+                  <p className="mt-2 text-base text-foreground leading-snug font-serif-italic">
+                    {s.flag}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <p className="mt-12 max-w-2xl text-lg text-foreground/70 leading-snug">
+          <span className="font-serif-italic text-foreground">Every rejection becomes a data point.</span>{" "}
+          Hindsight names the drop, points to the fix, and updates the playbook for your next application.
         </p>
       </div>
     </section>

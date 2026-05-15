@@ -544,20 +544,20 @@ function Waitlist() {
   return (
     <section id="waitlist" className="border-b border-border bg-foreground text-background">
       <div className="max-w-3xl mx-auto px-6 md:px-10 py-24 md:py-32">
-        <div className="label-eyebrow !text-background/60">Stay in the loop</div>
-        <h2 className="font-display text-4xl md:text-6xl mt-4 leading-[1.05]">
-          Get early access to the <span className="font-serif-italic">funnel</span>.
+        <div className="label-eyebrow-muted !text-background/60">Stay in the loop</div>
+        <h2 className="font-display text-5xl md:text-7xl mt-5 leading-[1.0]">
+          Get early access to <span className="font-serif-italic">Hindsight</span>.
         </h2>
-        <p className="mt-6 text-lg text-background/70 max-w-xl leading-relaxed">
+        <p className="mt-6 text-xl text-background/70 max-w-xl leading-snug font-light">
           The fit score is live. Funnel tracking and rejection diagnosis ship next.
-          Drop your email — we'll let you know when it's ready.
+          Drop your email — we&apos;ll let you know when it&apos;s ready.
         </p>
 
         {state === "ok" ? (
           <div className="mt-12 border border-background/30 p-8">
-            <div className="label-eyebrow !text-background/60">You're in</div>
-            <p className="font-display text-2xl mt-2">Thanks. We'll be in touch.</p>
-            <p className="text-background/70 mt-3 text-sm">
+            <div className="label-eyebrow-muted !text-background/60">You&apos;re in</div>
+            <p className="font-display text-3xl mt-3">Thanks. We&apos;ll be in touch.</p>
+            <p className="text-background/70 mt-4 text-base">
               Want to try the fit score now?{" "}
               <Link to="/onboarding" className="underline underline-offset-4">
                 Start free →
@@ -565,9 +565,9 @@ function Waitlist() {
             </p>
           </div>
         ) : (
-          <form onSubmit={submit} className="mt-12 space-y-6">
+          <form onSubmit={submit} className="mt-12 space-y-8">
             <div>
-              <div className="label-eyebrow !text-background/60 mb-2">Email</div>
+              <div className="label-eyebrow-muted !text-background/60 mb-3">Email</div>
               <input
                 type="email"
                 required
@@ -579,27 +579,27 @@ function Waitlist() {
               />
             </div>
             <div>
-              <div className="label-eyebrow !text-background/60 mb-2">
+              <div className="label-eyebrow-muted !text-background/60 mb-3">
                 What stage are you at? (optional)
               </div>
               <input
                 type="text"
                 value={note}
                 onChange={(e) => setNote(e.target.value)}
-                placeholder="e.g. Senior PM, ~80 apps in, 5 offers, lots of ghosting"
+                placeholder="e.g. Senior PM, ~80 apps in, lots of ghosting"
                 disabled={state === "loading"}
                 className="w-full bg-transparent border-b border-background/40 focus:border-background py-3 text-base focus:outline-none transition-colors text-background placeholder:text-background/40"
               />
             </div>
             {err && (
-              <div className="text-sm text-background/90 border-l-2 border-background pl-3 py-1">
+              <div className="text-base text-background/90 border-l-2 border-background pl-3 py-1">
                 {err}
               </div>
             )}
             <button
               type="submit"
               disabled={state === "loading"}
-              className="bg-background text-foreground px-8 py-4 text-base hover:opacity-90 transition disabled:opacity-50"
+              className="bg-background text-foreground px-8 py-4 text-base font-medium hover:opacity-90 transition disabled:opacity-50 rounded-full"
             >
               {state === "loading" ? "..." : "Join the waitlist →"}
             </button>
@@ -615,7 +615,7 @@ function Waitlist() {
 function Footer() {
   return (
     <footer>
-      <div className="max-w-6xl mx-auto px-6 md:px-10 py-10 flex flex-col sm:flex-row items-baseline justify-between gap-4 text-xs font-mono text-muted-foreground">
+      <div className="max-w-6xl mx-auto px-6 md:px-10 py-10 flex flex-col sm:flex-row items-baseline justify-between gap-4 text-sm text-muted-foreground">
         <div>Hindsight · Beta · {new Date().getFullYear()}</div>
         <div className="flex gap-6">
           <Link to="/auth" className="hover:text-foreground">Sign in</Link>

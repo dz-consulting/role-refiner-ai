@@ -57,7 +57,31 @@ function AuthPage() {
         <div className="font-display text-3xl tracking-tight">JobMatch</div>
         <div className="label-eyebrow mt-1">Honest job fit assessment</div>
 
-        <form onSubmit={submit} className="mt-16 space-y-8">
+        {/* Primary CTA — beta guest mode */}
+        <div className="mt-12 border border-foreground p-6 bg-surface">
+          <div className="label-eyebrow">Beta · No account needed</div>
+          <h2 className="font-display text-2xl mt-2 leading-tight">
+            Try it now — <span className="font-serif-italic">free</span>.
+          </h2>
+          <p className="text-caption mt-2">
+            Run up to 3 assessments per day without signing in. Your data stays in your browser.
+          </p>
+          <button
+            type="button"
+            onClick={() => nav({ to: "/onboarding" })}
+            className="w-full mt-5 bg-foreground text-background font-medium py-3 hover:opacity-90 transition"
+          >
+            Try without signing in →
+          </button>
+        </div>
+
+        <div className="flex items-center gap-4 mt-10">
+          <div className="flex-1 h-px bg-border" />
+          <div className="label-eyebrow">Or</div>
+          <div className="flex-1 h-px bg-border" />
+        </div>
+
+        <form onSubmit={submit} className="mt-10 space-y-8">
           <h1 className="font-display text-4xl">
             {mode === "signin" ? "Sign in." : "Create account."}
           </h1>

@@ -6,6 +6,7 @@ import { extractTextFromFile } from "@/lib/cv-extract";
 import { AppHeader } from "@/components/AppHeader";
 import { PreferencesEditor } from "@/components/PreferencesEditor";
 import { Preferences, emptyPreferences } from "@/lib/preferences";
+import { saveAnonProfile } from "@/lib/anon-store";
 
 export const Route = createFileRoute("/onboarding")({
   beforeLoad: requireAuth,
@@ -41,10 +42,6 @@ function OnboardingPage() {
       if (text.length < 200) throw new Error("That CV looks empty. Try another file.");
       setCvText(text);
 
-      setProgress("Checking your session…");
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Not authenticated");
-
       setProgress("Extracting structured profile with AI…");
       const { data, error: fnErr } = await supabase.functions.invoke("extract-cv", {
         body: { cvText: text },
@@ -65,11 +62,26 @@ function OnboardingPage() {
     setError(null);
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Not authenticated");
-      const { error: upErr } = await supabase
-        .from("profiles")
-        .upsert({
-          user_id: user.id,
+      if (user) {
+        const { error: upErr } = await supabase
+          .from("profiles")
+          .upsert({
+            user_id: user.id,
+            name: profile.name,
+            title: profile.title,
+            years_experience: profile.years_experience,
+            skills: profile.skills,
+            roles: profile.roles,
+            outcomes: profile.outcomes,
+            seniority_signals: profile.seniority_signals,
+            preferences: preferences as any,
+            raw_text: cvText,
+            cv_file_path: cvFilePath,
+          }, { onConflict: "user_id" });
+        if (upErr) throw upErr;
+      } else {
+        // Anon: save to localStorage
+        saveAnonProfile({
           name: profile.name,
           title: profile.title,
           years_experience: profile.years_experience,
@@ -77,11 +89,10 @@ function OnboardingPage() {
           roles: profile.roles,
           outcomes: profile.outcomes,
           seniority_signals: profile.seniority_signals,
-          preferences: preferences as any,
+          preferences,
           raw_text: cvText,
-          cv_file_path: cvFilePath,
-        }, { onConflict: "user_id" });
-      if (upErr) throw upErr;
+        });
+      }
       nav({ to: "/dashboard" });
     } catch (e: any) {
       setError(e.message ?? "Failed to save");

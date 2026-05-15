@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { requireAuth } from "@/lib/feature-flags";
 import { AppHeader } from "@/components/AppHeader";
+import { getAnonProfile, getAnonAssessments, getAnonDailyRemaining, ANON_DAILY_LIMIT } from "@/lib/anon-store";
 
 export const Route = createFileRoute("/dashboard")({
   beforeLoad: requireAuth,
@@ -15,11 +16,28 @@ function Dashboard() {
   const [profile, setProfile] = useState<any>(null);
   const [assessments, setAssessments] = useState<any[]>([]);
   const [email, setEmail] = useState<string | null>(null);
+  const [isAnon, setIsAnon] = useState(false);
+  const [remaining, setRemaining] = useState(ANON_DAILY_LIMIT);
 
   useEffect(() => {
     (async () => {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+      if (!user) {
+        // Anon flow
+        setIsAnon(true);
+        const prof = getAnonProfile();
+        if (!prof) {
+          nav({ to: "/onboarding" });
+          return;
+        }
+        setProfile(prof);
+        setAssessments(
+          getAnonAssessments().map((a) => ({ ...a })),
+        );
+        setRemaining(getAnonDailyRemaining());
+        setLoading(false);
+        return;
+      }
       setEmail(user.email ?? null);
       const { data: prof } = await supabase
         .from("profiles").select("*").eq("user_id", user.id).maybeSingle();

@@ -479,34 +479,38 @@ function Screens() {
   return (
     <section className="border-b border-border bg-surface/40">
       <div className="max-w-6xl mx-auto px-6 md:px-10 py-24 md:py-32">
-        <div className="label-eyebrow-muted">Inside the product</div>
+        <div className="label-eyebrow-muted">Three tools, one coach</div>
         <h2 className="font-display text-5xl md:text-7xl mt-5 max-w-3xl leading-[1.0]">
-          Three views, <span className="font-serif-italic">one promise</span>.
+          What Hindsight <span className="font-serif-italic">actually does</span>.
         </h2>
+        <p className="mt-6 max-w-2xl text-lg md:text-xl text-foreground/70 leading-snug font-light">
+          Three things, end-to-end. Score the role before you waste a week on it.
+          Record the interview and learn what tanked it. Walk into the next one prepared.
+        </p>
 
         <div className="mt-16 grid md:grid-cols-3 gap-10">
           <ScreenCard
             number="01"
-            title="The fit score"
-            blurb="Paste a JD, get an honest score in 60 seconds. No false hope."
+            title="Fit score, before you apply"
+            blurb="Paste a JD. Get an honest score in 60 seconds, the requirements that'll cut you, and a tailored angle if it's worth pursuing."
           >
             <FitScoreMock />
           </ScreenCard>
 
           <ScreenCard
             number="02"
-            title="Your funnel"
-            blurb="Every application tracked. See exactly where offers slip away."
+            title="Interview recording, analysed"
+            blurb="Record interviews with Granola. Hindsight reads the transcript and tells you exactly which answer lost the room — and why."
           >
-            <FunnelMock />
+            <RecordingMock />
           </ScreenCard>
 
           <ScreenCard
             number="03"
-            title="The diagnosis"
-            blurb="When you get rejected, we tell you why — and what to do next."
+            title="Prep for the next round"
+            blurb="A drill plan built from your last interview's gaps. The exact stories, frameworks, and questions to rehearse before you go again."
           >
-            <DiagnosisMock />
+            <PrepMock />
           </ScreenCard>
         </div>
       </div>

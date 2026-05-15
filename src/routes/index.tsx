@@ -167,72 +167,85 @@ function ConceptVisual() {
 const STAGES = [
   {
     label: "CV → Screen",
-    solo: { conv: 10, n: 20 },
-    with: { conv: 25, n: 50 },
-    soloWhy: "Spray-and-pray on every JD that looks close enough.",
-    lever: "Score every JD in 60s. Skip the unwinnable ones, tailor the rest to the priorities that actually matter.",
+    solo: 10,
+    with: 25,
+    guess: "Ghosted. CV? JD fit? ATS? You'll never know.",
+    diagnosis: "Fit score on every JD before you apply. CV gaps flagged against the actual requirements.",
   },
   {
     label: "Screen → Hiring manager",
-    solo: { conv: 50, n: 10 },
-    with: { conv: 70, n: 35 },
-    soloWhy: "Same recruiter pitch every call. Comp and 'why now' winged.",
-    lever: "Recruiter-call brief per role: comp range, scope traps, 'why now' nailed before you dial in.",
+    solo: 50,
+    with: 70,
+    guess: "Recruiter passed. They didn't say why. You wing the next one the same way.",
+    diagnosis: "Recruiter-call brief per role: comp range, scope traps, 'why now' — locked before you dial in.",
   },
   {
     label: "HM → Second round",
-    solo: { conv: 60, n: 6 },
-    with: { conv: 75, n: 26 },
-    soloWhy: "Generic narrative. Same stories regardless of company.",
-    lever: "Company-specific story built from their roadmap and your receipts — not a recycled deck.",
+    solo: 60,
+    with: 75,
+    guess: "'Not quite the right fit.' What does that mean? Move on.",
+    diagnosis: "Pattern across rejections — the exact signal you're missing for this kind of company.",
   },
   {
     label: "Second → Final",
-    solo: { conv: 50, n: 3 },
-    with: { conv: 70, n: 18 },
-    soloWhy: "You don't know which competency tanked the loop.",
-    lever: "Diagnose the exact gap from interviewer feedback patterns. Drill it before the next loop.",
+    solo: 50,
+    with: 70,
+    guess: "Loop tanked on something. System design? Stakeholder demo? Unclear.",
+    diagnosis: "The exact competency gap, named — drilled before the next loop.",
   },
   {
     label: "Final → Offer",
-    solo: { conv: 33, n: 1 },
-    with: { conv: 55, n: 10 },
-    soloWhy: "One offer, no leverage. Take what they give you.",
-    lever: "Negotiate with comp comps and a real BATNA from parallel processes you ran on purpose.",
+    solo: 33,
+    with: 55,
+    guess: "One offer, no leverage. Take what they give you.",
+    diagnosis: "Comp comps and a real BATNA from parallel processes you ran on purpose.",
   },
 ];
 
-function Funnel() {
-  const soloOffers = STAGES[STAGES.length - 1].solo.n;
-  const withOffers = STAGES[STAGES.length - 1].with.n;
+const SOLO_OFFERS = 1;
+const WITH_OFFERS = 10;
 
+function Funnel() {
   return (
     <section id="funnel" className="border-b border-border">
       <div className="max-w-6xl mx-auto px-6 md:px-10 py-20 md:py-28">
-        <div className="label-eyebrow-muted">Same 200 applications</div>
+        <div className="label-eyebrow-muted">Your job search is a funnel</div>
         <h2 className="font-display text-5xl md:text-7xl mt-5 max-w-3xl leading-[1.0]">
-          1 offer alone. <span className="font-serif-italic">{withOffers} with Hindsight.</span>
+          Stop guessing why you got <span className="font-serif-italic">rejected</span>.
         </h2>
+        <p className="mt-6 max-w-2xl text-lg md:text-xl text-foreground/70 leading-snug font-light">
+          Every job search has five stages. Most people lose offers at every one
+          and never know which. Hindsight tracks the funnel and tells you, at each
+          stage, <span className="font-serif-italic text-foreground">exactly why you fell out</span> — and what to do
+          about it before the next application.
+        </p>
 
         {/* Split-screen comparison */}
-        <div className="mt-12 grid grid-cols-2 gap-px bg-border border border-border">
+        <div className="mt-14 grid md:grid-cols-2 gap-px bg-border border border-border">
           {/* WITHOUT */}
           <div className="bg-card p-6 md:p-10">
             <div className="label-eyebrow-muted">Without Hindsight</div>
-            <p className="font-display text-6xl md:text-7xl mt-3 tabular-nums leading-none">{soloOffers} <span className="text-2xl md:text-3xl text-foreground/60 font-light">offer</span></p>
-            <p className="text-sm text-foreground/60 mt-3 font-serif-italic">You guess. You apply. You wait.</p>
+            <p className="font-display text-6xl md:text-7xl mt-3 tabular-nums leading-none">
+              {SOLO_OFFERS} <span className="text-2xl md:text-3xl text-foreground/60 font-light">offer</span>
+            </p>
+            <p className="text-base text-foreground/70 mt-3 font-serif-italic">
+              You guess. You apply. You get ghosted. You guess again.
+            </p>
 
             <div className="mt-8 space-y-5">
               {STAGES.map((s) => (
                 <div key={s.label}>
                   <div className="flex justify-between items-baseline text-sm">
                     <span className="text-foreground/70">{s.label}</span>
-                    <span className="tabular-nums font-medium text-foreground/70">{s.solo.conv}%</span>
+                    <span className="tabular-nums font-medium text-foreground/70">{s.solo}%</span>
                   </div>
                   <div className="mt-1.5 h-1.5 bg-foreground/10">
-                    <div className="h-full bg-foreground/40" style={{ width: `${s.solo.conv}%` }} />
+                    <div className="h-full bg-foreground/40" style={{ width: `${s.solo}%` }} />
                   </div>
-                  <p className="mt-2 text-xs text-foreground/50 leading-snug">{s.soloWhy}</p>
+                  <p className="mt-2 text-xs text-foreground/55 leading-snug">
+                    <span className="text-foreground/70 font-medium">Why you failed: </span>
+                    <span className="font-serif-italic">{s.guess}</span>
+                  </p>
                 </div>
               ))}
             </div>
@@ -241,26 +254,31 @@ function Funnel() {
           {/* WITH */}
           <div className="bg-foreground text-background p-6 md:p-10">
             <div className="label-eyebrow-muted !text-background/60">With Hindsight</div>
-            <p className="font-display text-6xl md:text-7xl mt-3 tabular-nums leading-none">{withOffers} <span className="text-2xl md:text-3xl text-background/70 font-light">offers</span></p>
-            <p className="text-sm text-background/70 mt-3 font-serif-italic">Hindsight tells you what to do at every stage.</p>
+            <p className="font-display text-6xl md:text-7xl mt-3 tabular-nums leading-none">
+              {WITH_OFFERS} <span className="text-2xl md:text-3xl text-background/70 font-light">offers</span>
+            </p>
+            <p className="text-base text-background/80 mt-3 font-serif-italic">
+              Every rejection becomes a data point. Every stage gets diagnosed.
+            </p>
 
             <div className="mt-8 space-y-5">
               {STAGES.map((s) => {
-                const delta = s.with.conv - s.solo.conv;
+                const delta = s.with - s.solo;
                 return (
                   <div key={s.label}>
                     <div className="flex justify-between items-baseline text-sm">
                       <span className="text-background/80">{s.label}</span>
                       <span className="tabular-nums font-medium">
-                        {s.with.conv}%
+                        {s.with}%
                         <span className="font-serif-italic text-background/60 ml-2">+{delta}</span>
                       </span>
                     </div>
                     <div className="mt-1.5 h-1.5 bg-background/15">
-                      <div className="h-full bg-background" style={{ width: `${s.with.conv}%` }} />
+                      <div className="h-full bg-background" style={{ width: `${s.with}%` }} />
                     </div>
-                    <p className="mt-2 text-xs text-background/70 leading-snug">
-                      <span className="text-background font-medium">Hindsight: </span>{s.lever}
+                    <p className="mt-2 text-xs text-background/75 leading-snug">
+                      <span className="text-background font-medium">Hindsight tells you: </span>
+                      {s.diagnosis}
                     </p>
                   </div>
                 );
@@ -270,8 +288,8 @@ function Funnel() {
         </div>
 
         <p className="mt-10 max-w-2xl text-lg text-foreground/70 leading-snug">
-          <span className="font-serif-italic text-foreground">Small gains compound.</span>{" "}
-          Lift every stage by a few points and the outcome isn&apos;t better — it&apos;s different.
+          <span className="font-serif-italic text-foreground">Five stages, five diagnoses.</span>{" "}
+          Close the gaps you can name and the outcome isn&apos;t better — it&apos;s different.
         </p>
       </div>
     </section>

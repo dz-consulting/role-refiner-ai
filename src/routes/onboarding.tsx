@@ -6,7 +6,14 @@ import { extractTextFromFile } from "@/lib/cv-extract";
 import { AppHeader } from "@/components/AppHeader";
 import { PreferencesEditor } from "@/components/PreferencesEditor";
 import { Preferences, emptyPreferences } from "@/lib/preferences";
-import { saveAnonProfile } from "@/lib/anon-store";
+import {
+  saveAnonProfile,
+  getAnonDailyRemaining,
+  incrementAnonDaily,
+  saveAnonAssessment,
+  newAnonId,
+  ANON_DAILY_LIMIT,
+} from "@/lib/anon-store";
 
 export const Route = createFileRoute("/onboarding")({
   beforeLoad: requireAuth,
@@ -26,17 +33,24 @@ type Profile = {
 
 function OnboardingPage() {
   const nav = useNavigate();
-  const [step, setStep] = useState<"upload" | "extracting" | "review" | "preferences" | "saving">("upload");
+  const [step, setStep] = useState<"input" | "processing" | "review" | "preferences" | "saving">("input");
   const [error, setError] = useState<string | null>(null);
   const [progress, setProgress] = useState("");
   const [profile, setProfile] = useState<Profile | null>(null);
   const [preferences, setPreferences] = useState<Preferences>(emptyPreferences());
   const [cvText, setCvText] = useState("");
   const [cvFilePath] = useState<string | null>(null);
+  const [file, setFile] = useState<File | null>(null);
+  const [jd, setJd] = useState("");
 
-  const handleFile = async (file: File) => {
+  const jdWords = jd.trim().split(/\s+/).filter(Boolean).length;
+
+  const run = async () => {
     setError(null);
-    setStep("extracting");
+    if (!file) { setError("Upload your CV to continue."); return; }
+    if (jdWords < 100) { setError("Paste the full job description (min 100 words)."); return; }
+
+    setStep("processing");
     try {
       setProgress("Reading your CV…");
       const text = await extractTextFromFile(file);
@@ -44,16 +58,106 @@ function OnboardingPage() {
       setCvText(text);
 
       setProgress("Extracting structured profile with AI…");
-      const { data, error: fnErr } = await supabase.functions.invoke("extract-cv", {
+      const { data: ex, error: exErr } = await supabase.functions.invoke("extract-cv", {
         body: { cvText: text },
       });
-      if (fnErr) throw fnErr;
-      if (data?.error) throw new Error(data.error);
-      setProfile({ ...data.profile, languages: data.profile?.languages ?? [] });
-      setStep("review");
+      if (exErr) throw exErr;
+      if (ex?.error) throw new Error(ex.error);
+      const extracted: Profile = { ...ex.profile, languages: ex.profile?.languages ?? [] };
+      setProfile(extracted);
+
+      const { data: { user } } = await supabase.auth.getUser();
+      const profilePayload = {
+        name: extracted.name,
+        title: extracted.title,
+        years_experience: extracted.years_experience,
+        skills: extracted.skills,
+        roles: extracted.roles,
+        outcomes: extracted.outcomes,
+        seniority_signals: extracted.seniority_signals,
+        languages: extracted.languages,
+        preferences,
+        raw_text: text,
+      };
+
+      if (user) {
+        const { error: upErr } = await supabase.from("profiles").upsert({
+          user_id: user.id,
+          ...profilePayload,
+          preferences: preferences as any,
+          cv_file_path: cvFilePath,
+        }, { onConflict: "user_id" });
+        if (upErr) throw upErr;
+      } else {
+        if (getAnonDailyRemaining() <= 0) {
+          throw new Error(`Beta limit reached: ${ANON_DAILY_LIMIT} assessments per day. Sign in to keep going.`);
+        }
+        saveAnonProfile(profilePayload);
+      }
+
+      setProgress("Assessing your fit for this role…");
+      const profileForAi = {
+        name: extracted.name,
+        title: extracted.title,
+        years_experience: extracted.years_experience,
+        skills: extracted.skills,
+        roles: extracted.roles,
+        outcomes: extracted.outcomes,
+        seniority_signals: extracted.seniority_signals,
+        languages: extracted.languages ?? [],
+        preferences: {},
+      };
+      const { data: a, error: aErr } = await supabase.functions.invoke("assess-job", {
+        body: { profile: profileForAi, jobDescription: jd },
+      });
+      if (aErr) throw aErr;
+      if (a?.error) throw new Error(a.error);
+
+      if (user) {
+        const { data: inserted, error: insErr } = await supabase
+          .from("assessments").insert({
+            user_id: user.id,
+            job_description: jd,
+            company: a.company,
+            role_title: a.role_title,
+            fit_score: a.fit_score,
+            fit_label: a.fit_label,
+            fit_summary: a.fit_summary,
+            job_decoder: a.job_decoder,
+            requirements: a.requirements,
+            screening_risks: a.screening_risks,
+            action_items: a.action_items,
+            company_intel: a.company_intel,
+            langfuse_assess_trace_id: a.langfuse_assess_trace_id,
+          }).select("id").single();
+        if (insErr) throw insErr;
+        nav({ to: "/assessment/$id", params: { id: inserted.id } });
+      } else {
+        const id = newAnonId();
+        saveAnonAssessment({
+          id,
+          created_at: new Date().toISOString(),
+          job_description: jd,
+          company: a.company ?? null,
+          role_title: a.role_title ?? null,
+          fit_score: a.fit_score ?? null,
+          fit_label: a.fit_label ?? null,
+          fit_summary: a.fit_summary ?? null,
+          job_decoder: a.job_decoder ?? null,
+          requirements: a.requirements ?? [],
+          screening_risks: a.screening_risks ?? [],
+          action_items: a.action_items ?? [],
+          company_intel: a.company_intel ?? null,
+          intent_to_apply: false,
+          status: "assessed",
+          feedback: {},
+        });
+        incrementAnonDaily();
+        nav({ to: "/assessment/$id", params: { id } });
+      }
     } catch (e: any) {
-      setError(e.message ?? "Failed to process CV");
-      setStep("upload");
+      setError(e.message ?? "Something went wrong");
+      setStep("input");
     }
   };
 
@@ -82,7 +186,6 @@ function OnboardingPage() {
           }, { onConflict: "user_id" });
         if (upErr) throw upErr;
       } else {
-        // Anon: save to localStorage
         saveAnonProfile({
           name: profile.name,
           title: profile.title,
@@ -107,10 +210,10 @@ function OnboardingPage() {
     <div className="min-h-screen">
       <AppHeader />
       <main className="max-w-3xl mx-auto px-8 py-24">
-        <div className="label-eyebrow">Step 1 of 1 · Onboarding</div>
-        <h1 className="font-display text-5xl mt-3">Upload your CV.</h1>
+        <div className="label-eyebrow">Get started</div>
+        <h1 className="font-display text-5xl mt-3">Your CV. The job. One screen.</h1>
         <p className="text-muted-foreground mt-4 text-lg max-w-xl">
-          One upload powers every assessment after this. PDF or Word.
+          Upload your CV and paste the job description. We'll assess your fit in seconds.
         </p>
 
         {error && (
@@ -119,9 +222,44 @@ function OnboardingPage() {
           </div>
         )}
 
-        {step === "upload" && <Uploader onFile={handleFile} />}
+        {step === "input" && (
+          <div className="mt-12 space-y-12">
+            <section>
+              <div className="label-eyebrow mb-4">01 · Your CV</div>
+              <Uploader file={file} onFile={setFile} />
+            </section>
 
-        {(step === "extracting" || step === "saving") && (
+            <section>
+              <div className="label-eyebrow mb-4">02 · The job description</div>
+              <textarea
+                value={jd}
+                onChange={(e) => setJd(e.target.value)}
+                rows={14}
+                placeholder="Paste the complete job description here…"
+                className="w-full bg-card border border-border p-5 text-sm leading-relaxed focus:outline-none focus:border-foreground resize-y transition-colors"
+              />
+              <div className="flex items-center justify-between mt-3 text-xs font-mono text-muted-foreground">
+                <span>{jdWords} words</span>
+                <span>Minimum 100</span>
+              </div>
+            </section>
+
+            <div className="flex items-center justify-between border-t border-foreground pt-8">
+              <div className="font-serif-italic text-muted-foreground text-sm">
+                Takes ~20 seconds.
+              </div>
+              <button
+                onClick={run}
+                disabled={!file || jdWords < 100}
+                className="bg-foreground text-background px-8 py-4 hover:opacity-90 disabled:opacity-30 disabled:cursor-not-allowed"
+              >
+                Run assessment →
+              </button>
+            </div>
+          </div>
+        )}
+
+        {(step === "processing" || step === "saving") && (
           <div className="mt-16 py-16 text-center">
             <div className="font-serif-italic text-2xl text-muted-foreground animate-pulse">
               {step === "saving" ? "Saving your profile…" : progress}
@@ -168,7 +306,7 @@ function OnboardingPage() {
   );
 }
 
-function Uploader({ onFile }: { onFile: (f: File) => void }) {
+function Uploader({ file, onFile }: { file: File | null; onFile: (f: File) => void }) {
   const [drag, setDrag] = useState(false);
   return (
     <label
@@ -180,7 +318,7 @@ function Uploader({ onFile }: { onFile: (f: File) => void }) {
         const f = e.dataTransfer.files[0];
         if (f) onFile(f);
       }}
-      className={`mt-16 block border border-dashed py-24 text-center cursor-pointer transition ${
+      className={`block border border-dashed py-12 text-center cursor-pointer transition ${
         drag ? "border-foreground bg-foreground/[0.03]" : "border-border hover:border-foreground/60"
       }`}
     >
@@ -190,8 +328,17 @@ function Uploader({ onFile }: { onFile: (f: File) => void }) {
         className="hidden"
         onChange={(e) => e.target.files?.[0] && onFile(e.target.files[0])}
       />
-      <div className="font-display text-3xl">Drop your CV here</div>
-      <div className="text-sm text-muted-foreground mt-3">or click to browse · PDF, DOC, DOCX</div>
+      {file ? (
+        <>
+          <div className="font-display text-2xl">{file.name}</div>
+          <div className="text-sm text-muted-foreground mt-2">Click or drop to replace</div>
+        </>
+      ) : (
+        <>
+          <div className="font-display text-2xl">Drop your CV here</div>
+          <div className="text-sm text-muted-foreground mt-2">or click to browse · PDF, DOC, DOCX</div>
+        </>
+      )}
     </label>
   );
 }

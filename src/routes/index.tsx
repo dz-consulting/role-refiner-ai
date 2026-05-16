@@ -593,8 +593,8 @@ function HowItWorks() {
     },
     {
       n: "02",
-      title: "Record every interview.",
-      body: "Use Granola to capture the call. Hindsight reads the transcript and pinpoints the exact moments you lost the room — across every round.",
+      title: "Analyse every interview.",
+      body: "After each round, Hindsight breaks down your performance — the answers that landed, the ones that lost the room, and the patterns repeating across interviews.",
     },
     {
       n: "03",

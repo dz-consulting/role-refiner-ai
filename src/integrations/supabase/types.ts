@@ -177,6 +177,7 @@ export type Database = {
           created_at: string
           cv_file_path: string | null
           id: string
+          languages: Json | null
           name: string | null
           outcomes: Json | null
           preferences: Json
@@ -193,6 +194,7 @@ export type Database = {
           created_at?: string
           cv_file_path?: string | null
           id?: string
+          languages?: Json | null
           name?: string | null
           outcomes?: Json | null
           preferences?: Json
@@ -209,6 +211,7 @@ export type Database = {
           created_at?: string
           cv_file_path?: string | null
           id?: string
+          languages?: Json | null
           name?: string | null
           outcomes?: Json | null
           preferences?: Json

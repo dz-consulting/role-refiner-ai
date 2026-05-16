@@ -105,6 +105,7 @@ function AssessNew() {
           roles: prof.roles,
           outcomes: prof.outcomes,
           seniority_signals: prof.seniority_signals,
+          languages: (prof as any).languages ?? [],
           preferences: (prof as any).preferences ?? {},
         };
       } else {
@@ -118,6 +119,7 @@ function AssessNew() {
           roles: prof.roles,
           outcomes: prof.outcomes,
           seniority_signals: prof.seniority_signals,
+          languages: prof.languages ?? [],
           preferences: prof.preferences ?? {},
         };
       }

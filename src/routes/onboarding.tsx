@@ -21,6 +21,7 @@ type Profile = {
   roles: { title: string; company: string; duration: string }[];
   outcomes: string[];
   seniority_signals: string[];
+  languages: string[];
 };
 
 function OnboardingPage() {
@@ -48,7 +49,7 @@ function OnboardingPage() {
       });
       if (fnErr) throw fnErr;
       if (data?.error) throw new Error(data.error);
-      setProfile(data.profile);
+      setProfile({ ...data.profile, languages: data.profile?.languages ?? [] });
       setStep("review");
     } catch (e: any) {
       setError(e.message ?? "Failed to process CV");
@@ -74,6 +75,7 @@ function OnboardingPage() {
             roles: profile.roles,
             outcomes: profile.outcomes,
             seniority_signals: profile.seniority_signals,
+            languages: profile.languages,
             preferences: preferences as any,
             raw_text: cvText,
             cv_file_path: cvFilePath,
@@ -89,6 +91,7 @@ function OnboardingPage() {
           roles: profile.roles,
           outcomes: profile.outcomes,
           seniority_signals: profile.seniority_signals,
+          languages: profile.languages,
           preferences,
           raw_text: cvText,
         });
@@ -221,6 +224,7 @@ function ProfileEditor({
       </section>
 
       <ListEditor label="Skills" items={profile.skills} onChange={(items) => update({ skills: items })} />
+      <ListEditor label="Languages" items={profile.languages ?? []} onChange={(items) => update({ languages: items })} />
       <ListEditor label="Key outcomes" items={profile.outcomes} onChange={(items) => update({ outcomes: items })} multiline />
       <ListEditor label="Seniority signals" items={profile.seniority_signals} onChange={(items) => update({ seniority_signals: items })} />
 

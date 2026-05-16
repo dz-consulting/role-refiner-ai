@@ -21,7 +21,8 @@ Deno.serve(async (req) => {
   "skills": string[],               // top 12 skills, ordered by seniority/relevance
   "roles": [{ "title": string, "company": string, "duration": string }],
   "outcomes": string[],             // 5-8 concrete, quantified achievements
-  "seniority_signals": string[]     // 3-6 phrases evidencing seniority (scope, team size, budget, ambiguity)
+  "seniority_signals": string[],    // 3-6 phrases evidencing seniority (scope, team size, budget, ambiguity)
+  "languages": string[]             // every language mentioned in the CV with its proficiency, preserving the candidate's own wording. Format: "Language — proficiency" (e.g. "German — Verhandlungssicher (C1)", "English — Native", "French — B2"). Include native languages. Translate German proficiency terms in parentheses: Muttersprache=Native, Verhandlungssicher=C1/Professional, Fließend=Fluent/C1, Gut=B2, Grundkenntnisse=A2/Basic. Return [] only if truly no languages are listed.
 }
 
 CV:

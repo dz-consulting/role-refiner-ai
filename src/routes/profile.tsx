@@ -19,6 +19,7 @@ type Profile = {
   roles: { title: string; company: string; duration: string }[];
   outcomes: string[];
   seniority_signals: string[];
+  languages: string[];
   raw_text?: string;
 };
 
@@ -49,6 +50,7 @@ function ProfilePage() {
         roles: (prof.roles as any) ?? [],
         outcomes: (prof.outcomes as any) ?? [],
         seniority_signals: (prof.seniority_signals as any) ?? [],
+        languages: ((prof as any).languages as any) ?? [],
         raw_text: prof.raw_text ?? "",
       });
       setPreferences(mergePreferences((prof as any).preferences));
@@ -77,6 +79,7 @@ function ProfilePage() {
           roles: profile.roles,
           outcomes: profile.outcomes,
           seniority_signals: profile.seniority_signals,
+          languages: profile.languages,
           preferences: preferences as any,
         })
         .eq("user_id", user.id);
@@ -136,8 +139,9 @@ function ProfilePage() {
           </Block>
 
           <ListEditor number="02" label="Skills" items={profile.skills} onChange={(items) => update({ skills: items })} />
-          <ListEditor number="03" label="Key outcomes" items={profile.outcomes} onChange={(items) => update({ outcomes: items })} multiline />
-          <ListEditor number="04" label="Seniority signals" items={profile.seniority_signals} onChange={(items) => update({ seniority_signals: items })} />
+          <ListEditor number="03" label="Languages" items={profile.languages} onChange={(items) => update({ languages: items })} />
+          <ListEditor number="04" label="Key outcomes" items={profile.outcomes} onChange={(items) => update({ outcomes: items })} multiline />
+          <ListEditor number="05" label="Seniority signals" items={profile.seniority_signals} onChange={(items) => update({ seniority_signals: items })} />
 
           <Block
             title="Roles"

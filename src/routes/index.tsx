@@ -576,108 +576,27 @@ function HowItWorks() {
   );
 }
 
-/* ───────────────────────── Waitlist ───────────────────────── */
+/* ───────────────────────── Final CTA ───────────────────────── */
 
 function Waitlist() {
-  const [email, setEmail] = useState("");
-  const [appsSent, setAppsSent] = useState("");
-  const [state, setState] = useState<"idle" | "loading" | "ok" | "error">("idle");
-  const [err, setErr] = useState<string | null>(null);
-
-  const submit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setErr(null);
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      setErr("That doesn't look like a valid email.");
-      return;
-    }
-    setState("loading");
-    const { error } = await supabase
-      .from("waitlist")
-      .insert({
-        email: email.trim().toLowerCase(),
-        note: appsSent.trim() ? `applications_sent: ${appsSent.trim()}` : null,
-        source: "landing",
-      });
-    if (error) {
-      // 23505 = unique violation — already on the list. Treat as success.
-      if (error.code === "23505") {
-        setState("ok");
-        return;
-      }
-      setState("error");
-      setErr(error.message);
-      return;
-    }
-    setState("ok");
-  };
-
   return (
     <section id="waitlist" className="border-b border-border bg-foreground text-background">
       <div className="max-w-3xl mx-auto px-6 md:px-10 py-24 md:py-32">
-        <div className="label-eyebrow-muted !text-background/60">Stay in the loop</div>
+        <div className="label-eyebrow-muted !text-background/60">Try it now</div>
         <h2 className="font-display text-5xl md:text-7xl mt-5 leading-[1.0]">
-          Get early access to <span className="font-serif-italic">Hindsight</span>.
+          Assess your CV against your <span className="font-serif-italic">dream role</span>.
         </h2>
         <p className="mt-6 text-xl text-background/70 max-w-xl leading-snug font-light">
-          The fit score is live. Funnel tracking and rejection diagnosis ship next.
-          Drop your email — we&apos;ll let you know when it&apos;s ready.
+          Paste a job description, get your fit score, gaps, and exactly what to fix — in under a minute.
         </p>
 
-        {state === "ok" ? (
-          <div className="mt-12 border border-background/30 p-8">
-            <div className="label-eyebrow-muted !text-background/60">You&apos;re in</div>
-            <p className="font-display text-3xl mt-3">Thanks. We&apos;ll be in touch.</p>
-            <p className="text-background/70 mt-4 text-base">
-              Want to try the fit score now?{" "}
-              <Link to="/onboarding" className="underline underline-offset-4">
-                Start free →
-              </Link>
-            </p>
-          </div>
-        ) : (
-          <form onSubmit={submit} className="mt-12 space-y-8">
-            <div>
-              <div className="label-eyebrow-muted !text-background/60 mb-3">Email</div>
-              <input
-                type="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="you@example.com"
-                disabled={state === "loading"}
-                className="w-full bg-transparent border-b border-background/40 focus:border-background py-3 text-lg focus:outline-none transition-colors text-background placeholder:text-background/40"
-              />
-            </div>
-            <div>
-              <div className="label-eyebrow-muted !text-background/60 mb-3">
-                How many applications have you sent so far? (optional)
-              </div>
-              <input
-                type="number"
-                min="0"
-                inputMode="numeric"
-                value={appsSent}
-                onChange={(e) => setAppsSent(e.target.value)}
-                placeholder="e.g. 80"
-                disabled={state === "loading"}
-                className="w-full bg-transparent border-b border-background/40 focus:border-background py-3 text-base focus:outline-none transition-colors text-background placeholder:text-background/40"
-              />
-            </div>
-            {err && (
-              <div className="text-base text-background/90 border-l-2 border-background pl-3 py-1">
-                {err}
-              </div>
-            )}
-            <button
-              type="submit"
-              disabled={state === "loading"}
-              className="bg-background text-foreground px-8 py-4 text-base font-medium hover:opacity-90 transition disabled:opacity-50 rounded-full"
-            >
-              {state === "loading" ? "..." : "Join the waitlist →"}
-            </button>
-          </form>
-        )}
+        <Link
+          to="/onboarding"
+          className="inline-block mt-12 bg-background text-foreground px-8 py-4 text-base font-medium hover:opacity-90 transition rounded-full"
+        >
+          Try it free →
+        </Link>
+        <p className="mt-4 text-sm text-background/60">3 free assessments per day. No signup required.</p>
       </div>
     </section>
   );

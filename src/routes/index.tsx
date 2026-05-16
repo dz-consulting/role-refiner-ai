@@ -215,20 +215,69 @@ const FUNNEL = [
 ];
 
 function Funnel() {
-  // Chart geometry (viewBox units)
-  const W = 1000;
-  const H = 560;
-  const xL = 80;
-  const xR = 960;
-  const yT = 80;
-  const yB = 440;
-  const maxV = 200;
-  const yScale = (v: number) => yB - (v / maxV) * (yB - yT);
-  const barW = 92;
-  const slot = (xR - xL) / FUNNEL.length;
-  const cx = (i: number) => xL + slot * (i + 0.5);
+  // Sankey-style geometry
+  const W = 1100;
+  const H = 520;
+  const axisY = 250;
+  const stageX = [110, 270, 430, 580, 730, 880];
+  const barW = 14;
 
-  const yTicks = [0, 50, 100, 150, 200];
+  // Scale: 1 person = px of band thickness. Min 3px so single-person flows are visible.
+  const scale = (n: number) => Math.max(n * 1.3, 3);
+
+  const STAGE_COLORS = ["#7FB2D6", "#F4A23C", "#6FC3B8", "#E8C547", "#B89BC7", "#7A7A7A"];
+  const FLOW_COLOR = "rgba(127, 178, 214, 0.45)";
+  const DROP_COLOR = "rgba(232, 140, 140, 0.55)";
+
+  // Drop-off labels per stage transition (i → i+1). Positioned below the axis.
+  const DROPS = [
+    { label: "No response / rejection email", dy: 170 },
+    { label: "Failed screen", dy: 130 },
+    { label: "Hiring manager: no fit", dy: 100 },
+    { label: "Second round: skill gap", dy: 90 },
+    { label: "Final round: not the one", dy: 80 },
+  ];
+
+  // Hindsight rejection-reason annotations (above axis)
+  const HINDSIGHT = [
+    "CV ↔ JD mismatch",
+    "Unclear motivation",
+    "Culture mismatch",
+    "Competency gap",
+    "Team-fit mismatch",
+  ];
+
+  // Passed flow band between bar i and bar i+1.
+  // Left edge attaches to TOP portion of bar i (height = scale(next.n)),
+  // right edge fills bar i+1 entirely.
+  const passedPath = (i: number) => {
+    const s = FUNNEL[i];
+    const next = FUNNEL[i + 1];
+    const x1 = stageX[i] + barW / 2;
+    const x2 = stageX[i + 1] - barW / 2;
+    const cxm = (x1 + x2) / 2;
+    const yTopL = axisY - scale(s.n) / 2;
+    const yBotL = yTopL + scale(next.n);
+    const yTopR = axisY - scale(next.n) / 2;
+    const yBotR = axisY + scale(next.n) / 2;
+    return `M ${x1} ${yTopL} C ${cxm} ${yTopL} ${cxm} ${yTopR} ${x2} ${yTopR} L ${x2} ${yBotR} C ${cxm} ${yBotR} ${cxm} ${yBotL} ${x1} ${yBotL} Z`;
+  };
+
+  // Drop-off band from BOTTOM portion of bar i down-right to a label node.
+  const dropPath = (i: number, labelX: number, labelY: number) => {
+    const s = FUNNEL[i];
+    const next = FUNNEL[i + 1];
+    const dropped = s.n - next.n;
+    const x1 = stageX[i] + barW / 2;
+    const yTopL = axisY - scale(s.n) / 2 + scale(next.n);
+    const yBotL = axisY + scale(s.n) / 2;
+    const dh = Math.max(scale(dropped), 6);
+    const yTopR = labelY - dh / 2;
+    const yBotR = labelY + dh / 2;
+    const x2 = labelX;
+    const cxm = (x1 + x2) / 2;
+    return `M ${x1} ${yTopL} C ${cxm} ${yTopL} ${cxm} ${yTopR} ${x2} ${yTopR} L ${x2} ${yBotR} C ${cxm} ${yBotR} ${cxm} ${yBotL} ${x1} ${yBotL} Z`;
+  };
 
   return (
     <section id="funnel" className="border-b border-border">
@@ -243,215 +292,127 @@ function Funnel() {
           <span className="font-serif-italic text-foreground">exactly why you fell out</span>.
         </p>
 
-        {/* The funnel chart */}
         <div className="mt-14 border border-border bg-card p-4 md:p-10">
-          <div className="font-display text-2xl md:text-3xl mb-2">Typical tech hiring funnel</div>
+          <div className="font-display text-2xl md:text-3xl mb-6">Typical tech hiring funnel</div>
           <svg
             viewBox={`0 0 ${W} ${H}`}
             className="w-full h-auto"
             role="img"
-            aria-label="Typical tech hiring funnel from 200 CVs to 1 offer"
+            aria-label="Sankey diagram of a typical tech hiring funnel from 200 CVs to 1 offer"
           >
-            {/* Gridlines + Y axis labels */}
-            {yTicks.map((v) => {
-              const y = yScale(v);
-              return (
-                <g key={v}>
-                  <line x1={xL} x2={xR} y1={y} y2={y} stroke="hsl(0 0% 88%)" strokeWidth={1} />
-                  <text
-                    x={xL - 14}
-                    y={y + 5}
-                    textAnchor="end"
-                    fontSize={16}
-                    fill="hsl(0 0% 35%)"
-                    fontFamily="ui-sans-serif, system-ui, sans-serif"
-                  >
-                    {v}
-                  </text>
-                </g>
-              );
-            })}
-
-            {/* Bars */}
-            {FUNNEL.map((s, i) => {
-              const yTop = yScale(s.n);
-              const h = yB - yTop;
-              const x = cx(i) - barW / 2;
-              return (
-                <g key={s.label}>
-                  <rect x={x} y={yTop} width={barW} height={h} fill="#F4A23C" />
-                  {/* Count above bar */}
-                  <text
-                    x={cx(i)}
-                    y={yTop - 14}
-                    textAnchor="middle"
-                    fontSize={20}
-                    fontWeight={700}
-                    fill="hsl(0 0% 10%)"
-                    fontFamily="ui-sans-serif, system-ui, sans-serif"
-                  >
-                    {s.n}
-                  </text>
-                </g>
-              );
-            })}
-
-            {/* Conversion % chips between consecutive bars */}
-            {FUNNEL.map((s, i) => {
-              if (s.conv == null) return null;
-              const prev = FUNNEL[i - 1];
-              const x1 = cx(i - 1) + barW / 2;
-              const x2 = cx(i) - barW / 2;
-              const midX = (x1 + x2) / 2;
-              const yPrevTop = yScale(prev.n);
-              const yCurTop = yScale(s.n);
-              const chipY = Math.max(yPrevTop, yCurTop - 30);
-              const chipW = 54;
-              const chipH = 26;
-              return (
-                <g key={`conv-${i}`}>
-                  {/* connector: small step from prev top down to current top */}
-                  <path
-                    d={`M ${x1} ${yPrevTop} L ${midX - chipW / 2 - 4} ${yPrevTop} M ${midX + chipW / 2 + 4} ${yPrevTop} L ${x2} ${yPrevTop} L ${x2} ${yCurTop}`}
-                    fill="none"
-                    stroke="hsl(0 0% 35%)"
-                    strokeWidth={1.2}
-                    markerEnd="url(#arrow)"
-                  />
-                  <rect
-                    x={midX - chipW / 2}
-                    y={chipY - chipH / 2}
-                    width={chipW}
-                    height={chipH}
-                    rx={3}
-                    fill="hsl(0 0% 28%)"
-                  />
-                  <text
-                    x={midX}
-                    y={chipY + 5}
-                    textAnchor="middle"
-                    fontSize={14}
-                    fontWeight={600}
-                    fill="white"
-                    fontFamily="ui-sans-serif, system-ui, sans-serif"
-                  >
-                    {s.conv}%
-                  </text>
-                </g>
-              );
-            })}
-
-            {/* Arrow marker */}
-            <defs>
-              <marker
-                id="arrow"
-                viewBox="0 0 10 10"
-                refX="8"
-                refY="5"
-                markerWidth="6"
-                markerHeight="6"
-                orient="auto-start-reverse"
-              >
-                <path d="M 0 0 L 10 5 L 0 10 z" fill="hsl(0 0% 35%)" />
-              </marker>
-              <marker
-                id="arrowDashed"
-                viewBox="0 0 10 10"
-                refX="8"
-                refY="5"
-                markerWidth="6"
-                markerHeight="6"
-                orient="auto-start-reverse"
-              >
-                <path d="M 0 0 L 10 5 L 0 10 z" fill="hsl(0 0% 30%)" />
-              </marker>
-            </defs>
-
-            {/* Stage labels */}
-            {FUNNEL.map((s, i) => (
-              <g key={`lbl-${s.label}`}>
-                <text
-                  x={cx(i)}
-                  y={yB + 28}
-                  textAnchor="middle"
-                  fontSize={15}
-                  fontWeight={500}
-                  fill="hsl(0 0% 12%)"
-                  fontFamily="ui-sans-serif, system-ui, sans-serif"
-                >
-                  {s.label}
-                </text>
-                <text
-                  x={cx(i)}
-                  y={yB + 50}
-                  textAnchor="middle"
-                  fontSize={13}
-                  fontStyle="italic"
-                  fill="hsl(0 0% 40%)"
-                  fontFamily="ui-serif, Georgia, serif"
-                >
-                  {s.time}
-                </text>
-              </g>
+            {/* Passed-flow bands (drawn first, behind bars) */}
+            {FUNNEL.slice(0, -1).map((_, i) => (
+              <path key={`flow-${i}`} d={passedPath(i)} fill={FLOW_COLOR} />
             ))}
 
-            {/* Per-stage rejection annotations */}
-            {[
-              { i: 1, reason: "CV ↔ JD mismatch", boxX: 280 },
-              { i: 2, reason: "Unclear motivation", boxX: 410 },
-              { i: 3, reason: "Culture mismatch", boxX: 545 },
-              { i: 4, reason: "Competency gap", boxX: 680 },
-              { i: 5, reason: "Team-fit mismatch", boxX: 815 },
-            ].map(({ i, reason, boxX }) => {
-              const prev = FUNNEL[i - 1];
-              const cur = FUNNEL[i];
-              const chipX = (cx(i - 1) + barW / 2 + cx(i) - barW / 2) / 2;
-              const yPrevTop = yScale(prev.n);
-              const yCurTop = yScale(cur.n);
-              const chipY = Math.max(yPrevTop, yCurTop - 30);
-              const boxW = 132;
-              const boxH = 26;
-              const boxY = 18;
+            {/* Drop-off bands + labels */}
+            {DROPS.map((d, i) => {
+              const labelX = stageX[i] + 90;
+              const labelY = axisY + d.dy;
+              const dropped = FUNNEL[i].n - FUNNEL[i + 1].n;
               return (
-                <g key={`ann-${i}`}>
-                  {/* connector */}
-                  <path
-                    d={`M ${boxX} ${boxY + boxH} L ${boxX} ${chipY - 18} L ${chipX} ${chipY - 18} L ${chipX} ${chipY - 13}`}
-                    fill="none"
-                    stroke="hsl(0 0% 30%)"
-                    strokeWidth={1.2}
-                    strokeDasharray="4 4"
-                  />
-                  {/* tag */}
+                <g key={`drop-${i}`}>
+                  <path d={dropPath(i, labelX, labelY)} fill={DROP_COLOR} />
+                  {/* terminal cap */}
                   <rect
-                    x={boxX - boxW / 2}
-                    y={boxY}
+                    x={labelX}
+                    y={labelY - Math.max(scale(dropped), 6) / 2}
+                    width={6}
+                    height={Math.max(scale(dropped), 6)}
+                    fill="#D97070"
+                  />
+                  <text
+                    x={labelX + 14}
+                    y={labelY + 5}
+                    fontSize={14}
+                    fill="hsl(0 0% 25%)"
+                    fontFamily="ui-sans-serif, system-ui, sans-serif"
+                  >
+                    <tspan fontWeight={600}>{d.label}: </tspan>
+                    <tspan>{dropped}</tspan>
+                  </text>
+                </g>
+              );
+            })}
+
+            {/* Stage bars + labels */}
+            {FUNNEL.map((s, i) => {
+              const t = scale(s.n);
+              const x = stageX[i] - barW / 2;
+              const y = axisY - t / 2;
+              return (
+                <g key={s.label}>
+                  <rect x={x} y={y} width={barW} height={t} fill={STAGE_COLORS[i]} />
+                  <text
+                    x={stageX[i]}
+                    y={y - 12}
+                    textAnchor="middle"
+                    fontSize={15}
+                    fontWeight={600}
+                    fill="hsl(0 0% 12%)"
+                    fontFamily="ui-sans-serif, system-ui, sans-serif"
+                  >
+                    {s.label}: {s.n}
+                  </text>
+                  <text
+                    x={stageX[i]}
+                    y={y - 32}
+                    textAnchor="middle"
+                    fontSize={12}
+                    fontStyle="italic"
+                    fill="hsl(0 0% 45%)"
+                    fontFamily="ui-serif, Georgia, serif"
+                  >
+                    {s.time}
+                  </text>
+                </g>
+              );
+            })}
+
+            {/* Hindsight annotations above transitions */}
+            {HINDSIGHT.map((reason, i) => {
+              const x = (stageX[i] + stageX[i + 1]) / 2;
+              const y = 40;
+              const boxW = 150;
+              const boxH = 26;
+              return (
+                <g key={`hs-${i}`}>
+                  <rect
+                    x={x - boxW / 2}
+                    y={y}
                     width={boxW}
                     height={boxH}
                     rx={2}
                     fill="#9FE3F2"
                   />
                   <text
-                    x={boxX}
-                    y={boxY + 17}
+                    x={x}
+                    y={y + 17}
                     textAnchor="middle"
-                    fontSize={13}
+                    fontSize={12}
                     fontWeight={600}
                     fill="hsl(0 0% 10%)"
                     fontFamily="ui-sans-serif, system-ui, sans-serif"
                   >
                     {reason}
                   </text>
+                  <path
+                    d={`M ${x} ${y + boxH} L ${x} ${axisY - scale(FUNNEL[i].n) / 2 - 50}`}
+                    stroke="hsl(0 0% 35%)"
+                    strokeWidth={1}
+                    strokeDasharray="3 3"
+                    fill="none"
+                  />
                 </g>
               );
             })}
 
-            {/* Hindsight legend */}
+            {/* Legend */}
             <g>
-              <rect x={xL} y={yB + 70} width={14} height={14} fill="#9FE3F2" />
+              <rect x={80} y={H - 30} width={14} height={14} fill="#9FE3F2" />
               <text
-                x={xL + 22}
-                y={yB + 82}
+                x={102}
+                y={H - 18}
                 fontSize={13}
                 fontWeight={600}
                 fill="hsl(0 0% 25%)"

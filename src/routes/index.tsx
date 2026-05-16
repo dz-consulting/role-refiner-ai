@@ -529,8 +529,8 @@ function RecordingMock() {
   return (
     <div className="h-full flex flex-col">
       <div className="flex items-center justify-between">
-        <div className="label-eyebrow-muted">Interview recording</div>
-        <span className="text-xs text-muted-foreground tabular-nums">via Granola · 47:12</span>
+        <div className="label-eyebrow-muted">Interview analysis</div>
+        <span className="text-xs text-muted-foreground tabular-nums">47:12 · 3rd round</span>
       </div>
       <div className="font-display text-xl mt-2 leading-tight">Stripe · HM round</div>
       <div className="editorial-rule mt-4" />

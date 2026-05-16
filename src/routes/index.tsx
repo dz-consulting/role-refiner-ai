@@ -435,7 +435,7 @@ function ScreenCard({
 }) {
   return (
     <div>
-      <div className="border border-border bg-card aspect-[4/3] p-6 overflow-hidden relative">
+      <div className="border border-border bg-card min-h-[22rem] p-6 relative flex flex-col">
         {children}
       </div>
       <div className="mt-5 flex items-baseline gap-3">

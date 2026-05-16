@@ -35,17 +35,45 @@ function AssessmentView() {
       setA(data);
       const { data: fb } = await supabase
         .from("assessment_feedback")
-        .select("target_key, corrected_value")
-        .eq("assessment_id", id)
-        .eq("target_type", "requirement");
+        .select("target_type, target_key, corrected_value")
+        .eq("assessment_id", id);
       if (fb) {
         const map: Record<string, string> = {};
-        fb.forEach((row: any) => { if (row.corrected_value) map[row.target_key] = row.corrected_value; });
+        fb.forEach((row: any) => {
+          if (row.target_type === "requirement" && row.corrected_value) {
+            map[row.target_key] = row.corrected_value;
+          }
+          if (row.target_type === "fit_score" && row.target_key === "overall" && (row.corrected_value === "better" || row.corrected_value === "worse")) {
+            setFitFeedback(row.corrected_value);
+          }
+        });
         setFeedback(map);
       }
       setLoading(false);
     })();
   }, [id]);
+
+  const submitFitFeedback = async (direction: "better" | "worse") => {
+    if (isAnon) return;
+    setFitFeedbackBusy(true);
+    setFitFeedback(direction);
+    try {
+      await supabase.functions.invoke("submit-feedback", {
+        body: {
+          assessment_id: id,
+          target_type: "fit_score",
+          target_key: "overall",
+          original_value: String(a?.fit_score ?? ""),
+          corrected_value: direction,
+          comment: `User says they are a ${direction} fit than the model's ${a?.fit_score ?? "?"}/10 (${a?.fit_label ?? ""})`,
+        },
+      });
+    } catch (e) {
+      console.error("fit feedback failed", e);
+    } finally {
+      setFitFeedbackBusy(false);
+    }
+  };
 
   const submitCorrection = async (req: any, corrected: string) => {
     const original = req.match_strength;

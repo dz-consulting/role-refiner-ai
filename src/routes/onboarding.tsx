@@ -6,7 +6,14 @@ import { extractTextFromFile } from "@/lib/cv-extract";
 import { AppHeader } from "@/components/AppHeader";
 import { PreferencesEditor } from "@/components/PreferencesEditor";
 import { Preferences, emptyPreferences } from "@/lib/preferences";
-import { saveAnonProfile } from "@/lib/anon-store";
+import {
+  saveAnonProfile,
+  getAnonDailyRemaining,
+  incrementAnonDaily,
+  saveAnonAssessment,
+  newAnonId,
+  ANON_DAILY_LIMIT,
+} from "@/lib/anon-store";
 
 export const Route = createFileRoute("/onboarding")({
   beforeLoad: requireAuth,

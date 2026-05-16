@@ -388,7 +388,8 @@ function Screens() {
         </h2>
         <p className="mt-6 max-w-2xl text-lg md:text-xl text-foreground/70 leading-snug font-light">
           Three things, end-to-end. Score the role before you waste a week on it.
-          Analyse every interview and learn what tanked it. Walk into the next one prepared.
+          See the exact gaps holding you back — with the action items to close them.
+          Then analyse every interview and learn what tanked it.
         </p>
 
         <div className="mt-16 grid md:grid-cols-3 gap-10">
@@ -402,18 +403,18 @@ function Screens() {
 
           <ScreenCard
             number="02"
-            title="Interview performance, analysed"
-            blurb="After every interview, Hindsight breaks down your performance — the answers that landed, the ones that lost the room, and the patterns repeating across rounds."
+            title="Gap analysis + action items"
+            blurb="See requirement-by-requirement where you're strong, where you're thin, and the concrete moves to close each gap before you apply."
           >
-            <RecordingMock />
+            <GapAnalysisMock />
           </ScreenCard>
 
           <ScreenCard
             number="03"
-            title="Prep for the next round"
-            blurb="A drill plan built from your last interview's gaps. The exact stories, frameworks, and questions to rehearse before you go again."
+            title="Interview performance, analysed"
+            blurb="After every interview, Hindsight breaks down your performance — the answers that landed, the ones that lost the room, and the patterns repeating across rounds."
           >
-            <PrepMock />
+            <RecordingMock />
           </ScreenCard>
         </div>
       </div>
@@ -497,28 +498,37 @@ function RecordingMock() {
   );
 }
 
-function PrepMock() {
+function GapAnalysisMock() {
   return (
     <div className="h-full flex flex-col">
-      <div className="label-eyebrow-muted">Prep · Stripe second round</div>
-      <div className="font-display text-xl mt-2 leading-tight">3 things to nail</div>
+      <div className="label-eyebrow-muted">Gap analysis</div>
+      <div className="font-display text-xl mt-2 leading-tight">3 gaps to close</div>
       <div className="editorial-rule mt-4" />
       <ul className="mt-4 space-y-3 text-sm leading-snug">
         <li className="flex gap-3">
-          <span className="text-muted-foreground">01</span>
-          <span>Rewrite <span className="font-serif-italic">&ldquo;why Stripe&rdquo;</span> in 45s — anchor on payments depth.</span>
+          <span className="text-muted-foreground tabular-nums shrink-0">01</span>
+          <span>
+            <span className="font-serif-italic">People management</span> — 0 direct reports shown.
+            <span className="block text-muted-foreground mt-0.5">Add 2 lines on mentoring leads at Acme.</span>
+          </span>
         </li>
         <li className="flex gap-3">
-          <span className="text-muted-foreground">02</span>
-          <span>Scoping drill: 3 reps. Always clarify constraints before proposing.</span>
+          <span className="text-muted-foreground tabular-nums shrink-0">02</span>
+          <span>
+            <span className="font-serif-italic">Payments domain</span> — JD wants 3+ yrs, CV shows 1.
+            <span className="block text-muted-foreground mt-0.5">Reframe Stripe integration project up top.</span>
+          </span>
         </li>
         <li className="flex gap-3">
-          <span className="text-muted-foreground">03</span>
-          <span>Likely panel question: <span className="font-serif-italic">&ldquo;Walk me through a tough trade-off.&rdquo;</span></span>
+          <span className="text-muted-foreground tabular-nums shrink-0">03</span>
+          <span>
+            <span className="font-serif-italic">B2B SaaS</span> — not mentioned in summary.
+            <span className="block text-muted-foreground mt-0.5">Rewrite headline to lead with B2B.</span>
+          </span>
         </li>
       </ul>
       <div className="mt-auto pt-4">
-        <span className="label-tag">Start drill →</span>
+        <span className="label-tag">Apply fixes →</span>
       </div>
     </div>
   );

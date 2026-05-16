@@ -50,6 +50,7 @@ function ProfilePage() {
         roles: (prof.roles as any) ?? [],
         outcomes: (prof.outcomes as any) ?? [],
         seniority_signals: (prof.seniority_signals as any) ?? [],
+        languages: ((prof as any).languages as any) ?? [],
         raw_text: prof.raw_text ?? "",
       });
       setPreferences(mergePreferences((prof as any).preferences));

@@ -84,15 +84,14 @@ function Hero({ authed, onCta }: { authed: boolean; onCta: () => void }) {
     <section className="border-b border-border">
       <div className="max-w-6xl mx-auto px-6 md:px-10 py-20 md:py-28 grid md:grid-cols-12 gap-12 items-center">
         <div className="md:col-span-7">
-          <div className="label-eyebrow-muted">AI job-search coach · Beta · Free during launch</div>
+          <div className="label-eyebrow-muted">AI interview coach · Beta · Free during launch</div>
           <h1 className="font-display text-6xl md:text-8xl mt-5 leading-[0.95]">
-            From <span className="font-serif-italic">applied</span> to{" "}
-            <span className="font-serif-italic">offer</span>, with a coach.
+            Your personal <span className="font-serif-italic">interview coach</span>.
           </h1>
           <p className="mt-8 text-xl md:text-2xl text-foreground/80 leading-snug max-w-xl font-light">
-            Hindsight is an AI coach that scores roles before you apply,
-            records and analyses your interviews, and preps you for the
-            next round — so you stop guessing what went wrong.
+            Hindsight analyses your interview performance, learns from every
+            rejection, and builds a prep plan for the next round — so you stop
+            making the same mistakes twice.
           </p>
           <div className="mt-10 flex flex-col sm:flex-row gap-4">
             <button
@@ -425,9 +424,10 @@ function Funnel() {
         </div>
 
         <p className="mt-10 max-w-2xl text-lg text-foreground/70 leading-snug">
-          <span className="font-serif-italic text-foreground">Hindsight is the coach across all of it.</span>{" "}
-          A fit score before you apply. A recording of every interview, analysed for what tanked it.
-          A prep plan for the next round — built from what actually went wrong in the last one.
+          <span className="font-serif-italic text-foreground">Hindsight is your coach across all of it.</span>{" "}
+          A fit score before you apply. An honest analysis of every interview you do —
+          what worked, what tanked it, and the patterns repeating across rounds.
+          A prep plan for the next one, built from what just went wrong.
         </p>
       </div>
     </section>
@@ -446,7 +446,7 @@ function Screens() {
         </h2>
         <p className="mt-6 max-w-2xl text-lg md:text-xl text-foreground/70 leading-snug font-light">
           Three things, end-to-end. Score the role before you waste a week on it.
-          Record the interview and learn what tanked it. Walk into the next one prepared.
+          Analyse every interview and learn what tanked it. Walk into the next one prepared.
         </p>
 
         <div className="mt-16 grid md:grid-cols-3 gap-10">
@@ -460,8 +460,8 @@ function Screens() {
 
           <ScreenCard
             number="02"
-            title="Interview recording, analysed"
-            blurb="Record interviews with Granola. Hindsight reads the transcript and tells you exactly which answer lost the room — and why."
+            title="Interview performance, analysed"
+            blurb="After every interview, Hindsight breaks down your performance — the answers that landed, the ones that lost the room, and the patterns repeating across rounds."
           >
             <RecordingMock />
           </ScreenCard>
@@ -529,8 +529,8 @@ function RecordingMock() {
   return (
     <div className="h-full flex flex-col">
       <div className="flex items-center justify-between">
-        <div className="label-eyebrow-muted">Interview recording</div>
-        <span className="text-xs text-muted-foreground tabular-nums">via Granola · 47:12</span>
+        <div className="label-eyebrow-muted">Interview analysis</div>
+        <span className="text-xs text-muted-foreground tabular-nums">47:12 · 3rd round</span>
       </div>
       <div className="font-display text-xl mt-2 leading-tight">Stripe · HM round</div>
       <div className="editorial-rule mt-4" />
@@ -593,8 +593,8 @@ function HowItWorks() {
     },
     {
       n: "02",
-      title: "Record every interview.",
-      body: "Use Granola to capture the call. Hindsight reads the transcript and pinpoints the exact moments you lost the room — across every round.",
+      title: "Analyse every interview.",
+      body: "After each round, Hindsight breaks down your performance — the answers that landed, the ones that lost the room, and the patterns repeating across interviews.",
     },
     {
       n: "03",

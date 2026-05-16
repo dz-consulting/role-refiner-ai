@@ -79,6 +79,7 @@ function ProfilePage() {
           roles: profile.roles,
           outcomes: profile.outcomes,
           seniority_signals: profile.seniority_signals,
+          languages: profile.languages,
           preferences: preferences as any,
         })
         .eq("user_id", user.id);

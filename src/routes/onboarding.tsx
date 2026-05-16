@@ -224,6 +224,7 @@ function ProfileEditor({
       </section>
 
       <ListEditor label="Skills" items={profile.skills} onChange={(items) => update({ skills: items })} />
+      <ListEditor label="Languages" items={profile.languages ?? []} onChange={(items) => update({ languages: items })} />
       <ListEditor label="Key outcomes" items={profile.outcomes} onChange={(items) => update({ outcomes: items })} multiline />
       <ListEditor label="Seniority signals" items={profile.seniority_signals} onChange={(items) => update({ seniority_signals: items })} />
 

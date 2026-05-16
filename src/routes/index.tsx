@@ -249,9 +249,9 @@ function Funnel() {
           300 applications in. <span className="font-serif-italic">1 offer out.</span>
         </h2>
         <p className="mt-6 max-w-2xl text-lg md:text-xl text-foreground/70 leading-snug font-light">
-          This is what a typical tech hiring funnel looks like. You lose candidates at every stage and
-          never know why. Hindsight tracks the funnel and tells you, at each stage,{" "}
-          <span className="font-serif-italic text-foreground">exactly why you fell out</span>.
+          This is what a typical tech hiring funnel looks like. You get rejected for different reasons at
+          every stage — and never know which one. Hindsight tracks the funnel and tells you, at each stage,{" "}
+          <span className="font-serif-italic text-foreground">exactly why you got rejected</span>.
         </p>
 
         <div className="mt-14 border border-border bg-card p-4 md:p-8">

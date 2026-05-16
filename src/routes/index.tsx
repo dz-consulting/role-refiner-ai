@@ -434,8 +434,8 @@ function ScreenCard({
   children: React.ReactNode;
 }) {
   return (
-    <div>
-      <div className="border border-border bg-card min-h-[22rem] p-6 relative flex flex-col">
+    <div className="flex flex-col h-full">
+      <div className="border border-border bg-card flex-1 min-h-[22rem] p-6 relative flex flex-col">
         {children}
       </div>
       <div className="mt-5 flex items-baseline gap-3">

@@ -446,7 +446,7 @@ function Screens() {
         </h2>
         <p className="mt-6 max-w-2xl text-lg md:text-xl text-foreground/70 leading-snug font-light">
           Three things, end-to-end. Score the role before you waste a week on it.
-          Record the interview and learn what tanked it. Walk into the next one prepared.
+          Analyse every interview and learn what tanked it. Walk into the next one prepared.
         </p>
 
         <div className="mt-16 grid md:grid-cols-3 gap-10">
@@ -460,8 +460,8 @@ function Screens() {
 
           <ScreenCard
             number="02"
-            title="Interview recording, analysed"
-            blurb="Record interviews with Granola. Hindsight reads the transcript and tells you exactly which answer lost the room — and why."
+            title="Interview performance, analysed"
+            blurb="After every interview, Hindsight breaks down your performance — the answers that landed, the ones that lost the room, and the patterns repeating across rounds."
           >
             <RecordingMock />
           </ScreenCard>

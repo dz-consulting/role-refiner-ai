@@ -570,7 +570,7 @@ function HowItWorks() {
 
 function Waitlist() {
   const [email, setEmail] = useState("");
-  const [note, setNote] = useState("");
+  const [appsSent, setAppsSent] = useState("");
   const [state, setState] = useState<"idle" | "loading" | "ok" | "error">("idle");
   const [err, setErr] = useState<string | null>(null);
 
@@ -584,7 +584,11 @@ function Waitlist() {
     setState("loading");
     const { error } = await supabase
       .from("waitlist")
-      .insert({ email: email.trim().toLowerCase(), note: note.trim() || null, source: "landing" });
+      .insert({
+        email: email.trim().toLowerCase(),
+        note: appsSent.trim() ? `applications_sent: ${appsSent.trim()}` : null,
+        source: "landing",
+      });
     if (error) {
       // 23505 = unique violation — already on the list. Treat as success.
       if (error.code === "23505") {
@@ -637,13 +641,15 @@ function Waitlist() {
             </div>
             <div>
               <div className="label-eyebrow-muted !text-background/60 mb-3">
-                What stage are you at? (optional)
+                How many applications have you sent so far? (optional)
               </div>
               <input
-                type="text"
-                value={note}
-                onChange={(e) => setNote(e.target.value)}
-                placeholder="e.g. Senior PM, ~80 apps in, lots of ghosting"
+                type="number"
+                min="0"
+                inputMode="numeric"
+                value={appsSent}
+                onChange={(e) => setAppsSent(e.target.value)}
+                placeholder="e.g. 80"
                 disabled={state === "loading"}
                 className="w-full bg-transparent border-b border-background/40 focus:border-background py-3 text-base focus:outline-none transition-colors text-background placeholder:text-background/40"
               />

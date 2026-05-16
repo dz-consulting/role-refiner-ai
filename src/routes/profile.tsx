@@ -139,8 +139,9 @@ function ProfilePage() {
           </Block>
 
           <ListEditor number="02" label="Skills" items={profile.skills} onChange={(items) => update({ skills: items })} />
-          <ListEditor number="03" label="Key outcomes" items={profile.outcomes} onChange={(items) => update({ outcomes: items })} multiline />
-          <ListEditor number="04" label="Seniority signals" items={profile.seniority_signals} onChange={(items) => update({ seniority_signals: items })} />
+          <ListEditor number="03" label="Languages" items={profile.languages} onChange={(items) => update({ languages: items })} />
+          <ListEditor number="04" label="Key outcomes" items={profile.outcomes} onChange={(items) => update({ outcomes: items })} multiline />
+          <ListEditor number="05" label="Seniority signals" items={profile.seniority_signals} onChange={(items) => update({ seniority_signals: items })} />
 
           <Block
             title="Roles"

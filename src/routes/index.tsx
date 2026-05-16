@@ -214,213 +214,146 @@ const FUNNEL = [
 ];
 
 function Funnel() {
-  // Sankey-style geometry
-  const W = 1100;
-  const H = 520;
-  const axisY = 250;
-  const stageX = [110, 270, 430, 580, 730, 880];
-  const barW = 14;
-
-  // Scale: 1 person = px of band thickness. Min 3px so single-person flows are visible.
-  const scale = (n: number) => Math.max(n * 1.3, 3);
-
-  const STAGE_COLORS = ["#7FB2D6", "#F4A23C", "#6FC3B8", "#E8C547", "#B89BC7", "#7A7A7A"];
-  const FLOW_COLOR = "rgba(127, 178, 214, 0.45)";
-  const DROP_COLOR = "rgba(232, 140, 140, 0.55)";
-
-  // Drop-off labels per stage transition (i → i+1). Positioned below the axis.
-  const DROPS = [
-    { label: "No response / rejection email", dy: 170 },
-    { label: "Failed screen", dy: 130 },
-    { label: "Hiring manager: no fit", dy: 100 },
-    { label: "Second round: skill gap", dy: 90 },
-    { label: "Final round: not the one", dy: 80 },
+  const stages = [
+    { label: "Applications",    count: 300, passRate: "15%", time: "10 sec" },
+    { label: "Recruiter screen", count: 45,  passRate: "44%", time: "30 min" },
+    { label: "Technical screen", count: 20,  passRate: "40%", time: "60 min" },
+    { label: "Onsite",           count: 8,   passRate: "38%", time: "4–5 hrs" },
+    { label: "Final round",      count: 3,   passRate: "33%", time: "60 min" },
+    { label: "Offer",            count: 1,   passRate: null,  time: null },
   ];
 
-  // Hindsight rejection-reason annotations (above axis)
-  const HINDSIGHT = [
-    "CV ↔ JD mismatch",
-    "Unclear motivation",
-    "Culture mismatch",
-    "Competency gap",
-    "Team-fit mismatch",
-  ];
+  // Chart geometry
+  const W = 800;
+  const H = 320;
+  const padL = 44;
+  const padR = 16;
+  const padT = 24;
+  const padB = 64; // room for two-line x labels
+  const innerW = W - padL - padR;
+  const innerH = H - padT - padB;
+  const yMax = 340;
+  const colW = innerW / stages.length;
+  const barW = colW * 0.55;
+  const yTicks = [0, 100, 200, 300];
+  const barColor = "#E8943A";
 
-  // Passed flow band between bar i and bar i+1.
-  // Left edge attaches to TOP portion of bar i (height = scale(next.n)),
-  // right edge fills bar i+1 entirely.
-  const passedPath = (i: number) => {
-    const s = FUNNEL[i];
-    const next = FUNNEL[i + 1];
-    const x1 = stageX[i] + barW / 2;
-    const x2 = stageX[i + 1] - barW / 2;
-    const cxm = (x1 + x2) / 2;
-    const yTopL = axisY - scale(s.n) / 2;
-    const yBotL = yTopL + scale(next.n);
-    const yTopR = axisY - scale(next.n) / 2;
-    const yBotR = axisY + scale(next.n) / 2;
-    return `M ${x1} ${yTopL} C ${cxm} ${yTopL} ${cxm} ${yTopR} ${x2} ${yTopR} L ${x2} ${yBotR} C ${cxm} ${yBotR} ${cxm} ${yBotL} ${x1} ${yBotL} Z`;
-  };
-
-  // Drop-off band from BOTTOM portion of bar i down-right to a label node.
-  const dropPath = (i: number, labelX: number, labelY: number) => {
-    const s = FUNNEL[i];
-    const next = FUNNEL[i + 1];
-    const dropped = s.n - next.n;
-    const x1 = stageX[i] + barW / 2;
-    const yTopL = axisY - scale(s.n) / 2 + scale(next.n);
-    const yBotL = axisY + scale(s.n) / 2;
-    const dh = Math.max(scale(dropped), 6);
-    const yTopR = labelY - dh / 2;
-    const yBotR = labelY + dh / 2;
-    const x2 = labelX;
-    const cxm = (x1 + x2) / 2;
-    return `M ${x1} ${yTopL} C ${cxm} ${yTopL} ${cxm} ${yTopR} ${x2} ${yTopR} L ${x2} ${yBotR} C ${cxm} ${yBotR} ${cxm} ${yBotL} ${x1} ${yBotL} Z`;
-  };
+  const xCenter = (i: number) => padL + colW * (i + 0.5);
+  const yFor = (v: number) => padT + innerH * (1 - v / yMax);
 
   return (
     <section id="funnel" className="border-b border-border">
       <div className="max-w-6xl mx-auto px-6 md:px-10 py-20 md:py-28">
         <div className="label-eyebrow-muted">Your job search is a funnel</div>
         <h2 className="font-display text-5xl md:text-7xl mt-5 max-w-3xl leading-[1.0]">
-          200 applications in. <span className="font-serif-italic">1 offer out.</span>
+          300 applications in. <span className="font-serif-italic">1 offer out.</span>
         </h2>
         <p className="mt-6 max-w-2xl text-lg md:text-xl text-foreground/70 leading-snug font-light">
-          This is what a typical search looks like. You lose offers at every stage and never
-          know which. Hindsight tracks the funnel and tells you, at each stage,{" "}
+          This is what a typical tech hiring funnel looks like. You lose candidates at every stage and
+          never know why. Hindsight tracks the funnel and tells you, at each stage,{" "}
           <span className="font-serif-italic text-foreground">exactly why you fell out</span>.
         </p>
 
-        <div className="mt-14 border border-border bg-card p-4 md:p-10">
-          <div className="font-display text-2xl md:text-3xl mb-6">Typical tech hiring funnel</div>
+        <div className="mt-14 border border-border bg-card p-4 md:p-8">
+          <div className="text-sm font-medium mb-6">Typical tech hiring funnel</div>
+
           <svg
             viewBox={`0 0 ${W} ${H}`}
             className="w-full h-auto"
             role="img"
-            aria-label="Sankey diagram of a typical tech hiring funnel from 200 CVs to 1 offer"
+            aria-label="Bar chart showing candidate counts: Applications 300, Recruiter screen 45, Technical screen 20, Onsite 8, Final round 3, Offer 1"
           >
-            {/* Passed-flow bands (drawn first, behind bars) */}
-            {FUNNEL.slice(0, -1).map((_, i) => (
-              <path key={`flow-${i}`} d={passedPath(i)} fill={FLOW_COLOR} />
+            {/* y-axis gridlines + ticks */}
+            {yTicks.map((t) => (
+              <g key={t}>
+                <line
+                  x1={padL}
+                  x2={W - padR}
+                  y1={yFor(t)}
+                  y2={yFor(t)}
+                  stroke="hsl(0 0% 0% / 0.06)"
+                  strokeWidth={1}
+                />
+                <text
+                  x={padL - 10}
+                  y={yFor(t) + 4}
+                  textAnchor="end"
+                  fontSize={11}
+                  fill="hsl(0 0% 60%)"
+                  fontFamily="ui-sans-serif, system-ui, sans-serif"
+                >
+                  {t}
+                </text>
+              </g>
             ))}
 
-            {/* Drop-off bands + labels */}
-            {DROPS.map((d, i) => {
-              const labelX = stageX[i] + 90;
-              const labelY = axisY + d.dy;
-              const dropped = FUNNEL[i].n - FUNNEL[i + 1].n;
-              return (
-                <g key={`drop-${i}`}>
-                  <path d={dropPath(i, labelX, labelY)} fill={DROP_COLOR} />
-                  {/* terminal cap */}
-                  <rect
-                    x={labelX}
-                    y={labelY - Math.max(scale(dropped), 6) / 2}
-                    width={6}
-                    height={Math.max(scale(dropped), 6)}
-                    fill="#D97070"
-                  />
-                  <text
-                    x={labelX + 14}
-                    y={labelY + 5}
-                    fontSize={14}
-                    fill="hsl(0 0% 25%)"
-                    fontFamily="ui-sans-serif, system-ui, sans-serif"
-                  >
-                    <tspan fontWeight={600}>{d.label}: </tspan>
-                    <tspan>{dropped}</tspan>
-                  </text>
-                </g>
-              );
-            })}
-
-            {/* Stage bars + labels */}
-            {FUNNEL.map((s, i) => {
-              const t = scale(s.n);
-              const x = stageX[i] - barW / 2;
-              const y = axisY - t / 2;
+            {/* bars + value/passrate labels */}
+            {stages.map((s, i) => {
+              const h = innerH * (s.count / yMax);
+              const x = xCenter(i) - barW / 2;
+              const y = padT + innerH - h;
               return (
                 <g key={s.label}>
-                  <rect x={x} y={y} width={barW} height={t} fill={STAGE_COLORS[i]} />
+                  <rect x={x} y={y} width={barW} height={h} rx={3} fill={barColor} />
                   <text
-                    x={stageX[i]}
-                    y={y - 12}
-                    textAnchor="middle"
-                    fontSize={15}
-                    fontWeight={600}
-                    fill="hsl(0 0% 12%)"
-                    fontFamily="ui-sans-serif, system-ui, sans-serif"
-                  >
-                    {s.label}: {s.n}
-                  </text>
-                  <text
-                    x={stageX[i]}
-                    y={y - 32}
+                    x={xCenter(i)}
+                    y={y - 18}
                     textAnchor="middle"
                     fontSize={12}
-                    fontStyle="italic"
-                    fill="hsl(0 0% 45%)"
-                    fontFamily="ui-serif, Georgia, serif"
+                    fontWeight={500}
+                    fill="hsl(0 0% 33%)"
+                    fontFamily="ui-sans-serif, system-ui, sans-serif"
                   >
-                    {s.time}
+                    {s.count}
                   </text>
+                  {s.passRate && (
+                    <text
+                      x={xCenter(i)}
+                      y={y - 4}
+                      textAnchor="middle"
+                      fontSize={12}
+                      fontWeight={500}
+                      fill="hsl(0 0% 33%)"
+                      fontFamily="ui-sans-serif, system-ui, sans-serif"
+                    >
+                      {s.passRate}
+                    </text>
+                  )}
+
+                  {/* x labels: stage + time */}
+                  <text
+                    x={xCenter(i)}
+                    y={padT + innerH + 18}
+                    textAnchor="middle"
+                    fontSize={11}
+                    fill="hsl(0 0% 40%)"
+                    fontFamily="ui-sans-serif, system-ui, sans-serif"
+                  >
+                    {s.label}
+                  </text>
+                  {s.time && (
+                    <text
+                      x={xCenter(i)}
+                      y={padT + innerH + 34}
+                      textAnchor="middle"
+                      fontSize={11}
+                      fill="hsl(0 0% 40%)"
+                      fontFamily="ui-sans-serif, system-ui, sans-serif"
+                    >
+                      {s.time}
+                    </text>
+                  )}
                 </g>
               );
             })}
-
-            {/* Hindsight annotations above transitions */}
-            {HINDSIGHT.map((reason, i) => {
-              const x = (stageX[i] + stageX[i + 1]) / 2;
-              const y = 40;
-              const boxW = 150;
-              const boxH = 26;
-              return (
-                <g key={`hs-${i}`}>
-                  <rect
-                    x={x - boxW / 2}
-                    y={y}
-                    width={boxW}
-                    height={boxH}
-                    rx={2}
-                    fill="#9FE3F2"
-                  />
-                  <text
-                    x={x}
-                    y={y + 17}
-                    textAnchor="middle"
-                    fontSize={12}
-                    fontWeight={600}
-                    fill="hsl(0 0% 10%)"
-                    fontFamily="ui-sans-serif, system-ui, sans-serif"
-                  >
-                    {reason}
-                  </text>
-                  <path
-                    d={`M ${x} ${y + boxH} L ${x} ${axisY - scale(FUNNEL[i].n) / 2 - 50}`}
-                    stroke="hsl(0 0% 35%)"
-                    strokeWidth={1}
-                    strokeDasharray="3 3"
-                    fill="none"
-                  />
-                </g>
-              );
-            })}
-
-            {/* Legend */}
-            <g>
-              <rect x={80} y={H - 30} width={14} height={14} fill="#9FE3F2" />
-              <text
-                x={102}
-                y={H - 18}
-                fontSize={13}
-                fontWeight={600}
-                fill="hsl(0 0% 25%)"
-                fontFamily="ui-sans-serif, system-ui, sans-serif"
-              >
-                Typical rejection reason Hindsight surfaces at each stage
-              </text>
-            </g>
           </svg>
+
+          {/* KPI cards */}
+          <div className="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <KpiCard label="Blind application success rate" value="<0.5%" />
+            <KpiCard label="Referral offer rate (est.)" value="~5–8%" />
+            <KpiCard label="Onsite → offer rate" value="~12%" />
+          </div>
         </div>
 
         <p className="mt-10 max-w-2xl text-lg text-foreground/70 leading-snug">
@@ -431,6 +364,15 @@ function Funnel() {
         </p>
       </div>
     </section>
+  );
+}
+
+function KpiCard({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="bg-surface/60 border border-border rounded-md px-4 py-3">
+      <div className="text-xs text-muted-foreground">{label}</div>
+      <div className="text-2xl font-medium mt-1">{value}</div>
+    </div>
   );
 }
 

@@ -300,8 +300,8 @@ function AssessmentView() {
               <tbody>
                 {reqs.map((r, i) => (
                   <tr key={i} className="border-b border-border align-top">
-                    <td className="py-5 pr-6 font-display text-lg leading-snug">{r.requirement}</td>
-                    <td className="py-5 pr-6 text-sm text-muted-foreground leading-relaxed">{r.evidence}</td>
+                    <td className="py-5 pr-6 text-sm leading-relaxed">{r.requirement}</td>
+                    <td className="py-5 pr-6 text-sm leading-relaxed">{r.evidence}</td>
                     <td className="py-5">
                       <RatingCorrector
                         original={r.match_strength}

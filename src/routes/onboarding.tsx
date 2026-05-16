@@ -21,6 +21,7 @@ type Profile = {
   roles: { title: string; company: string; duration: string }[];
   outcomes: string[];
   seniority_signals: string[];
+  languages: string[];
 };
 
 function OnboardingPage() {

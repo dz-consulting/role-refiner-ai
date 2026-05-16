@@ -15,6 +15,7 @@ export type AnonProfile = {
   roles: { title: string; company: string; duration: string }[];
   outcomes: string[];
   seniority_signals: string[];
+  languages: string[];
   preferences: any;
   raw_text?: string;
 };

@@ -424,9 +424,10 @@ function Funnel() {
         </div>
 
         <p className="mt-10 max-w-2xl text-lg text-foreground/70 leading-snug">
-          <span className="font-serif-italic text-foreground">Hindsight is the coach across all of it.</span>{" "}
-          A fit score before you apply. A recording of every interview, analysed for what tanked it.
-          A prep plan for the next round — built from what actually went wrong in the last one.
+          <span className="font-serif-italic text-foreground">Hindsight is your coach across all of it.</span>{" "}
+          A fit score before you apply. An honest analysis of every interview you do —
+          what worked, what tanked it, and the patterns repeating across rounds.
+          A prep plan for the next one, built from what just went wrong.
         </p>
       </div>
     </section>

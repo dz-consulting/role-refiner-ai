@@ -17,6 +17,8 @@ function AssessmentView() {
   const [loading, setLoading] = useState(true);
   const [feedback, setFeedback] = useState<Record<string, string>>({});
   const [isAnon, setIsAnon] = useState(false);
+  const [fitFeedback, setFitFeedback] = useState<"better" | "worse" | null>(null);
+  const [fitFeedbackBusy, setFitFeedbackBusy] = useState(false);
 
   useEffect(() => {
     (async () => {

@@ -190,6 +190,34 @@ function AssessmentView() {
               <div className="label-eyebrow">{a.fit_label}</div>
               <div className="font-serif-italic text-lg mt-2 text-muted-foreground">Fit score</div>
             </div>
+            {!isAnon && (
+              <div className="ml-auto flex flex-col gap-1.5 self-center">
+                <div className="label-eyebrow">Score feedback</div>
+                <div className="flex gap-1">
+                  <button
+                    onClick={() => submitFitFeedback("better")}
+                    disabled={fitFeedbackBusy}
+                    className={`label-tag transition-colors ${fitFeedback === "better" ? "border-success! text-success" : "hover:text-foreground"}`}
+                    title="The score is too low — I'm a stronger fit than this"
+                  >
+                    ↑ I'm a better fit
+                  </button>
+                  <button
+                    onClick={() => submitFitFeedback("worse")}
+                    disabled={fitFeedbackBusy}
+                    className={`label-tag transition-colors ${fitFeedback === "worse" ? "border-destructive! text-destructive" : "hover:text-foreground"}`}
+                    title="The score is too high — I'm a weaker fit than this"
+                  >
+                    ↓ I'm a worse fit
+                  </button>
+                </div>
+                {fitFeedback && (
+                  <div className="text-[10px] font-mono text-muted-foreground tracking-wider">
+                    Thanks — feedback logged
+                  </div>
+                )}
+              </div>
+            )}
           </div>
 
           <ul className="mt-10 space-y-3 max-w-2xl">

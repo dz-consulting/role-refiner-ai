@@ -84,15 +84,14 @@ function Hero({ authed, onCta }: { authed: boolean; onCta: () => void }) {
     <section className="border-b border-border">
       <div className="max-w-6xl mx-auto px-6 md:px-10 py-20 md:py-28 grid md:grid-cols-12 gap-12 items-center">
         <div className="md:col-span-7">
-          <div className="label-eyebrow-muted">AI job-search coach · Beta · Free during launch</div>
+          <div className="label-eyebrow-muted">AI interview coach · Beta · Free during launch</div>
           <h1 className="font-display text-6xl md:text-8xl mt-5 leading-[0.95]">
-            From <span className="font-serif-italic">applied</span> to{" "}
-            <span className="font-serif-italic">offer</span>, with a coach.
+            Your personal <span className="font-serif-italic">interview coach</span>.
           </h1>
           <p className="mt-8 text-xl md:text-2xl text-foreground/80 leading-snug max-w-xl font-light">
-            Hindsight is an AI coach that scores roles before you apply,
-            records and analyses your interviews, and preps you for the
-            next round — so you stop guessing what went wrong.
+            Hindsight analyses your interview performance, learns from every
+            rejection, and builds a prep plan for the next round — so you stop
+            making the same mistakes twice.
           </p>
           <div className="mt-10 flex flex-col sm:flex-row gap-4">
             <button

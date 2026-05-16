@@ -75,6 +75,7 @@ function OnboardingPage() {
             roles: profile.roles,
             outcomes: profile.outcomes,
             seniority_signals: profile.seniority_signals,
+            languages: profile.languages,
             preferences: preferences as any,
             raw_text: cvText,
             cv_file_path: cvFilePath,
@@ -90,6 +91,7 @@ function OnboardingPage() {
           roles: profile.roles,
           outcomes: profile.outcomes,
           seniority_signals: profile.seniority_signals,
+          languages: profile.languages,
           preferences,
           raw_text: cvText,
         });

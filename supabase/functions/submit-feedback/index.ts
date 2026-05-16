@@ -87,8 +87,13 @@ function json(body: unknown, status = 200) {
 }
 
 // 1.0 = model was right, 0.0 = adjacent miss, -1.0 = full inversion
+// 1.0 = model was right, 0.0 = adjacent miss, -1.0 = full inversion
+// For fit_score feedback: "better" = +1 (user is stronger than score), "worse" = -1
 function scoreFromCorrection(original?: string, corrected?: string): number | undefined {
-  if (!original || !corrected) return undefined;
+  if (!corrected) return undefined;
+  if (corrected === "better") return 1;
+  if (corrected === "worse") return -1;
+  if (!original) return undefined;
   if (original === corrected) return 1;
   const order = ["Gap", "Partial", "Strong"];
   const a = order.indexOf(original);

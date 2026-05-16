@@ -17,6 +17,8 @@ function AssessmentView() {
   const [loading, setLoading] = useState(true);
   const [feedback, setFeedback] = useState<Record<string, string>>({});
   const [isAnon, setIsAnon] = useState(false);
+  const [fitFeedback, setFitFeedback] = useState<"better" | "worse" | null>(null);
+  const [fitFeedbackBusy, setFitFeedbackBusy] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -33,17 +35,45 @@ function AssessmentView() {
       setA(data);
       const { data: fb } = await supabase
         .from("assessment_feedback")
-        .select("target_key, corrected_value")
-        .eq("assessment_id", id)
-        .eq("target_type", "requirement");
+        .select("target_type, target_key, corrected_value")
+        .eq("assessment_id", id);
       if (fb) {
         const map: Record<string, string> = {};
-        fb.forEach((row: any) => { if (row.corrected_value) map[row.target_key] = row.corrected_value; });
+        fb.forEach((row: any) => {
+          if (row.target_type === "requirement" && row.corrected_value) {
+            map[row.target_key] = row.corrected_value;
+          }
+          if (row.target_type === "fit_score" && row.target_key === "overall" && (row.corrected_value === "better" || row.corrected_value === "worse")) {
+            setFitFeedback(row.corrected_value);
+          }
+        });
         setFeedback(map);
       }
       setLoading(false);
     })();
   }, [id]);
+
+  const submitFitFeedback = async (direction: "better" | "worse") => {
+    if (isAnon) return;
+    setFitFeedbackBusy(true);
+    setFitFeedback(direction);
+    try {
+      await supabase.functions.invoke("submit-feedback", {
+        body: {
+          assessment_id: id,
+          target_type: "fit_score",
+          target_key: "overall",
+          original_value: String(a?.fit_score ?? ""),
+          corrected_value: direction,
+          comment: `User says they are a ${direction} fit than the model's ${a?.fit_score ?? "?"}/10 (${a?.fit_label ?? ""})`,
+        },
+      });
+    } catch (e) {
+      console.error("fit feedback failed", e);
+    } finally {
+      setFitFeedbackBusy(false);
+    }
+  };
 
   const submitCorrection = async (req: any, corrected: string) => {
     const original = req.match_strength;
@@ -160,6 +190,34 @@ function AssessmentView() {
               <div className="label-eyebrow">{a.fit_label}</div>
               <div className="font-serif-italic text-lg mt-2 text-muted-foreground">Fit score</div>
             </div>
+            {!isAnon && (
+              <div className="ml-auto flex flex-col gap-1.5 self-center">
+                <div className="label-eyebrow">Score feedback</div>
+                <div className="flex gap-1">
+                  <button
+                    onClick={() => submitFitFeedback("better")}
+                    disabled={fitFeedbackBusy}
+                    className={`label-tag transition-colors ${fitFeedback === "better" ? "border-success! text-success" : "hover:text-foreground"}`}
+                    title="The score is too low — I'm a stronger fit than this"
+                  >
+                    ↑ I'm a better fit
+                  </button>
+                  <button
+                    onClick={() => submitFitFeedback("worse")}
+                    disabled={fitFeedbackBusy}
+                    className={`label-tag transition-colors ${fitFeedback === "worse" ? "border-destructive! text-destructive" : "hover:text-foreground"}`}
+                    title="The score is too high — I'm a weaker fit than this"
+                  >
+                    ↓ I'm a worse fit
+                  </button>
+                </div>
+                {fitFeedback && (
+                  <div className="text-[10px] font-mono text-muted-foreground tracking-wider">
+                    Thanks — feedback logged
+                  </div>
+                )}
+              </div>
+            )}
           </div>
 
           <ul className="mt-10 space-y-3 max-w-2xl">

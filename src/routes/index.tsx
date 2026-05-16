@@ -392,7 +392,7 @@ function Screens() {
           Then analyse every interview and learn what tanked it.
         </p>
 
-        <div className="mt-16 grid md:grid-cols-3 gap-10">
+        <div className="mt-16 grid md:grid-cols-3 gap-10 items-start">
           <ScreenCard
             number="01"
             title="Fit score, before you apply"
@@ -434,8 +434,8 @@ function ScreenCard({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex flex-col h-full">
-      <div className="border border-border bg-card h-[22rem] p-6 relative flex flex-col">
+    <article className="flex flex-col h-full">
+      <div className="border border-border bg-card min-h-[24rem] md:h-[26rem] p-6 relative flex flex-col">
         {children}
       </div>
       <div className="mt-5 flex items-baseline gap-3">
@@ -443,7 +443,7 @@ function ScreenCard({
         <h3 className="font-display text-2xl">{title}</h3>
       </div>
       <p className="mt-3 text-base text-foreground/70 leading-snug">{blurb}</p>
-    </div>
+    </article>
   );
 }
 

@@ -49,7 +49,7 @@ function OnboardingPage() {
       });
       if (fnErr) throw fnErr;
       if (data?.error) throw new Error(data.error);
-      setProfile(data.profile);
+      setProfile({ ...data.profile, languages: data.profile?.languages ?? [] });
       setStep("review");
     } catch (e: any) {
       setError(e.message ?? "Failed to process CV");

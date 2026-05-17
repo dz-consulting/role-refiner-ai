@@ -288,32 +288,21 @@ function AssessmentView() {
 
         {/* 03 — Requirements */}
         <Section number="03" title="Requirement breakdown">
-          <div className="overflow-x-auto">
-            <table className="w-full border-collapse">
-              <thead>
-                <tr className="border-b border-foreground">
-                  <th className="label-eyebrow text-left py-3 pr-6 align-bottom w-[35%]">Job requirement</th>
-                  <th className="label-eyebrow text-left py-3 pr-6 align-bottom">Evidence from CV</th>
-                  <th className="label-eyebrow text-left py-3 align-bottom w-[180px]">Rating</th>
-                </tr>
-              </thead>
-              <tbody>
-                {reqs.map((r, i) => (
-                  <tr key={i} className="border-b border-border align-top">
-                    <td className="py-5 pr-6 text-sm leading-relaxed">{r.requirement}</td>
-                    <td className="py-5 pr-6 text-sm leading-relaxed">{r.evidence}</td>
-                    <td className="py-5">
-                      <RatingCorrector
-                        original={r.match_strength}
-                        corrected={feedback[r.requirement]}
-                        onChange={(v) => submitCorrection(r, v)}
-                      />
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <p className="text-sm text-muted-foreground max-w-2xl mb-8 leading-relaxed">
+            For each JD requirement: what the CV shows, the model's rating, and <em className="font-serif-italic">why</em>. Disagree? Click a different rating — it re-scores the fit and logs the correction.
+          </p>
+          <RatingLegend />
+          <ul className="mt-6">
+            {reqs.map((r, i) => (
+              <RequirementRow
+                key={i}
+                index={i}
+                req={r}
+                corrected={feedback[r.requirement]}
+                onChange={(v) => submitCorrection(r, v)}
+              />
+            ))}
+          </ul>
         </Section>
 
         {/* 04 — Screening risks */}

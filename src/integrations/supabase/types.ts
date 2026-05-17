@@ -172,6 +172,181 @@ export type Database = {
         }
         Relationships: []
       }
+      eval_cases: {
+        Row: {
+          created_at: string
+          id: string
+          job_description: string
+          notes: string | null
+          profile: Json
+          source: string
+          tags: string[]
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          job_description: string
+          notes?: string | null
+          profile: Json
+          source?: string
+          tags?: string[]
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          job_description?: string
+          notes?: string | null
+          profile?: Json
+          source?: string
+          tags?: string[]
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      eval_review_queue: {
+        Row: {
+          assessment_id: string | null
+          created_at: string
+          id: string
+          prompt_fix_note: string | null
+          reason: string
+          reviewed_at: string | null
+          run_id: string | null
+          status: string
+          updated_at: string
+          verdict: string | null
+        }
+        Insert: {
+          assessment_id?: string | null
+          created_at?: string
+          id?: string
+          prompt_fix_note?: string | null
+          reason: string
+          reviewed_at?: string | null
+          run_id?: string | null
+          status?: string
+          updated_at?: string
+          verdict?: string | null
+        }
+        Update: {
+          assessment_id?: string | null
+          created_at?: string
+          id?: string
+          prompt_fix_note?: string | null
+          reason?: string
+          reviewed_at?: string | null
+          run_id?: string | null
+          status?: string
+          updated_at?: string
+          verdict?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "eval_review_queue_assessment_id_fkey"
+            columns: ["assessment_id"]
+            isOneToOne: false
+            referencedRelation: "assessments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "eval_review_queue_run_id_fkey"
+            columns: ["run_id"]
+            isOneToOne: false
+            referencedRelation: "eval_runs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      eval_runs: {
+        Row: {
+          case_id: string
+          created_at: string
+          error: string | null
+          id: string
+          langfuse_trace_id: string | null
+          latency_ms: number | null
+          model: string | null
+          output: Json | null
+          prompt_label: string | null
+          prompt_version: number | null
+        }
+        Insert: {
+          case_id: string
+          created_at?: string
+          error?: string | null
+          id?: string
+          langfuse_trace_id?: string | null
+          latency_ms?: number | null
+          model?: string | null
+          output?: Json | null
+          prompt_label?: string | null
+          prompt_version?: number | null
+        }
+        Update: {
+          case_id?: string
+          created_at?: string
+          error?: string | null
+          id?: string
+          langfuse_trace_id?: string | null
+          latency_ms?: number | null
+          model?: string | null
+          output?: Json | null
+          prompt_label?: string | null
+          prompt_version?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "eval_runs_case_id_fkey"
+            columns: ["case_id"]
+            isOneToOne: false
+            referencedRelation: "eval_cases"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      eval_scores: {
+        Row: {
+          created_at: string
+          detail: Json | null
+          id: string
+          name: string
+          passed: boolean | null
+          run_id: string
+          scorer: string
+          value: number | null
+        }
+        Insert: {
+          created_at?: string
+          detail?: Json | null
+          id?: string
+          name: string
+          passed?: boolean | null
+          run_id: string
+          scorer: string
+          value?: number | null
+        }
+        Update: {
+          created_at?: string
+          detail?: Json | null
+          id?: string
+          name?: string
+          passed?: boolean | null
+          run_id?: string
+          scorer?: string
+          value?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "eval_scores_run_id_fkey"
+            columns: ["run_id"]
+            isOneToOne: false
+            referencedRelation: "eval_runs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           created_at: string
@@ -255,7 +430,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      is_admin: { Args: never; Returns: boolean }
     }
     Enums: {
       [_ in never]: never

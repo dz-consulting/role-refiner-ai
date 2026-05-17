@@ -288,32 +288,21 @@ function AssessmentView() {
 
         {/* 03 — Requirements */}
         <Section number="03" title="Requirement breakdown">
-          <div className="overflow-x-auto">
-            <table className="w-full border-collapse">
-              <thead>
-                <tr className="border-b border-foreground">
-                  <th className="label-eyebrow text-left py-3 pr-6 align-bottom w-[35%]">Job requirement</th>
-                  <th className="label-eyebrow text-left py-3 pr-6 align-bottom">Evidence from CV</th>
-                  <th className="label-eyebrow text-left py-3 align-bottom w-[180px]">Rating</th>
-                </tr>
-              </thead>
-              <tbody>
-                {reqs.map((r, i) => (
-                  <tr key={i} className="border-b border-border align-top">
-                    <td className="py-5 pr-6 text-sm leading-relaxed">{r.requirement}</td>
-                    <td className="py-5 pr-6 text-sm leading-relaxed">{r.evidence}</td>
-                    <td className="py-5">
-                      <RatingCorrector
-                        original={r.match_strength}
-                        corrected={feedback[r.requirement]}
-                        onChange={(v) => submitCorrection(r, v)}
-                      />
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <p className="text-sm text-muted-foreground max-w-2xl mb-8 leading-relaxed">
+            For each JD requirement: what the CV shows, the model's rating, and <em className="font-serif-italic">why</em>. Disagree? Click a different rating — it re-scores the fit and logs the correction.
+          </p>
+          <RatingLegend />
+          <ul className="mt-6">
+            {reqs.map((r, i) => (
+              <RequirementRow
+                key={i}
+                index={i}
+                req={r}
+                corrected={feedback[r.requirement]}
+                onChange={(v: string) => submitCorrection(r, v)}
+              />
+            ))}
+          </ul>
         </Section>
 
         {/* 04 — Screening risks */}
@@ -447,6 +436,84 @@ function PriorityPill({ value }: { value: string }) {
     Low: "",
   };
   return <span className={`label-tag ${map[value] ?? ""}`}>{value}</span>;
+}
+
+function RatingLegend() {
+  const items = [
+    { label: "Strong", desc: "Direct, recent, substantial evidence in the CV", cls: "border-success! text-success" },
+    { label: "Partial", desc: "Adjacent or partial evidence — credible but pushable", cls: "border-warning! text-warning" },
+    { label: "Gap", desc: "No meaningful evidence, or contradicting evidence", cls: "border-destructive! text-destructive" },
+  ];
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-3 border-t border-b border-border py-4">
+      {items.map((it) => (
+        <div key={it.label} className="flex items-baseline gap-3">
+          <span className={`label-tag ${it.cls}`}>{it.label}</span>
+          <span className="text-xs text-muted-foreground leading-snug">{it.desc}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function RequirementRow({
+  index,
+  req,
+  corrected,
+  onChange,
+}: {
+  index: number;
+  req: any;
+  corrected?: string;
+  onChange: (v: string) => void;
+}) {
+  const current = corrected ?? req.match_strength;
+  const accent =
+    current === "Strong" ? "border-l-success"
+    : current === "Partial" ? "border-l-warning"
+    : current === "Gap" ? "border-l-destructive"
+    : "border-l-border";
+
+  return (
+    <li className={`border-b border-border border-l-2 ${accent} pl-5 py-6`}>
+      <div className="grid grid-cols-[auto_1fr_auto] gap-5 items-start">
+        <span className="font-display text-2xl tabular-nums text-muted-foreground leading-none pt-1">
+          {String(index + 1).padStart(2, "0")}
+        </span>
+        <div className="min-w-0">
+          <div className="font-display text-lg leading-snug">{req.requirement}</div>
+
+          <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
+            <div>
+              <div className="label-eyebrow mb-1.5">CV evidence</div>
+              <p className="text-sm leading-relaxed text-muted-foreground">
+                {req.evidence || "—"}
+              </p>
+            </div>
+            <div>
+              <div className="label-eyebrow mb-1.5">Why this rating</div>
+              <p className="text-sm leading-relaxed">
+                {req.reasoning || <span className="text-muted-foreground italic">No rationale provided.</span>}
+              </p>
+              {req.gap_detail && current !== "Strong" && (
+                <p className="text-sm leading-relaxed text-destructive/90 mt-2">
+                  <span className="label-eyebrow text-destructive mr-1">Missing:</span>
+                  {req.gap_detail}
+                </p>
+              )}
+            </div>
+          </div>
+        </div>
+        <div className="shrink-0">
+          <RatingCorrector
+            original={req.match_strength}
+            corrected={corrected}
+            onChange={onChange}
+          />
+        </div>
+      </div>
+    </li>
+  );
 }
 
 function RatingCorrector({ original, corrected, onChange }: { original: string; corrected?: string; onChange: (v: string) => void }) {

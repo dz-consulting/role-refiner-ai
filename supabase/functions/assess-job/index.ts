@@ -45,13 +45,28 @@ Return JSON exactly matching this schema:
   "fit_label": "STRONG FIT" | "PARTIAL FIT" | "POOR FIT",
   "fit_summary": string,
   "requirements": [
-    { "requirement": string, "evidence": string, "match_strength": "Strong" | "Partial" | "Gap" }
+    {
+      "requirement": string,                    // the JD requirement, paraphrased crisply (max ~15 words)
+      "evidence": string,                       // SPECIFIC quote/paraphrase from the CV profile that supports or fails this requirement. Cite role+company or skill name. If nothing in the CV speaks to it, say "Not present in CV".
+      "match_strength": "Strong" | "Partial" | "Gap",
+      "reasoning": string,                      // 1-2 sentences explaining WHY this rating was chosen. Must reference the evidence and the rubric (see below). Be direct, no hedging.
+      "gap_detail": string|null                 // if Partial or Gap, name SPECIFICALLY what is missing or weak (e.g. "Has Python but no production ML deployment experience"). null if Strong.
+    }
   ],
   "screening_risks": string[],
   "action_items": [
     { "title": string, "detail": string, "priority": "High" | "Medium" | "Low", "effort": "Quick" | "Medium" | "Deep", "addresses": string }
   ]
 }
+
+Rating rubric — apply consistently to every requirement:
+- "Strong": CV shows DIRECT, recent, and substantial evidence. Candidate has demonstrably done this exact thing (or a very close analog) at a comparable scope/seniority. Language proficiency at B2+ for the asked language counts as Strong.
+- "Partial": CV shows ADJACENT or PARTIAL evidence — e.g. related skill, smaller scope, older experience, transferable but not identical. The candidate can credibly claim it but a recruiter could push back.
+- "Gap": CV shows NO meaningful evidence, or contradicting evidence. Do not soften this — call it a Gap if it is one.
+
+Generate 8-15 requirements covering the full JD: hard skills, tools, domain experience, seniority/scope signals, soft skills called out explicitly, language requirements, location/work-arrangement constraints, and any "nice to have" lines. Do not collapse multiple distinct requirements into one row. Order from most important to least.
+
+For EVERY requirement, the "reasoning" field must explicitly justify the rating by tying the evidence to the rubric — e.g. "Strong: led ML platform at Series-C scale at Acme (2022-2024), matches the asked scope exactly" or "Gap: no mention of Kubernetes anywhere in the CV; adjacent Docker experience is not enough at this seniority". Never leave reasoning generic.
 
 Generate 4-7 concrete, specific action_items the candidate can take to close gaps and increase fit. Each item: a short imperative title, a 1-2 sentence detail with how to do it, a priority, an effort estimate (Quick = under a day, Medium = a few days, Deep = a week+), and "addresses" naming the specific gap, requirement, or screening risk it tackles. Prioritize actions that close Gap requirements and screening risks. Be direct. Do not hedge. If the user lacks evidence for a requirement, mark it Gap and say so. If the job clearly conflicts with a stated preference or deal-breaker, include that as a screening risk and (where possible) an action item to verify or negotiate.`;
 

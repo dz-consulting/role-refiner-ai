@@ -42,7 +42,7 @@ export async function persistInlineEval(opts: {
   const { data: run, error: runErr } = await supa
     .from("eval_runs")
     .insert({
-      case_id: null as unknown as string, // case_id is NOT NULL — but we're using inline runs.
+      case_id: null,
       prompt_label: "production",
       model: model ?? "claude-sonnet-4-5",
       langfuse_trace_id: langfuseTraceId ?? null,

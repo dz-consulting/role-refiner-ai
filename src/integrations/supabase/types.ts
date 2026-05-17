@@ -261,7 +261,7 @@ export type Database = {
       }
       eval_runs: {
         Row: {
-          case_id: string
+          case_id: string | null
           created_at: string
           error: string | null
           id: string
@@ -273,7 +273,7 @@ export type Database = {
           prompt_version: number | null
         }
         Insert: {
-          case_id: string
+          case_id?: string | null
           created_at?: string
           error?: string | null
           id?: string
@@ -285,7 +285,7 @@ export type Database = {
           prompt_version?: number | null
         }
         Update: {
-          case_id?: string
+          case_id?: string | null
           created_at?: string
           error?: string | null
           id?: string

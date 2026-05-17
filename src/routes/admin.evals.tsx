@@ -1,4 +1,4 @@
-import { createFileRoute, redirect } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { AppHeader } from "@/components/AppHeader";
@@ -7,19 +7,53 @@ import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/admin/evals")({
-  beforeLoad: async () => {
-    const { data } = await supabase.auth.getSession();
-    if (!data.session) throw redirect({ to: "/auth" });
-    const { data: isAdmin } = await supabase.rpc("is_admin");
-    if (!isAdmin) throw redirect({ to: "/dashboard" });
-  },
   component: AdminEvals,
 });
 
 type Tab = "queue" | "runs" | "notes" | "datasets";
 
 function AdminEvals() {
+  const nav = useNavigate();
   const [tab, setTab] = useState<Tab>("queue");
+  const [checkingAccess, setCheckingAccess] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    (async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (cancelled) return;
+
+      if (!user) {
+        nav({ to: "/auth" });
+        return;
+      }
+
+      const { data: isAdmin, error } = await supabase.rpc("is_admin");
+      if (cancelled) return;
+
+      if (error || !isAdmin) {
+        toast.error(error?.message ?? "You don't have admin access.");
+        nav({ to: "/dashboard" });
+        return;
+      }
+
+      setCheckingAccess(false);
+    })();
+
+    return () => { cancelled = true; };
+  }, [nav]);
+
+  if (checkingAccess) {
+    return (
+      <div className="min-h-screen bg-background">
+        <AppHeader />
+        <main className="container max-w-6xl py-8">
+          <p className="text-muted-foreground">Checking admin access…</p>
+        </main>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">

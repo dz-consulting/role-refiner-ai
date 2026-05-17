@@ -136,6 +136,17 @@ If you genuinely don't recognize the company, say "Unknown company" in what_they
     }
     result.langfuse_assess_trace_id = assessRes.traceId;
 
+    // Fire-and-forget evals: code + heuristic checks always, judges sampled.
+    // deno-lint-ignore no-explicit-any
+    const er = (globalThis as any).EdgeRuntime;
+    const evalWork = persistInlineEval({
+      output: result,
+      ctx: { profile, jobDescription },
+      langfuseTraceId: assessRes.traceId,
+      latencyMs: Date.now() - t0,
+    }).catch((e) => console.error("persistInlineEval failed:", e));
+    if (er?.waitUntil) er.waitUntil(evalWork);
+
     return new Response(JSON.stringify(result), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });

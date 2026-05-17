@@ -438,6 +438,84 @@ function PriorityPill({ value }: { value: string }) {
   return <span className={`label-tag ${map[value] ?? ""}`}>{value}</span>;
 }
 
+function RatingLegend() {
+  const items = [
+    { label: "Strong", desc: "Direct, recent, substantial evidence in the CV", cls: "border-success! text-success" },
+    { label: "Partial", desc: "Adjacent or partial evidence — credible but pushable", cls: "border-warning! text-warning" },
+    { label: "Gap", desc: "No meaningful evidence, or contradicting evidence", cls: "border-destructive! text-destructive" },
+  ];
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-3 border-t border-b border-border py-4">
+      {items.map((it) => (
+        <div key={it.label} className="flex items-baseline gap-3">
+          <span className={`label-tag ${it.cls}`}>{it.label}</span>
+          <span className="text-xs text-muted-foreground leading-snug">{it.desc}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function RequirementRow({
+  index,
+  req,
+  corrected,
+  onChange,
+}: {
+  index: number;
+  req: any;
+  corrected?: string;
+  onChange: (v: string) => void;
+}) {
+  const current = corrected ?? req.match_strength;
+  const accent =
+    current === "Strong" ? "border-l-success"
+    : current === "Partial" ? "border-l-warning"
+    : current === "Gap" ? "border-l-destructive"
+    : "border-l-border";
+
+  return (
+    <li className={`border-b border-border border-l-2 ${accent} pl-5 py-6`}>
+      <div className="grid grid-cols-[auto_1fr_auto] gap-5 items-start">
+        <span className="font-display text-2xl tabular-nums text-muted-foreground leading-none pt-1">
+          {String(index + 1).padStart(2, "0")}
+        </span>
+        <div className="min-w-0">
+          <div className="font-display text-lg leading-snug">{req.requirement}</div>
+
+          <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
+            <div>
+              <div className="label-eyebrow mb-1.5">CV evidence</div>
+              <p className="text-sm leading-relaxed text-muted-foreground">
+                {req.evidence || "—"}
+              </p>
+            </div>
+            <div>
+              <div className="label-eyebrow mb-1.5">Why this rating</div>
+              <p className="text-sm leading-relaxed">
+                {req.reasoning || <span className="text-muted-foreground italic">No rationale provided.</span>}
+              </p>
+              {req.gap_detail && current !== "Strong" && (
+                <p className="text-sm leading-relaxed text-destructive/90 mt-2">
+                  <span className="label-eyebrow text-destructive mr-1">Missing:</span>
+                  {req.gap_detail}
+                </p>
+              )}
+            </div>
+          </div>
+        </div>
+        <div className="shrink-0">
+          <RatingCorrector
+            original={req.match_strength}
+            corrected={corrected}
+            onChange={onChange}
+          />
+        </div>
+      </div>
+    </li>
+  );
+}
+
 function RatingCorrector({ original, corrected, onChange }: { original: string; corrected?: string; onChange: (v: string) => void }) {
   const current = corrected ?? original;
   const options = ["Strong", "Partial", "Gap"];

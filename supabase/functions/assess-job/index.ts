@@ -45,7 +45,13 @@ Return JSON exactly matching this schema:
   "fit_label": "STRONG FIT" | "PARTIAL FIT" | "POOR FIT",
   "fit_summary": string,
   "requirements": [
-    { "requirement": string, "evidence": string, "match_strength": "Strong" | "Partial" | "Gap" }
+    {
+      "requirement": string,                    // the JD requirement, paraphrased crisply (max ~15 words)
+      "evidence": string,                       // SPECIFIC quote/paraphrase from the CV profile that supports or fails this requirement. Cite role+company or skill name. If nothing in the CV speaks to it, say "Not present in CV".
+      "match_strength": "Strong" | "Partial" | "Gap",
+      "reasoning": string,                      // 1-2 sentences explaining WHY this rating was chosen. Must reference the evidence and the rubric (see below). Be direct, no hedging.
+      "gap_detail": string|null                 // if Partial or Gap, name SPECIFICALLY what is missing or weak (e.g. "Has Python but no production ML deployment experience"). null if Strong.
+    }
   ],
   "screening_risks": string[],
   "action_items": [

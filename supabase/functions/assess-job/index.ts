@@ -4,6 +4,7 @@ import { persistInlineEval } from "../_shared/evals/persist.ts";
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
+  const t0 = Date.now();
   try {
     const { profile, jobDescription } = await req.json();
     if (!profile || !jobDescription) {

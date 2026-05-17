@@ -299,7 +299,7 @@ function AssessmentView() {
                 index={i}
                 req={r}
                 corrected={feedback[r.requirement]}
-                onChange={(v) => submitCorrection(r, v)}
+                onChange={(v: string) => submitCorrection(r, v)}
               />
             ))}
           </ul>

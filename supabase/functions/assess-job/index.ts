@@ -1,5 +1,6 @@
 import { corsHeaders } from "../_shared/cors.ts";
 import { callClaude, extractJson } from "../_shared/claude.ts";
+import { persistInlineEval } from "../_shared/evals/persist.ts";
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });

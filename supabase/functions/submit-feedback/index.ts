@@ -72,6 +72,22 @@ Deno.serve(async (req) => {
       });
     }
 
+    // Enqueue for admin review using service role (admin RLS would block the user).
+    try {
+      const admin = createClient(
+        Deno.env.get("SUPABASE_URL")!,
+        Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
+        { auth: { persistSession: false, autoRefreshToken: false } },
+      );
+      await admin.from("eval_review_queue").insert({
+        assessment_id,
+        reason: `production_correction: ${target_type}.${target_key} ${original_value ?? "?"} -> ${corrected_value ?? "?"}`,
+        status: "pending",
+      });
+    } catch (qErr) {
+      console.error("enqueue review failed:", qErr);
+    }
+
     return json({ ok: true });
   } catch (e) {
     console.error("submit-feedback error:", e);

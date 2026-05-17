@@ -1,0 +1,1 @@
+alter table public.eval_runs alter column case_id drop not null;

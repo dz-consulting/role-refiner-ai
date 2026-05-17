@@ -17,6 +17,7 @@ import { Route as AssessRouteImport } from './routes/assess'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as TailorIdRouteImport } from './routes/tailor.$id'
 import { Route as AssessmentIdRouteImport } from './routes/assessment.$id'
+import { Route as AdminEvalsRouteImport } from './routes/admin.evals'
 
 const ProfileRoute = ProfileRouteImport.update({
   id: '/profile',
@@ -58,6 +59,11 @@ const AssessmentIdRoute = AssessmentIdRouteImport.update({
   path: '/assessment/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminEvalsRoute = AdminEvalsRouteImport.update({
+  id: '/admin/evals',
+  path: '/admin/evals',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -66,6 +72,7 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof DashboardRoute
   '/onboarding': typeof OnboardingRoute
   '/profile': typeof ProfileRoute
+  '/admin/evals': typeof AdminEvalsRoute
   '/assessment/$id': typeof AssessmentIdRoute
   '/tailor/$id': typeof TailorIdRoute
 }
@@ -76,6 +83,7 @@ export interface FileRoutesByTo {
   '/dashboard': typeof DashboardRoute
   '/onboarding': typeof OnboardingRoute
   '/profile': typeof ProfileRoute
+  '/admin/evals': typeof AdminEvalsRoute
   '/assessment/$id': typeof AssessmentIdRoute
   '/tailor/$id': typeof TailorIdRoute
 }
@@ -87,6 +95,7 @@ export interface FileRoutesById {
   '/dashboard': typeof DashboardRoute
   '/onboarding': typeof OnboardingRoute
   '/profile': typeof ProfileRoute
+  '/admin/evals': typeof AdminEvalsRoute
   '/assessment/$id': typeof AssessmentIdRoute
   '/tailor/$id': typeof TailorIdRoute
 }
@@ -99,6 +108,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/onboarding'
     | '/profile'
+    | '/admin/evals'
     | '/assessment/$id'
     | '/tailor/$id'
   fileRoutesByTo: FileRoutesByTo
@@ -109,6 +119,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/onboarding'
     | '/profile'
+    | '/admin/evals'
     | '/assessment/$id'
     | '/tailor/$id'
   id:
@@ -119,6 +130,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/onboarding'
     | '/profile'
+    | '/admin/evals'
     | '/assessment/$id'
     | '/tailor/$id'
   fileRoutesById: FileRoutesById
@@ -130,6 +142,7 @@ export interface RootRouteChildren {
   DashboardRoute: typeof DashboardRoute
   OnboardingRoute: typeof OnboardingRoute
   ProfileRoute: typeof ProfileRoute
+  AdminEvalsRoute: typeof AdminEvalsRoute
   AssessmentIdRoute: typeof AssessmentIdRoute
   TailorIdRoute: typeof TailorIdRoute
 }
@@ -192,6 +205,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AssessmentIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/evals': {
+      id: '/admin/evals'
+      path: '/admin/evals'
+      fullPath: '/admin/evals'
+      preLoaderRoute: typeof AdminEvalsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -202,19 +222,10 @@ const rootRouteChildren: RootRouteChildren = {
   DashboardRoute: DashboardRoute,
   OnboardingRoute: OnboardingRoute,
   ProfileRoute: ProfileRoute,
+  AdminEvalsRoute: AdminEvalsRoute,
   AssessmentIdRoute: AssessmentIdRoute,
   TailorIdRoute: TailorIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

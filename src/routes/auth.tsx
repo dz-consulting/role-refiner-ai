@@ -54,7 +54,7 @@ function AuthPage() {
   return (
     <div className="min-h-screen flex items-center justify-center px-6">
       <div className="w-full max-w-sm py-24">
-        <div className="font-display text-3xl tracking-tight">Hindsight</div>
+        <div className="font-display text-3xl tracking-tight">ApplyQ</div>
         <div className="label-eyebrow mt-1">From applied to offer, with a plan</div>
 
         <h1 className="font-display text-4xl mt-10 leading-[1.05]">

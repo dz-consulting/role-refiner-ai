@@ -5,13 +5,13 @@ import { supabase } from "@/integrations/supabase/client";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Hindsight — From applied to offer, with a plan" },
+      { title: "ApplyQ — From applied to offer, with a plan" },
       {
         name: "description",
         content:
           "Most job searches are pure luck and persistence. Yours doesn't have to be. Track every application, learn from every rejection, and close the gaps that stand between you and the offer.",
       },
-      { property: "og:title", content: "Hindsight — From applied to offer, with a plan" },
+      { property: "og:title", content: "ApplyQ — From applied to offer, with a plan" },
       {
         property: "og:description",
         content:
@@ -50,7 +50,7 @@ function Nav({ authed }: { authed: boolean }) {
     <header className="border-b border-border">
       <div className="max-w-6xl mx-auto px-6 md:px-10 py-5 flex items-center justify-between">
         <Link to="/" className="font-display text-2xl tracking-tight">
-          Hindsight
+          ApplyQ
         </Link>
         <nav className="flex items-center gap-7 text-base">
           <a href="#funnel" className="hidden sm:inline text-foreground/70 hover:text-foreground">
@@ -89,7 +89,7 @@ function Hero({ authed, onCta }: { authed: boolean; onCta: () => void }) {
             Your personal <span className="font-serif-italic">interview coach</span>.
           </h1>
           <p className="mt-8 text-xl md:text-2xl text-foreground/80 leading-snug max-w-xl font-light">
-            Hindsight analyses your interview performance, learns from every
+            ApplyQ analyses your interview performance, learns from every
             rejection, and builds a prep plan for the next round — so you stop
             making the same mistakes twice.
           </p>
@@ -250,7 +250,7 @@ function Funnel() {
         </h2>
         <p className="mt-6 max-w-2xl text-lg md:text-xl text-foreground/70 leading-snug font-light">
           This is what a typical tech hiring funnel looks like. You get rejected for different reasons at
-          every stage — and never know which one. Hindsight tracks the funnel and tells you, at each stage,{" "}
+          every stage — and never know which one. ApplyQ tracks the funnel and tells you, at each stage,{" "}
           <span className="font-serif-italic text-foreground">exactly why you got rejected</span>.
         </p>
 
@@ -357,7 +357,7 @@ function Funnel() {
         </div>
 
         <p className="mt-10 max-w-2xl text-lg text-foreground/70 leading-snug">
-          <span className="font-serif-italic text-foreground">Hindsight is your coach across all of it.</span>{" "}
+          <span className="font-serif-italic text-foreground">ApplyQ is your coach across all of it.</span>{" "}
           A fit score before you apply. An honest analysis of every interview you do —
           what worked, what tanked it, and the patterns repeating across rounds.
           A prep plan for the next one, built from what just went wrong.
@@ -384,7 +384,7 @@ function Screens() {
       <div className="max-w-6xl mx-auto px-6 md:px-10 py-24 md:py-32">
         <div className="label-eyebrow-muted">Three tools, one coach</div>
         <h2 className="font-display text-5xl md:text-7xl mt-5 max-w-3xl leading-[1.0]">
-          What Hindsight <span className="font-serif-italic">actually does</span>.
+          What ApplyQ <span className="font-serif-italic">actually does</span>.
         </h2>
         <p className="mt-6 max-w-2xl text-lg md:text-xl text-foreground/70 leading-snug font-light">
           Three things, end-to-end. Score the role before you waste a week on it.
@@ -412,7 +412,7 @@ function Screens() {
           <ScreenCard
             number="03"
             title="Interview performance, analysed"
-            blurb="After every interview, Hindsight breaks down your performance — the answers that landed, the ones that lost the room, and the patterns repeating across rounds."
+            blurb="After every interview, ApplyQ breaks down your performance — the answers that landed, the ones that lost the room, and the patterns repeating across rounds."
           >
             <RecordingMock />
           </ScreenCard>
@@ -541,12 +541,12 @@ function HowItWorks() {
     {
       n: "01",
       title: "Score before you apply.",
-      body: "Upload your CV, paste a JD. Hindsight scores fit, names the requirements that'll cut you, and tells you whether to apply, refer, or skip.",
+      body: "Upload your CV, paste a JD. ApplyQ scores fit, names the requirements that'll cut you, and tells you whether to apply, refer, or skip.",
     },
     {
       n: "02",
       title: "Analyse every interview.",
-      body: "After each round, Hindsight breaks down your performance — the answers that landed, the ones that lost the room, and the patterns repeating across interviews.",
+      body: "After each round, ApplyQ breaks down your performance — the answers that landed, the ones that lost the room, and the patterns repeating across interviews.",
     },
     {
       n: "03",
@@ -608,7 +608,7 @@ function Footer() {
   return (
     <footer>
       <div className="max-w-6xl mx-auto px-6 md:px-10 py-10 flex flex-col sm:flex-row items-baseline justify-between gap-4 text-sm text-muted-foreground">
-        <div>Hindsight · Beta · {new Date().getFullYear()}</div>
+        <div>ApplyQ · Beta · {new Date().getFullYear()}</div>
         <div className="flex gap-6">
           <Link to="/auth" className="hover:text-foreground">Sign in</Link>
           <Link to="/onboarding" className="hover:text-foreground">Try free</Link>

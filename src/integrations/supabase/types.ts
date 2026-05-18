@@ -84,6 +84,7 @@ export type Database = {
           action_items: Json | null
           company: string | null
           company_intel: Json | null
+          cover_letter: Json | null
           created_at: string
           fit_label: string | null
           fit_score: number | null
@@ -105,6 +106,7 @@ export type Database = {
           action_items?: Json | null
           company?: string | null
           company_intel?: Json | null
+          cover_letter?: Json | null
           created_at?: string
           fit_label?: string | null
           fit_score?: number | null
@@ -126,6 +128,7 @@ export type Database = {
           action_items?: Json | null
           company?: string | null
           company_intel?: Json | null
+          cover_letter?: Json | null
           created_at?: string
           fit_label?: string | null
           fit_score?: number | null

@@ -358,6 +358,13 @@ function AssessmentView() {
           >
             Tailor my CV for this role →
           </Link>
+          <Link
+            to="/cover-letter/$id"
+            params={{ id }}
+            className="border border-foreground px-6 py-3 hover:bg-foreground hover:text-background transition-colors"
+          >
+            Write cover letter →
+          </Link>
           <button
             onClick={() => updateStatus("applied")}
             className="text-sm underline underline-offset-4 hover:text-foreground text-muted-foreground"

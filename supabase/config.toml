@@ -11,3 +11,6 @@ verify_jwt = true
 
 [functions.run-evals]
 verify_jwt = false
+
+[functions.cover-letter]
+verify_jwt = true

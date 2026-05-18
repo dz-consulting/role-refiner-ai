@@ -16,6 +16,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AssessRouteImport } from './routes/assess'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as TailorIdRouteImport } from './routes/tailor.$id'
+import { Route as CoverLetterIdRouteImport } from './routes/cover-letter.$id'
 import { Route as AssessmentIdRouteImport } from './routes/assessment.$id'
 import { Route as AdminEvalsRouteImport } from './routes/admin.evals'
 
@@ -54,6 +55,11 @@ const TailorIdRoute = TailorIdRouteImport.update({
   path: '/tailor/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CoverLetterIdRoute = CoverLetterIdRouteImport.update({
+  id: '/cover-letter/$id',
+  path: '/cover-letter/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AssessmentIdRoute = AssessmentIdRouteImport.update({
   id: '/assessment/$id',
   path: '/assessment/$id',
@@ -74,6 +80,7 @@ export interface FileRoutesByFullPath {
   '/profile': typeof ProfileRoute
   '/admin/evals': typeof AdminEvalsRoute
   '/assessment/$id': typeof AssessmentIdRoute
+  '/cover-letter/$id': typeof CoverLetterIdRoute
   '/tailor/$id': typeof TailorIdRoute
 }
 export interface FileRoutesByTo {
@@ -85,6 +92,7 @@ export interface FileRoutesByTo {
   '/profile': typeof ProfileRoute
   '/admin/evals': typeof AdminEvalsRoute
   '/assessment/$id': typeof AssessmentIdRoute
+  '/cover-letter/$id': typeof CoverLetterIdRoute
   '/tailor/$id': typeof TailorIdRoute
 }
 export interface FileRoutesById {
@@ -97,6 +105,7 @@ export interface FileRoutesById {
   '/profile': typeof ProfileRoute
   '/admin/evals': typeof AdminEvalsRoute
   '/assessment/$id': typeof AssessmentIdRoute
+  '/cover-letter/$id': typeof CoverLetterIdRoute
   '/tailor/$id': typeof TailorIdRoute
 }
 export interface FileRouteTypes {
@@ -110,6 +119,7 @@ export interface FileRouteTypes {
     | '/profile'
     | '/admin/evals'
     | '/assessment/$id'
+    | '/cover-letter/$id'
     | '/tailor/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -121,6 +131,7 @@ export interface FileRouteTypes {
     | '/profile'
     | '/admin/evals'
     | '/assessment/$id'
+    | '/cover-letter/$id'
     | '/tailor/$id'
   id:
     | '__root__'
@@ -132,6 +143,7 @@ export interface FileRouteTypes {
     | '/profile'
     | '/admin/evals'
     | '/assessment/$id'
+    | '/cover-letter/$id'
     | '/tailor/$id'
   fileRoutesById: FileRoutesById
 }
@@ -144,6 +156,7 @@ export interface RootRouteChildren {
   ProfileRoute: typeof ProfileRoute
   AdminEvalsRoute: typeof AdminEvalsRoute
   AssessmentIdRoute: typeof AssessmentIdRoute
+  CoverLetterIdRoute: typeof CoverLetterIdRoute
   TailorIdRoute: typeof TailorIdRoute
 }
 
@@ -198,6 +211,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TailorIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/cover-letter/$id': {
+      id: '/cover-letter/$id'
+      path: '/cover-letter/$id'
+      fullPath: '/cover-letter/$id'
+      preLoaderRoute: typeof CoverLetterIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/assessment/$id': {
       id: '/assessment/$id'
       path: '/assessment/$id'
@@ -224,18 +244,9 @@ const rootRouteChildren: RootRouteChildren = {
   ProfileRoute: ProfileRoute,
   AdminEvalsRoute: AdminEvalsRoute,
   AssessmentIdRoute: AssessmentIdRoute,
+  CoverLetterIdRoute: CoverLetterIdRoute,
   TailorIdRoute: TailorIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

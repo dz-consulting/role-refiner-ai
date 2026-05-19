@@ -162,7 +162,12 @@ function AssessmentView() {
     setA({ ...a, intent_to_apply: true });
   };
 
-  const dec = a.job_decoder ?? {};
+  const dec: any = a.job_decoder ?? {};
+  const hasDecoder =
+    !!dec.ai_maturity ||
+    !!dec.real_seniority ||
+    (Array.isArray(dec.unstated_requirements) && dec.unstated_requirements.length > 0) ||
+    (Array.isArray(dec.red_flags) && dec.red_flags.length > 0);
   const reqs: any[] = Array.isArray(a.requirements) ? a.requirements : [];
   const risks: string[] = Array.isArray(a.screening_risks) ? a.screening_risks : [];
   const savedActionItems: any[] = Array.isArray(a.action_items) ? a.action_items : [];

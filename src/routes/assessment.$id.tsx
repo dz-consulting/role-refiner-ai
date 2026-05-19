@@ -303,17 +303,30 @@ function AssessmentView() {
             For each JD requirement: what the CV shows, the model's rating, and <em className="font-serif-italic">why</em>. Disagree? Click a different rating — it re-scores the fit and logs the correction.
           </p>
           <RatingLegend />
-          <ul className="mt-6">
-            {reqs.map((r, i) => (
-              <RequirementRow
-                key={i}
-                index={i}
-                req={r}
-                corrected={feedback[r.requirement]}
-                onChange={(v: string) => submitCorrection(r, v)}
-              />
-            ))}
-          </ul>
+          <div className="mt-6 overflow-x-auto">
+            <table className="w-full border-collapse text-sm">
+              <thead>
+                <tr className="border-b border-foreground">
+                  <th className="label-eyebrow text-left py-3 pr-4 w-8">#</th>
+                  <th className="label-eyebrow text-left py-3 pr-4 w-[26%]">Requirement</th>
+                  <th className="label-eyebrow text-left py-3 pr-4 w-[28%]">CV evidence</th>
+                  <th className="label-eyebrow text-left py-3 pr-4 w-[28%]">Why this rating</th>
+                  <th className="label-eyebrow text-left py-3 w-[180px]">Rating</th>
+                </tr>
+              </thead>
+              <tbody>
+                {reqs.map((r, i) => (
+                  <RequirementTableRow
+                    key={i}
+                    index={i}
+                    req={r}
+                    corrected={feedback[r.requirement]}
+                    onChange={(v: string) => submitCorrection(r, v)}
+                  />
+                ))}
+              </tbody>
+            </table>
+          </div>
         </Section>
 
         {/* 04 — Screening risks */}

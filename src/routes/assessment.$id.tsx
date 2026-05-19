@@ -517,8 +517,20 @@ function RequirementTableRow({
         {req.evidence || "—"}
       </td>
       <td className="py-4 pr-4 text-sm leading-relaxed">
-        {req.reasoning || <span className="text-muted-foreground italic">No rationale provided.</span>}
-        {req.gap_detail && current !== "Strong" && (
+        {req.reasoning ? (
+          req.reasoning
+        ) : req.gap_detail ? (
+          <span>{req.gap_detail}</span>
+        ) : current === "Strong" ? (
+          <span className="text-muted-foreground">CV evidence directly matches this requirement.</span>
+        ) : current === "Partial" ? (
+          <span className="text-muted-foreground">CV shows adjacent or partial evidence — credible but not a direct match.</span>
+        ) : current === "Gap" ? (
+          <span className="text-muted-foreground">No meaningful evidence for this requirement in the CV.</span>
+        ) : (
+          <span className="text-muted-foreground italic">No rationale provided.</span>
+        )}
+        {req.gap_detail && req.reasoning && current !== "Strong" && (
           <p className="text-destructive/90 mt-2">
             <span className="label-eyebrow text-destructive mr-1">Missing:</span>
             {req.gap_detail}
@@ -539,10 +551,10 @@ function RequirementTableRow({
 function RatingCorrector({ original, corrected, onChange }: { original: string; corrected?: string; onChange: (v: string) => void }) {
   const current = corrected ?? original;
   const options = ["Strong", "Partial", "Gap"];
-  const activeStyle = (v: string) =>
-    v === "Strong" ? "bg-success text-success-foreground border-success!"
-    : v === "Partial" ? "bg-warning text-warning-foreground border-warning!"
-    : "bg-destructive text-destructive-foreground border-destructive!";
+  const activeDot = (v: string) =>
+    v === "Strong" ? "bg-success"
+    : v === "Partial" ? "bg-warning"
+    : "bg-destructive";
   return (
     <div className="flex flex-col gap-1.5">
       <div className="flex gap-1">
@@ -552,8 +564,13 @@ function RatingCorrector({ original, corrected, onChange }: { original: string; 
             <button
               key={opt}
               onClick={() => onChange(opt)}
-              className={`label-tag transition-colors ${active ? activeStyle(opt) : "text-muted-foreground hover:text-foreground"}`}
+              className={`label-tag transition-colors inline-flex items-center gap-1.5 ${
+                active
+                  ? "bg-foreground text-background border-foreground!"
+                  : "bg-transparent text-foreground hover:bg-foreground/5"
+              }`}
             >
+              <span className={`inline-block w-1.5 h-1.5 rounded-full ${activeDot(opt)}`} />
               {opt}
             </button>
           );

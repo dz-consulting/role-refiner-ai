@@ -487,7 +487,7 @@ function RatingLegend() {
   );
 }
 
-function RequirementRow({
+function RequirementTableRow({
   index,
   req,
   corrected,
@@ -503,57 +503,46 @@ function RequirementRow({
     current === "Strong" ? "border-l-success"
     : current === "Partial" ? "border-l-warning"
     : current === "Gap" ? "border-l-destructive"
-    : "border-l-border";
+    : "border-l-transparent";
 
   return (
-    <li className={`border-b border-border border-l-2 ${accent} pl-5 py-6`}>
-      <div className="grid grid-cols-[auto_1fr_auto] gap-5 items-start">
-        <span className="font-display text-2xl tabular-nums text-muted-foreground leading-none pt-1">
-          {String(index + 1).padStart(2, "0")}
-        </span>
-        <div className="min-w-0">
-          <div className="font-display text-lg leading-snug">{req.requirement}</div>
-
-          <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
-            <div>
-              <div className="label-eyebrow mb-1.5">CV evidence</div>
-              <p className="text-sm leading-relaxed text-muted-foreground">
-                {req.evidence || "—"}
-              </p>
-            </div>
-            <div>
-              <div className="label-eyebrow mb-1.5">Why this rating</div>
-              <p className="text-sm leading-relaxed">
-                {req.reasoning || <span className="text-muted-foreground italic">No rationale provided.</span>}
-              </p>
-              {req.gap_detail && current !== "Strong" && (
-                <p className="text-sm leading-relaxed text-destructive/90 mt-2">
-                  <span className="label-eyebrow text-destructive mr-1">Missing:</span>
-                  {req.gap_detail}
-                </p>
-              )}
-            </div>
-          </div>
-        </div>
-        <div className="shrink-0">
-          <RatingCorrector
-            original={req.match_strength}
-            corrected={corrected}
-            onChange={onChange}
-          />
-        </div>
-      </div>
-    </li>
+    <tr className={`border-b border-border border-l-2 ${accent} align-top`}>
+      <td className="py-4 pr-4 font-mono text-xs text-muted-foreground tabular-nums pl-3">
+        {String(index + 1).padStart(2, "0")}
+      </td>
+      <td className="py-4 pr-4">
+        <div className="font-display text-base leading-snug">{req.requirement}</div>
+      </td>
+      <td className="py-4 pr-4 text-sm leading-relaxed text-muted-foreground">
+        {req.evidence || "—"}
+      </td>
+      <td className="py-4 pr-4 text-sm leading-relaxed">
+        {req.reasoning || <span className="text-muted-foreground italic">No rationale provided.</span>}
+        {req.gap_detail && current !== "Strong" && (
+          <p className="text-destructive/90 mt-2">
+            <span className="label-eyebrow text-destructive mr-1">Missing:</span>
+            {req.gap_detail}
+          </p>
+        )}
+      </td>
+      <td className="py-4">
+        <RatingCorrector
+          original={req.match_strength}
+          corrected={corrected}
+          onChange={onChange}
+        />
+      </td>
+    </tr>
   );
 }
 
 function RatingCorrector({ original, corrected, onChange }: { original: string; corrected?: string; onChange: (v: string) => void }) {
   const current = corrected ?? original;
   const options = ["Strong", "Partial", "Gap"];
-  const colorFor = (v: string) =>
-    v === "Strong" ? "border-success! text-success"
-    : v === "Partial" ? "border-warning! text-warning"
-    : "border-destructive! text-destructive";
+  const activeStyle = (v: string) =>
+    v === "Strong" ? "bg-success text-success-foreground border-success!"
+    : v === "Partial" ? "bg-warning text-warning-foreground border-warning!"
+    : "bg-destructive text-destructive-foreground border-destructive!";
   return (
     <div className="flex flex-col gap-1.5">
       <div className="flex gap-1">
@@ -563,7 +552,7 @@ function RatingCorrector({ original, corrected, onChange }: { original: string; 
             <button
               key={opt}
               onClick={() => onChange(opt)}
-              className={`label-tag transition-colors ${active ? colorFor(opt) : "hover:text-foreground"}`}
+              className={`label-tag transition-colors ${active ? activeStyle(opt) : "text-muted-foreground hover:text-foreground"}`}
             >
               {opt}
             </button>

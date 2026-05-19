@@ -162,7 +162,12 @@ function AssessmentView() {
     setA({ ...a, intent_to_apply: true });
   };
 
-  const dec = a.job_decoder ?? {};
+  const dec: any = a.job_decoder ?? {};
+  const hasDecoder =
+    !!dec.ai_maturity ||
+    !!dec.real_seniority ||
+    (Array.isArray(dec.unstated_requirements) && dec.unstated_requirements.length > 0) ||
+    (Array.isArray(dec.red_flags) && dec.red_flags.length > 0);
   const reqs: any[] = Array.isArray(a.requirements) ? a.requirements : [];
   const risks: string[] = Array.isArray(a.screening_risks) ? a.screening_risks : [];
   const savedActionItems: any[] = Array.isArray(a.action_items) ? a.action_items : [];
@@ -241,33 +246,39 @@ function AssessmentView() {
           <span className="text-xs font-mono text-muted-foreground group-hover:text-foreground">Read ↓</span>
         </a>
 
-        {/* 01 — Job decoder */}
-        <Section number="01" title="Job decoder">
-          <DefList>
-            <DefRow label="Company AI maturity" value={<span className="capitalize">{dec.ai_maturity ?? "—"}</span>} note={dec.ai_maturity_reason} />
-            <DefRow label="Real seniority" value={dec.real_seniority ?? "—"} />
-          </DefList>
+        {/* 01 — Job decoder (only if model returned it) */}
+        {hasDecoder && (
+          <Section number="01" title="Job decoder">
+            <DefList>
+              {dec.ai_maturity && (
+                <DefRow label="Company AI maturity" value={<span className="capitalize">{dec.ai_maturity}</span>} note={dec.ai_maturity_reason} />
+              )}
+              {dec.real_seniority && (
+                <DefRow label="Real seniority" value={dec.real_seniority} />
+              )}
+            </DefList>
 
-          {Array.isArray(dec.unstated_requirements) && dec.unstated_requirements.length > 0 && (
-            <SubSection title="Unstated requirements">
-              <ul className="space-y-2">
-                {dec.unstated_requirements.map((r: string, i: number) => (
-                  <li key={i} className="flex gap-3"><span className="text-muted-foreground font-mono text-xs pt-1">→</span><span>{r}</span></li>
-                ))}
-              </ul>
-            </SubSection>
-          )}
+            {Array.isArray(dec.unstated_requirements) && dec.unstated_requirements.length > 0 && (
+              <SubSection title="Unstated requirements">
+                <ul className="space-y-2">
+                  {dec.unstated_requirements.map((r: string, i: number) => (
+                    <li key={i} className="flex gap-3"><span className="text-muted-foreground font-mono text-xs pt-1">→</span><span>{r}</span></li>
+                  ))}
+                </ul>
+              </SubSection>
+            )}
 
-          {Array.isArray(dec.red_flags) && dec.red_flags.length > 0 && (
-            <SubSection title="Red flags">
-              <ul className="space-y-2">
-                {dec.red_flags.map((r: string, i: number) => (
-                  <li key={i} className="flex gap-3"><span className="text-destructive font-mono text-xs pt-1">!</span><span>{r}</span></li>
-                ))}
-              </ul>
-            </SubSection>
-          )}
-        </Section>
+            {Array.isArray(dec.red_flags) && dec.red_flags.length > 0 && (
+              <SubSection title="Red flags">
+                <ul className="space-y-2">
+                  {dec.red_flags.map((r: string, i: number) => (
+                    <li key={i} className="flex gap-3"><span className="text-destructive font-mono text-xs pt-1">!</span><span>{r}</span></li>
+                  ))}
+                </ul>
+              </SubSection>
+            )}
+          </Section>
+        )}
 
         {/* 02 — Company intelligence */}
         {a.intent_to_apply ? (

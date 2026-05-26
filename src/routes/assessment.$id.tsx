@@ -553,28 +553,28 @@ function RequirementTableRow({
 
 function RatingCorrector({ original, corrected, onChange }: { original: string; corrected?: string; onChange: (v: string) => void }) {
   const current = corrected ?? original;
-  const options = ["Strong", "Partial", "Gap"];
-  const activeDot = (v: string) =>
-    v === "Strong" ? "bg-success"
-    : v === "Partial" ? "bg-warning"
-    : "bg-destructive";
+  const options: Array<{ key: string; activeCls: string; dot: string }> = [
+    { key: "Strong",  activeCls: "bg-success/15 text-success border-success!",         dot: "bg-success" },
+    { key: "Partial", activeCls: "bg-warning/15 text-warning border-warning!",         dot: "bg-warning" },
+    { key: "Gap",     activeCls: "bg-destructive/15 text-destructive border-destructive!", dot: "bg-destructive" },
+  ];
   return (
     <div className="flex flex-col gap-1.5">
-      <div className="flex gap-1">
+      <div className="flex flex-wrap gap-1.5">
         {options.map((opt) => {
-          const active = current === opt;
+          const active = current === opt.key;
           return (
             <button
-              key={opt}
-              onClick={() => onChange(opt)}
+              key={opt.key}
+              onClick={() => onChange(opt.key)}
               className={`label-tag transition-colors inline-flex items-center gap-1.5 ${
                 active
-                  ? "bg-foreground text-background border-foreground!"
-                  : "bg-transparent text-foreground hover:bg-foreground/5"
+                  ? opt.activeCls
+                  : "bg-transparent text-muted-foreground border-border! hover:text-foreground hover:border-foreground!"
               }`}
             >
-              <span className={`inline-block w-1.5 h-1.5 rounded-full ${activeDot(opt)}`} />
-              {opt}
+              <span className={`inline-block w-1.5 h-1.5 rounded-full ${opt.dot}`} />
+              {opt.key}
             </button>
           );
         })}

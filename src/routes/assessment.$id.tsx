@@ -303,15 +303,15 @@ function AssessmentView() {
             For each JD requirement: what the CV shows, the model's rating, and <em className="font-serif-italic">why</em>. Disagree? Click a different rating — it re-scores the fit and logs the correction.
           </p>
           <RatingLegend />
-          <div className="mt-6 overflow-x-auto">
+          <div className="mt-6 overflow-x-auto border border-border">
             <table className="w-full border-collapse text-sm">
-              <thead>
+              <thead className="bg-muted/40">
                 <tr className="border-b border-foreground">
-                  <th className="label-eyebrow text-left py-3 pr-4 w-8">#</th>
-                  <th className="label-eyebrow text-left py-3 pr-4 w-[26%]">Requirement</th>
-                  <th className="label-eyebrow text-left py-3 pr-4 w-[28%]">CV evidence</th>
-                  <th className="label-eyebrow text-left py-3 pr-4 w-[28%]">Why this rating</th>
-                  <th className="label-eyebrow text-left py-3 w-[180px]">Rating</th>
+                  <th className="label-eyebrow text-left py-3 px-3 w-10 border-r border-border">#</th>
+                  <th className="label-eyebrow text-left py-3 px-4 w-[24%] border-r border-border">Requirement</th>
+                  <th className="label-eyebrow text-left py-3 px-4 w-[28%] border-r border-border">CV evidence</th>
+                  <th className="label-eyebrow text-left py-3 px-4 w-[28%] border-r border-border">Why this rating</th>
+                  <th className="label-eyebrow text-left py-3 px-4 w-[200px]">Rating</th>
                 </tr>
               </thead>
               <tbody>
@@ -322,6 +322,7 @@ function AssessmentView() {
                     req={r}
                     corrected={feedback[r.requirement]}
                     onChange={(v: string) => submitCorrection(r, v)}
+                    zebra={i % 2 === 1}
                   />
                 ))}
               </tbody>

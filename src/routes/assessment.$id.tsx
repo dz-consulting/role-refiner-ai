@@ -493,11 +493,13 @@ function RequirementTableRow({
   req,
   corrected,
   onChange,
+  zebra,
 }: {
   index: number;
   req: any;
   corrected?: string;
   onChange: (v: string) => void;
+  zebra?: boolean;
 }) {
   const current = corrected ?? req.match_strength;
   const accent =
@@ -507,17 +509,17 @@ function RequirementTableRow({
     : "border-l-transparent";
 
   return (
-    <tr className={`border-b border-border border-l-2 ${accent} align-top`}>
-      <td className="py-4 pr-4 font-mono text-xs text-muted-foreground tabular-nums pl-3">
+    <tr className={`border-b border-border border-l-2 ${accent} align-top ${zebra ? "bg-muted/20" : ""}`}>
+      <td className="py-4 px-3 font-mono text-xs text-muted-foreground tabular-nums border-r border-border">
         {String(index + 1).padStart(2, "0")}
       </td>
-      <td className="py-4 pr-4">
+      <td className="py-4 px-4 border-r border-border">
         <div className="font-display text-base leading-snug">{req.requirement}</div>
       </td>
-      <td className="py-4 pr-4 text-sm leading-relaxed text-muted-foreground">
+      <td className="py-4 px-4 text-sm leading-relaxed text-muted-foreground border-r border-border">
         {req.evidence || "—"}
       </td>
-      <td className="py-4 pr-4 text-sm leading-relaxed">
+      <td className="py-4 px-4 text-sm leading-relaxed border-r border-border">
         {req.reasoning ? (
           req.reasoning
         ) : req.gap_detail ? (
@@ -538,7 +540,7 @@ function RequirementTableRow({
           </p>
         )}
       </td>
-      <td className="py-4">
+      <td className="py-4 px-4">
         <RatingCorrector
           original={req.match_strength}
           corrected={corrected}

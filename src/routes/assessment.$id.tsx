@@ -303,15 +303,15 @@ function AssessmentView() {
             For each JD requirement: what the CV shows, the model's rating, and <em className="font-serif-italic">why</em>. Disagree? Click a different rating — it re-scores the fit and logs the correction.
           </p>
           <RatingLegend />
-          <div className="mt-6 overflow-x-auto">
+          <div className="mt-6 overflow-x-auto border border-border">
             <table className="w-full border-collapse text-sm">
-              <thead>
+              <thead className="bg-muted/40">
                 <tr className="border-b border-foreground">
-                  <th className="label-eyebrow text-left py-3 pr-4 w-8">#</th>
-                  <th className="label-eyebrow text-left py-3 pr-4 w-[26%]">Requirement</th>
-                  <th className="label-eyebrow text-left py-3 pr-4 w-[28%]">CV evidence</th>
-                  <th className="label-eyebrow text-left py-3 pr-4 w-[28%]">Why this rating</th>
-                  <th className="label-eyebrow text-left py-3 w-[180px]">Rating</th>
+                  <th className="label-eyebrow text-left py-3 px-3 w-10 border-r border-border">#</th>
+                  <th className="label-eyebrow text-left py-3 px-4 w-[24%] border-r border-border">Requirement</th>
+                  <th className="label-eyebrow text-left py-3 px-4 w-[28%] border-r border-border">CV evidence</th>
+                  <th className="label-eyebrow text-left py-3 px-4 w-[28%] border-r border-border">Why this rating</th>
+                  <th className="label-eyebrow text-left py-3 px-4 w-[200px]">Rating</th>
                 </tr>
               </thead>
               <tbody>
@@ -322,6 +322,7 @@ function AssessmentView() {
                     req={r}
                     corrected={feedback[r.requirement]}
                     onChange={(v: string) => submitCorrection(r, v)}
+                    zebra={i % 2 === 1}
                   />
                 ))}
               </tbody>
@@ -492,11 +493,13 @@ function RequirementTableRow({
   req,
   corrected,
   onChange,
+  zebra,
 }: {
   index: number;
   req: any;
   corrected?: string;
   onChange: (v: string) => void;
+  zebra?: boolean;
 }) {
   const current = corrected ?? req.match_strength;
   const accent =
@@ -506,17 +509,17 @@ function RequirementTableRow({
     : "border-l-transparent";
 
   return (
-    <tr className={`border-b border-border border-l-2 ${accent} align-top`}>
-      <td className="py-4 pr-4 font-mono text-xs text-muted-foreground tabular-nums pl-3">
+    <tr className={`border-b border-border border-l-2 ${accent} align-top ${zebra ? "bg-muted/20" : ""}`}>
+      <td className="py-4 px-3 font-mono text-xs text-muted-foreground tabular-nums border-r border-border">
         {String(index + 1).padStart(2, "0")}
       </td>
-      <td className="py-4 pr-4">
+      <td className="py-4 px-4 border-r border-border">
         <div className="font-display text-base leading-snug">{req.requirement}</div>
       </td>
-      <td className="py-4 pr-4 text-sm leading-relaxed text-muted-foreground">
+      <td className="py-4 px-4 text-sm leading-relaxed text-muted-foreground border-r border-border">
         {req.evidence || "—"}
       </td>
-      <td className="py-4 pr-4 text-sm leading-relaxed">
+      <td className="py-4 px-4 text-sm leading-relaxed border-r border-border">
         {req.reasoning ? (
           req.reasoning
         ) : req.gap_detail ? (
@@ -537,7 +540,7 @@ function RequirementTableRow({
           </p>
         )}
       </td>
-      <td className="py-4">
+      <td className="py-4 px-4">
         <RatingCorrector
           original={req.match_strength}
           corrected={corrected}
@@ -550,28 +553,28 @@ function RequirementTableRow({
 
 function RatingCorrector({ original, corrected, onChange }: { original: string; corrected?: string; onChange: (v: string) => void }) {
   const current = corrected ?? original;
-  const options = ["Strong", "Partial", "Gap"];
-  const activeDot = (v: string) =>
-    v === "Strong" ? "bg-success"
-    : v === "Partial" ? "bg-warning"
-    : "bg-destructive";
+  const options: Array<{ key: string; activeCls: string; dot: string }> = [
+    { key: "Strong",  activeCls: "bg-success/15 text-success border-success!",         dot: "bg-success" },
+    { key: "Partial", activeCls: "bg-warning/15 text-warning border-warning!",         dot: "bg-warning" },
+    { key: "Gap",     activeCls: "bg-destructive/15 text-destructive border-destructive!", dot: "bg-destructive" },
+  ];
   return (
     <div className="flex flex-col gap-1.5">
-      <div className="flex gap-1">
+      <div className="flex flex-wrap gap-1.5">
         {options.map((opt) => {
-          const active = current === opt;
+          const active = current === opt.key;
           return (
             <button
-              key={opt}
-              onClick={() => onChange(opt)}
+              key={opt.key}
+              onClick={() => onChange(opt.key)}
               className={`label-tag transition-colors inline-flex items-center gap-1.5 ${
                 active
-                  ? "bg-foreground text-background border-foreground!"
-                  : "bg-transparent text-foreground hover:bg-foreground/5"
+                  ? opt.activeCls
+                  : "bg-transparent text-muted-foreground border-border! hover:text-foreground hover:border-foreground!"
               }`}
             >
-              <span className={`inline-block w-1.5 h-1.5 rounded-full ${activeDot(opt)}`} />
-              {opt}
+              <span className={`inline-block w-1.5 h-1.5 rounded-full ${opt.dot}`} />
+              {opt.key}
             </button>
           );
         })}

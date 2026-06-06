@@ -197,15 +197,15 @@ function AssessNew() {
           </div>
         )}
 
-        <div className="mt-12 p-4 bg-yellow-100 border-2 border-red-500">
-          <label className="label-eyebrow block mb-2 text-red-600">Company <span className="text-muted-foreground normal-case tracking-normal font-sans text-[11px]">— optional, helps if the JD doesn't name it</span></label>
+        <div className="mt-12">
+          <label className="label-eyebrow block mb-2">Company <span className="text-muted-foreground normal-case tracking-normal font-sans text-[11px]">— optional, helps if the JD doesn't name it</span></label>
           <input
             type="text"
             value={companyHint}
             onChange={(e) => setCompanyHint(e.target.value.slice(0, 120))}
             placeholder="e.g. Acme Robotics"
             disabled={busy}
-            className="w-full bg-white border-2 border-red-500 px-4 py-3 text-sm focus:outline-none focus:border-red-700 transition-colors"
+            className="w-full bg-card border border-border px-4 py-3 text-sm focus:outline-none focus:border-foreground transition-colors"
           />
         </div>
 

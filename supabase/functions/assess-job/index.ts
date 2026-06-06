@@ -139,7 +139,9 @@ If you genuinely don't recognize the company, say "Unknown company" in what_they
         userPrompt: intelPrompt,
         variables: {
           candidateBackground: JSON.stringify({ title: profile.title, years_experience: profile.years_experience, skills: profile.skills?.slice?.(0, 20) }, null, 2),
-          jobDescription: jobDescription.slice(0, 20000),
+          jobDescription: companyHintClean
+            ? `[Candidate-provided company hint: ${companyHintClean}]\n\n${jobDescription.slice(0, 20000)}`
+            : jobDescription.slice(0, 20000),
         },
         maxTokens: 3000,
         functionName: "assess-job.company-intel",

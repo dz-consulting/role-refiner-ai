@@ -6,7 +6,8 @@ Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
   const t0 = Date.now();
   try {
-    const { profile, jobDescription } = await req.json();
+    const { profile, jobDescription, companyHint } = await req.json();
+    const companyHintClean = typeof companyHint === "string" ? companyHint.trim().slice(0, 120) : "";
     if (!profile || !jobDescription) {
       return new Response(JSON.stringify({ error: "profile and jobDescription required" }), {
         status: 400,
@@ -29,6 +30,8 @@ JOB DESCRIPTION:
 """
 {{jobDescription}}
 """
+
+{{companyHintBlock}}
 
 Return JSON exactly matching this schema:
 {
@@ -124,6 +127,9 @@ If you genuinely don't recognize the company, say "Unknown company" in what_they
         variables: {
           profile: JSON.stringify(profile, null, 2),
           jobDescription: jobDescription.slice(0, 20000),
+          companyHintBlock: companyHintClean
+            ? `COMPANY HINT (provided by candidate — treat as authoritative for the "company" field unless the JD clearly contradicts it):\n"${companyHintClean}"`
+            : `If the JD does not name the company, do your best to infer it from URLs, email domains, signatures, product names, or distinctive phrasing in the JD. Only return null for "company" if there is genuinely no signal.`,
         },
         maxTokens: 8000,
         functionName: "assess-job.fit-assessment",
@@ -133,7 +139,9 @@ If you genuinely don't recognize the company, say "Unknown company" in what_they
         userPrompt: intelPrompt,
         variables: {
           candidateBackground: JSON.stringify({ title: profile.title, years_experience: profile.years_experience, skills: profile.skills?.slice?.(0, 20) }, null, 2),
-          jobDescription: jobDescription.slice(0, 20000),
+          jobDescription: companyHintClean
+            ? `[Candidate-provided company hint: ${companyHintClean}]\n\n${jobDescription.slice(0, 20000)}`
+            : jobDescription.slice(0, 20000),
         },
         maxTokens: 3000,
         functionName: "assess-job.company-intel",

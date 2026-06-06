@@ -26,6 +26,7 @@ const STEPS = [
 function AssessNew() {
   const nav = useNavigate();
   const [jd, setJd] = useState("");
+  const [companyHint, setCompanyHint] = useState("");
   const [busy, setBusy] = useState(false);
   const [stepIdx, setStepIdx] = useState(0);
   const [error, setError] = useState<string | null>(null);
@@ -125,17 +126,19 @@ function AssessNew() {
       }
 
       const { data, error: fnErr } = await supabase.functions.invoke("assess-job", {
-        body: { profile: profileForAi, jobDescription: jd },
+        body: { profile: profileForAi, jobDescription: jd, companyHint: companyHint.trim() || undefined },
       });
       if (fnErr) throw fnErr;
       if (data?.error) throw new Error(data.error);
+
+      const effectiveCompany = data.company ?? (companyHint.trim() || null);
 
       if (user) {
         const { data: inserted, error: insErr } = await supabase
           .from("assessments").insert({
             user_id: user.id,
             job_description: jd,
-            company: data.company,
+            company: effectiveCompany,
             role_title: data.role_title,
             fit_score: data.fit_score,
             fit_label: data.fit_label,
@@ -155,7 +158,7 @@ function AssessNew() {
           id,
           created_at: new Date().toISOString(),
           job_description: jd,
-          company: data.company ?? null,
+          company: effectiveCompany,
           role_title: data.role_title ?? null,
           fit_score: data.fit_score ?? null,
           fit_label: data.fit_label ?? null,
@@ -194,13 +197,25 @@ function AssessNew() {
           </div>
         )}
 
+        <div className="mt-12">
+          <label className="label-eyebrow block mb-2">Company <span className="text-muted-foreground normal-case tracking-normal font-sans text-[11px]">— optional, helps if the JD doesn't name it</span></label>
+          <input
+            type="text"
+            value={companyHint}
+            onChange={(e) => setCompanyHint(e.target.value.slice(0, 120))}
+            placeholder="e.g. Acme Robotics"
+            disabled={busy}
+            className="w-full bg-card border border-border px-4 py-3 text-sm focus:outline-none focus:border-foreground transition-colors"
+          />
+        </div>
+
         <textarea
           value={jd}
           onChange={(e) => setJd(e.target.value)}
           rows={16}
           placeholder="Paste the complete job description here…"
           disabled={busy}
-          className="w-full mt-12 bg-card border border-border p-5 text-sm leading-relaxed focus:outline-none focus:border-foreground resize-y transition-colors"
+          className="w-full mt-4 bg-card border border-border p-5 text-sm leading-relaxed focus:outline-none focus:border-foreground resize-y transition-colors"
         />
 
         <div className="flex items-center justify-between mt-3 text-xs font-mono text-muted-foreground">

@@ -31,6 +31,8 @@ JOB DESCRIPTION:
 {{jobDescription}}
 """
 
+{{companyHintBlock}}
+
 Return JSON exactly matching this schema:
 {
   "company": string|null,

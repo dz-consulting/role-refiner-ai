@@ -183,7 +183,7 @@ function AssessmentView() {
 
         {/* Hero */}
         <header className="mt-12">
-          <div className="label-eyebrow">{a.company || "—"}</div>
+          <div className="label-eyebrow">{a.company || "Company not specified"}</div>
           <h1 className="font-display text-5xl mt-3 leading-[1.05]">{a.role_title || "Untitled role"}</h1>
 
           <div className="mt-12 flex items-baseline gap-6 border-t border-foreground pt-8">

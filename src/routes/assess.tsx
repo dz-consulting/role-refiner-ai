@@ -138,7 +138,7 @@ function AssessNew() {
           .from("assessments").insert({
             user_id: user.id,
             job_description: jd,
-            company: data.company,
+            company: effectiveCompany,
             role_title: data.role_title,
             fit_score: data.fit_score,
             fit_label: data.fit_label,

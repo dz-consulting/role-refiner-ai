@@ -131,6 +131,8 @@ function AssessNew() {
       if (fnErr) throw fnErr;
       if (data?.error) throw new Error(data.error);
 
+      const effectiveCompany = data.company ?? (companyHint.trim() || null);
+
       if (user) {
         const { data: inserted, error: insErr } = await supabase
           .from("assessments").insert({

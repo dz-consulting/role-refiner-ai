@@ -197,13 +197,25 @@ function AssessNew() {
           </div>
         )}
 
+        <div className="mt-12">
+          <label className="label-eyebrow block mb-2">Company <span className="text-muted-foreground normal-case tracking-normal font-sans text-[11px]">— optional, helps if the JD doesn't name it</span></label>
+          <input
+            type="text"
+            value={companyHint}
+            onChange={(e) => setCompanyHint(e.target.value.slice(0, 120))}
+            placeholder="e.g. Acme Robotics"
+            disabled={busy}
+            className="w-full bg-card border border-border px-4 py-3 text-sm focus:outline-none focus:border-foreground transition-colors"
+          />
+        </div>
+
         <textarea
           value={jd}
           onChange={(e) => setJd(e.target.value)}
           rows={16}
           placeholder="Paste the complete job description here…"
           disabled={busy}
-          className="w-full mt-12 bg-card border border-border p-5 text-sm leading-relaxed focus:outline-none focus:border-foreground resize-y transition-colors"
+          className="w-full mt-4 bg-card border border-border p-5 text-sm leading-relaxed focus:outline-none focus:border-foreground resize-y transition-colors"
         />
 
         <div className="flex items-center justify-between mt-3 text-xs font-mono text-muted-foreground">

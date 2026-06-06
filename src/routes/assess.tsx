@@ -158,7 +158,7 @@ function AssessNew() {
           id,
           created_at: new Date().toISOString(),
           job_description: jd,
-          company: data.company ?? null,
+          company: effectiveCompany,
           role_title: data.role_title ?? null,
           fit_score: data.fit_score ?? null,
           fit_label: data.fit_label ?? null,

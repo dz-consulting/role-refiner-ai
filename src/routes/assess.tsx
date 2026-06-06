@@ -26,6 +26,7 @@ const STEPS = [
 function AssessNew() {
   const nav = useNavigate();
   const [jd, setJd] = useState("");
+  const [companyHint, setCompanyHint] = useState("");
   const [busy, setBusy] = useState(false);
   const [stepIdx, setStepIdx] = useState(0);
   const [error, setError] = useState<string | null>(null);

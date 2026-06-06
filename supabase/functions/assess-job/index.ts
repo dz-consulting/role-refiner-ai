@@ -6,7 +6,8 @@ Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
   const t0 = Date.now();
   try {
-    const { profile, jobDescription } = await req.json();
+    const { profile, jobDescription, companyHint } = await req.json();
+    const companyHintClean = typeof companyHint === "string" ? companyHint.trim().slice(0, 120) : "";
     if (!profile || !jobDescription) {
       return new Response(JSON.stringify({ error: "profile and jobDescription required" }), {
         status: 400,

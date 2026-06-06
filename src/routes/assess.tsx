@@ -126,7 +126,7 @@ function AssessNew() {
       }
 
       const { data, error: fnErr } = await supabase.functions.invoke("assess-job", {
-        body: { profile: profileForAi, jobDescription: jd },
+        body: { profile: profileForAi, jobDescription: jd, companyHint: companyHint.trim() || undefined },
       });
       if (fnErr) throw fnErr;
       if (data?.error) throw new Error(data.error);

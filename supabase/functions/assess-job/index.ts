@@ -127,6 +127,9 @@ If you genuinely don't recognize the company, say "Unknown company" in what_they
         variables: {
           profile: JSON.stringify(profile, null, 2),
           jobDescription: jobDescription.slice(0, 20000),
+          companyHintBlock: companyHintClean
+            ? `COMPANY HINT (provided by candidate — treat as authoritative for the "company" field unless the JD clearly contradicts it):\n"${companyHintClean}"`
+            : `If the JD does not name the company, do your best to infer it from URLs, email domains, signatures, product names, or distinctive phrasing in the JD. Only return null for "company" if there is genuinely no signal.`,
         },
         maxTokens: 8000,
         functionName: "assess-job.fit-assessment",
